@@ -1,0 +1,427 @@
+.onboarding {
+  position: fixed;
+  inset: 0;
+  z-index: 100;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  background: var(--color-bg);
+  padding: var(--space-6) var(--space-6)
+    calc(var(--space-8) + env(safe-area-inset-bottom));
+  overflow: hidden;
+}
+
+/* Subtle radial teal glow behind content */
+.onboarding::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  background: radial-gradient(
+    ellipse 70% 50% at 50% 30%,
+    var(--color-primary-dim) 0%,
+    transparent 70%
+  );
+  pointer-events: none;
+}
+
+/* ---- Step indicators ---- */
+
+.onboarding__steps {
+  position: absolute;
+  top: calc(var(--space-8) + env(safe-area-inset-top));
+  display: flex;
+  align-items: center;
+  gap: var(--space-1);
+}
+
+.onboarding__step {
+  height: 8px;
+  min-width: 10px;
+  border-radius: var(--radius-full);
+  background: var(--color-border);
+  overflow: hidden;
+  display: flex;
+  align-items: center;
+  padding: 0;
+  transition: background var(--ease-base);
+}
+
+.onboarding__step--active {
+  background: var(--color-primary);
+  padding: 0 var(--space-2);
+}
+
+.onboarding__step--done {
+  background: color-mix(in srgb, var(--color-primary) 40%, transparent);
+}
+
+.onboarding__step-label {
+  font-size: 10px;
+  font-weight: var(--weight-bold);
+  color: #fff;
+  white-space: nowrap;
+  letter-spacing: 0.2px;
+}
+
+/* ---- Screen ---- */
+
+.onboarding__screen {
+  width: 100%;
+  max-width: 360px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: var(--space-7);
+}
+
+/* ---- Logo ---- */
+
+.onboarding__logo-wrap {
+  position: relative;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.onboarding__logo-mark {
+  border-radius: 18px;
+  box-shadow: 0 8px 32px rgba(201, 79, 42, 0.26);
+}
+
+.onboarding__logo-glow {
+  position: absolute;
+  width: 120px;
+  height: 120px;
+  border-radius: var(--radius-full);
+  background: radial-gradient(
+    circle,
+    var(--color-primary-dim) 0%,
+    transparent 70%
+  );
+  pointer-events: none;
+  z-index: -1;
+}
+
+/* ---- Text ---- */
+
+.onboarding__text {
+  text-align: center;
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-2);
+}
+
+.onboarding__title {
+  font-family: var(--font-display);
+  font-size: var(--font-2xl);
+  font-weight: 800;
+  color: var(--color-text);
+  letter-spacing: -0.7px;
+  line-height: 1.15;
+}
+
+.onboarding__title--md {
+  font-size: var(--font-xl);
+}
+
+.onboarding__subtitle {
+  font-size: var(--font-sm);
+  color: var(--color-text-muted);
+  line-height: var(--leading-normal);
+}
+
+/* ---- Name field ---- */
+
+.onboarding__field {
+  width: 100%;
+}
+
+.onboarding__input {
+  width: 100%;
+  padding: var(--space-4) var(--space-5);
+  background: var(--color-surface);
+  border: 1.5px solid var(--color-border);
+  border-radius: var(--radius-lg);
+  color: var(--color-text);
+  font-size: var(--font-md);
+  font-family: var(--font-display);
+  font-weight: var(--weight-semibold);
+  text-align: center;
+  outline: none;
+  transition:
+    border-color var(--ease-base),
+    box-shadow var(--ease-base);
+  box-shadow: var(--shadow-sm);
+}
+
+.onboarding__input::placeholder {
+  color: var(--color-text-faint);
+  font-weight: var(--weight-regular);
+}
+
+.onboarding__input:focus {
+  border-color: var(--color-primary);
+  box-shadow: 0 0 0 3px var(--color-primary-dim);
+}
+
+.onboarding__input--error {
+  border-color: #ef4444;
+  box-shadow: 0 0 0 3px rgba(239, 68, 68, 0.12);
+  animation: input-shake 0.35s ease;
+}
+
+@keyframes input-shake {
+  0%,
+  100% {
+    transform: translateX(0);
+  }
+  20% {
+    transform: translateX(-8px);
+  }
+  40% {
+    transform: translateX(8px);
+  }
+  60% {
+    transform: translateX(-5px);
+  }
+  80% {
+    transform: translateX(5px);
+  }
+}
+
+/* ---- Word fade-in ---- */
+
+.onboarding__word {
+  display: inline;
+}
+
+/* ---- Focus chips ---- */
+
+.onboarding__focuses {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: var(--space-2);
+  width: 100%;
+}
+
+.onboarding__focus {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: var(--space-1);
+  padding: var(--space-3) var(--space-2);
+  min-height: 72px;
+  background: var(--color-surface);
+  border: 1.5px solid var(--color-border);
+  border-radius: var(--radius-lg);
+  transition:
+    background var(--ease-base),
+    border-color var(--ease-base);
+  box-shadow: var(--shadow-sm);
+}
+
+.onboarding__focus--active {
+  background: var(--color-primary-dim);
+  border-color: var(--color-primary);
+}
+
+.onboarding__focus-icon {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: var(--color-text-muted);
+  transition: color var(--ease-base);
+}
+
+.onboarding__focus--active .onboarding__focus-icon {
+  color: var(--color-primary-text);
+}
+
+.onboarding__focus-label {
+  font-size: var(--font-xs);
+  font-weight: var(--weight-semibold);
+  color: var(--color-text-muted);
+  transition: color var(--ease-base);
+}
+
+.onboarding__focus--active .onboarding__focus-label {
+  color: var(--color-primary-text);
+}
+
+/* ---- Actions ---- */
+
+.onboarding__actions {
+  width: 100%;
+}
+
+.onboarding__btn {
+  width: 100%;
+  padding: var(--space-4);
+  border-radius: var(--radius-lg);
+  font-family: var(--font-display);
+  font-size: var(--font-base);
+  font-weight: var(--weight-bold);
+  letter-spacing: 0.2px;
+  transition:
+    opacity var(--ease-base),
+    transform var(--ease-fast);
+}
+
+.onboarding__btn--primary {
+  background: var(--color-primary);
+  color: #ffffff;
+  border: 1.5px solid rgba(160, 56, 32, 0.4);
+  box-shadow:
+    0 2px 8px rgba(160, 56, 32, 0.28),
+    0 4px 20px rgba(201, 79, 42, 0.22);
+}
+
+.onboarding__btn--primary:active {
+  transform: scale(0.97);
+  opacity: 0.9;
+}
+
+/* ---- Confetti burst ---- */
+
+.onboarding__confetti-wrap {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  pointer-events: none;
+  z-index: 10;
+}
+
+.onboarding__confetti-dot {
+  position: absolute;
+  top: 0;
+  left: 0;
+  transform: translate(-50%, -50%);
+}
+
+/* ---- Starter habit tiles ---- */
+
+.onboarding__starters {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-2);
+  width: 100%;
+}
+
+.onboarding__starter {
+  display: flex;
+  align-items: center;
+  gap: var(--space-3);
+  padding: var(--space-3) var(--space-4);
+  background: var(--color-surface);
+  border: 1.5px solid var(--color-border);
+  border-radius: var(--radius-lg);
+  text-align: left;
+  transition:
+    border-color var(--ease-base),
+    background var(--ease-base),
+    transform var(--ease-fast);
+  box-shadow: var(--shadow-sm);
+}
+
+.onboarding__starter:hover {
+  border-color: var(--color-primary);
+  background: var(--color-primary-dim);
+}
+
+.onboarding__starter:active {
+  transform: scale(0.97);
+}
+
+.onboarding__starter-icon {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 36px;
+  height: 36px;
+  border-radius: 10px;
+  background: var(--color-primary-dim);
+  color: var(--color-primary);
+  flex-shrink: 0;
+}
+
+.onboarding__starter-body {
+  flex: 1;
+  min-width: 0;
+}
+
+.onboarding__starter-title {
+  font-size: var(--font-base);
+  font-weight: var(--weight-semibold);
+  color: var(--color-text);
+}
+
+.onboarding__starter-time {
+  font-size: var(--font-xs);
+  color: var(--color-text-muted);
+  text-transform: capitalize;
+  margin-top: 1px;
+}
+
+.onboarding__starter-arrow {
+  color: var(--color-primary-text);
+  font-size: var(--font-md);
+  flex-shrink: 0;
+}
+
+/* ---- Ghost button variant ---- */
+
+.onboarding__btn--ghost {
+  background: transparent;
+  color: var(--color-text-muted);
+  font-size: var(--font-sm);
+  text-align: center;
+}
+
+/* ---- Step 4 - Gesture cards ---- */
+
+.onboarding__gestures {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-3);
+  width: 100%;
+}
+
+.onboarding__gesture-card {
+  display: flex;
+  align-items: center;
+  gap: var(--space-4);
+  padding: var(--space-4) var(--space-4);
+  background: var(--color-surface-alt);
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-lg);
+}
+
+.onboarding__gesture-icon {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 44px;
+  height: 44px;
+  border-radius: var(--radius-md);
+  background: var(--color-primary-dim);
+  color: var(--color-primary);
+  flex-shrink: 0;
+}
+
+.onboarding__gesture-body {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+}
+
+.onboarding__gesture-label {
+  font-size: var(--font-base);
+  font-weight: var(--weight-semibold);
+  color: var(--color-text);
+}
+
+.onboarding__gesture-sub {
+  font-size: var(--font-sm);
+  color: var(--color-text-muted);
+}

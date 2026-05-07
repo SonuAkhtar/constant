@@ -1,0 +1,703 @@
+import { useState, useEffect, useRef, useMemo } from "react";
+import { useNavigate } from "react-router-dom";
+import { format, differenceInCalendarDays, parseISO } from "date-fns";
+import { motion, AnimatePresence } from "framer-motion";
+import { useHabitStore } from "../../store/useHabitStore";
+import { useOnboardingStore } from "../../store/useOnboardingStore";
+import HabitCard from "../../components/HabitCard/HabitCard";
+import { SlotIcon, SparkleIcon, TrophyIcon, StarIcon, WaveIcon } from "../../components/Icons";
+import type { Milestone, TimeSlot } from "../../types";
+import "./Today.css";
+
+const SLOTS: { slot: TimeSlot; label: string; time: string }[] = [
+  { slot: "morning", label: "Morning", time: "6am – 12pm" },
+  { slot: "afternoon", label: "Afternoon", time: "12pm – 5pm" },
+  { slot: "evening", label: "Evening", time: "5pm – 9pm" },
+  { slot: "night", label: "Night", time: "9pm – 11pm" },
+];
+
+const COPY_TIERS = [
+  { min: 0, max: 0, title: "Fresh start.", sub: "Pick one habit to begin." },
+  { min: 1, max: 29, title: "You're moving.", sub: "Keep the momentum going." },
+  {
+    min: 30,
+    max: 59,
+    title: "Halfway there.",
+    sub: "The second half is yours.",
+  },
+  { min: 60, max: 89, title: "Almost perfect.", sub: "Just a few more to go." },
+  { min: 90, max: 99, title: "So close!", sub: "One last push." },
+  {
+    min: 100,
+    max: 100,
+    title: "Perfect day.",
+    sub: "You showed up for yourself.",
+  },
+] as const;
+
+function getCopy(pct: number) {
+  return COPY_TIERS.find((c) => pct >= c.min && pct <= c.max) ?? COPY_TIERS[0];
+}
+function getCopyKey(pct: number) {
+  return COPY_TIERS.findIndex((c) => pct >= c.min && pct <= c.max);
+}
+
+function getGreeting(h: number): string {
+  if (h < 12) return "Good morning";
+  if (h < 17) return "Good afternoon";
+  if (h < 21) return "Good evening";
+  return "Good night";
+}
+
+// ---- Confetti ----------------------------------------------------------------
+
+const CONFETTI_COLORS = [
+  "#c94f2a",
+  "#6366f1",
+  "#f97316",
+  "#22c55e",
+  "#c084fc",
+  "#22d3ee",
+  "#f59e0b",
+  "#818cf8",
+];
+
+function Confetti({ onDone }: { onDone: () => void }) {
+  useEffect(() => {
+    const id = setTimeout(onDone, 2600);
+    return () => clearTimeout(id);
+  }, [onDone]);
+
+  const particles = useMemo(
+    () =>
+      Array.from({ length: 30 }, (_, i) => ({
+        id: i,
+        color: CONFETTI_COLORS[i % CONFETTI_COLORS.length],
+        x: (Math.random() - 0.5) * 340,
+        y: Math.random() * 300 + 80,
+        rotate: Math.random() * 640 - 320,
+        delay: i * 0.036,
+        duration: 1.0 + Math.random() * 0.6,
+        w: 6 + Math.floor(Math.random() * 7),
+        h: 4 + Math.floor(Math.random() * 5),
+        round: Math.random() > 0.5,
+      })),
+    [],
+  );
+
+  return (
+    <div className="today__confetti" aria-hidden="true">
+      {particles.map((p) => (
+        <motion.div
+          key={p.id}
+          className="today__confetti-particle"
+          style={{
+            backgroundColor: p.color,
+            width: p.w,
+            height: p.h,
+            borderRadius: p.round ? "50%" : "2px",
+          }}
+          initial={{ x: 0, y: 0, opacity: 1, rotate: 0, scale: 1 }}
+          animate={{ x: p.x, y: p.y, opacity: 0, rotate: p.rotate, scale: 0.3 }}
+          transition={{
+            duration: p.duration,
+            delay: p.delay,
+            ease: [0.2, 0.8, 0.4, 1],
+          }}
+        />
+      ))}
+    </div>
+  );
+}
+
+// ---- Milestone overlay -------------------------------------------------------
+
+function MilestoneOverlay({
+  milestone,
+  onDone,
+}: {
+  milestone: Milestone;
+  onDone: () => void;
+}) {
+  useEffect(() => {
+    navigator.vibrate?.([30, 20, 60, 20, 80]);
+    const id = setTimeout(onDone, 3000);
+    return () => clearTimeout(id);
+  }, [onDone]);
+
+  return (
+    <motion.div
+      className="today__milestone-overlay"
+      initial={{ opacity: 0 }}
+      animate={{ opacity: 1 }}
+      exit={{ opacity: 0 }}
+      transition={{ duration: 0.3 }}
+      onClick={onDone}
+    >
+      <motion.div
+        className="today__milestone-card"
+        initial={{ scale: 0.85, y: 40 }}
+        animate={{ scale: 1, y: 0 }}
+        exit={{ scale: 0.9, opacity: 0 }}
+        transition={{ type: "spring", stiffness: 320, damping: 26 }}
+      >
+        <span className="today__milestone-icon"><TrophyIcon size={48} /></span>
+        <p className="today__milestone-message">{milestone.message}</p>
+        <p className="today__milestone-tap">Tap to continue</p>
+      </motion.div>
+    </motion.div>
+  );
+}
+
+// ---- Empty state -------------------------------------------------------------
+
+function EmptyTodayState({ userName }: { userName: string }) {
+  const navigate = useNavigate();
+  return (
+    <motion.div
+      className="today__empty"
+      initial={{ opacity: 0, y: 16 }}
+      animate={{ opacity: 1, y: 0 }}
+      transition={{ duration: 0.4 }}
+    >
+      <div className="today__empty-illustration">
+        <svg
+          width="80"
+          height="80"
+          viewBox="0 0 80 80"
+          fill="none"
+          aria-hidden="true"
+        >
+          <rect
+            x="12"
+            y="16"
+            width="56"
+            height="52"
+            rx="8"
+            stroke="var(--color-border)"
+            strokeWidth="2"
+          />
+          <rect
+            x="12"
+            y="16"
+            width="56"
+            height="14"
+            rx="8"
+            fill="var(--color-primary-dim)"
+          />
+          <rect
+            x="12"
+            y="22"
+            width="56"
+            height="8"
+            fill="var(--color-primary-dim)"
+          />
+          <path
+            d="M24 38h32M24 48h20"
+            stroke="var(--color-border)"
+            strokeWidth="2"
+            strokeLinecap="round"
+          />
+          <circle cx="58" cy="56" r="14" fill="var(--color-primary)" />
+          <path
+            d="M53 56l3.5 3.5L63 51"
+            stroke="white"
+            strokeWidth="2.2"
+            strokeLinecap="round"
+            strokeLinejoin="round"
+          />
+        </svg>
+      </div>
+      <h3 className="today__empty-title">No habits yet</h3>
+      <p className="today__empty-sub">
+        Start building your best day,
+        <br />
+        one habit at a time.
+      </p>
+      <button className="today__empty-cta" onClick={() => navigate("/habits")}>
+        {userName
+          ? `Start your first habit, ${userName} →`
+          : "Set up your routine →"}
+      </button>
+    </motion.div>
+  );
+}
+
+// ---- Rolling number helper ---------------------------------------------------
+
+function NumRoll({ n }: { n: number }) {
+  return (
+    <span className="today__progress-count-wrap">
+      <AnimatePresence mode="popLayout" initial={false}>
+        <motion.span
+          key={n}
+          initial={{ y: 7, opacity: 0 }}
+          animate={{ y: 0, opacity: 1 }}
+          exit={{ y: -7, opacity: 0 }}
+          transition={{ duration: 0.22, ease: "easeOut" }}
+          style={{ display: "block" }}
+        >
+          {n}
+        </motion.span>
+      </AnimatePresence>
+    </span>
+  );
+}
+
+// ---- Ring constants ----------------------------------------------------------
+
+const RING_R = 20;
+const RING_CIRC = +(2 * Math.PI * RING_R).toFixed(2);
+
+// ---- Page -------------------------------------------------------------------
+
+export default function Today() {
+  const {
+    getTodayHabits,
+    toggleHabit,
+    isCompleted,
+    isSkipped,
+    getStreak,
+    getDayProgress,
+    getAppStreak,
+    getLastActiveDate,
+  } = useHabitStore();
+  const { userName, goal } = useOnboardingStore();
+  const todayHabits = getTodayHabits();
+  const { completed, total, percentage } = getDayProgress();
+
+  const now = new Date();
+  const dayAbbr = format(now, "EEE");
+  const monthAbbr = format(now, "MMM");
+  const dayNum = format(now, "d");
+
+  const [currentHour, setCurrentHour] = useState(() => new Date().getHours());
+
+  const orderedSlots = useMemo(() => {
+    const idx = currentHour < 12 ? 0 : currentHour < 17 ? 1 : currentHour < 21 ? 2 : 3;
+    return [...SLOTS.slice(idx), ...SLOTS.slice(0, idx)];
+  }, [currentHour]);
+
+  const [ringMounted, setRingMounted] = useState(false);
+  const [showConfetti, setShowConfetti] = useState(false);
+  const [showToast, setShowToast] = useState(false);
+  const [activeMilestone, setActiveMilestone] = useState<Milestone | null>(
+    null,
+  );
+  const prevPctRef = useRef(percentage);
+  const prevCompletedRef = useRef(completed);
+  const [pillBump, setPillBump] = useState(false);
+  const auroraTriggeredRef = useRef(new Set<number>());
+  const [auroraBurst, setAuroraBurst] = useState(false);
+
+  const appStreak = getAppStreak();
+  const lastActiveDate = getLastActiveDate();
+  const isReturning = appStreak === 0 && !!lastActiveDate;
+  const daysSince = lastActiveDate
+    ? differenceInCalendarDays(new Date(), parseISO(lastActiveDate))
+    : 0;
+  const toastTimer = useRef<ReturnType<typeof window.setTimeout> | null>(null);
+
+  // Check if the date changed while the app was open (overnight edge case)
+  const [todayDate, setTodayDate] = useState(format(new Date(), "yyyy-MM-dd"));
+  useEffect(() => {
+    const id = setInterval(() => {
+      const now = format(new Date(), "yyyy-MM-dd");
+      if (now !== todayDate) setTodayDate(now);
+    }, 30_000);
+    return () => clearInterval(id);
+  }, [todayDate]);
+
+  useEffect(() => {
+    const update = () => setCurrentHour(new Date().getHours());
+    const id = setInterval(update, 60_000);
+    document.addEventListener('visibilitychange', update);
+    return () => {
+      clearInterval(id);
+      document.removeEventListener('visibilitychange', update);
+    };
+  }, []);
+
+  useEffect(() => {
+    const id = requestAnimationFrame(() => setRingMounted(true));
+    return () => cancelAnimationFrame(id);
+  }, []);
+
+  useEffect(() => {
+    if (percentage === 100 && prevPctRef.current < 100) {
+      setShowConfetti(true);
+      navigator.vibrate?.([30, 20, 60, 20, 30]);
+    }
+    prevPctRef.current = percentage;
+  }, [percentage]);
+
+  useEffect(() => {
+    if (completed > prevCompletedRef.current) {
+      setPillBump(true);
+      const t = setTimeout(() => setPillBump(false), 400);
+      prevCompletedRef.current = completed;
+      return () => clearTimeout(t);
+    }
+    prevCompletedRef.current = completed;
+  }, [completed]);
+
+  useEffect(() => {
+    for (const threshold of [25, 50, 75]) {
+      if (
+        percentage >= threshold &&
+        !auroraTriggeredRef.current.has(threshold)
+      ) {
+        auroraTriggeredRef.current.add(threshold);
+        setAuroraBurst(true);
+        const t = setTimeout(() => setAuroraBurst(false), 3000);
+        return () => clearTimeout(t);
+      }
+    }
+  }, [percentage]);
+
+  function showSaveToast() {
+    setShowToast(true);
+    if (toastTimer.current) clearTimeout(toastTimer.current);
+    toastTimer.current = window.setTimeout(() => setShowToast(false), 1400);
+  }
+
+  function handleToggle(habitId: string) {
+    const wasCompleted = isCompleted(habitId);
+    const milestone = toggleHabit(habitId);
+    if (!wasCompleted) {
+      showSaveToast();
+      if (milestone) setActiveMilestone(milestone);
+    }
+  }
+
+  const strokeDash = ringMounted ? (percentage / 100) * RING_CIRC : 0;
+  const copy = getCopy(percentage);
+  const copyKey = getCopyKey(percentage);
+
+  return (
+    <div className="today">
+      {/* ---- Hero card ---- */}
+      <motion.div
+        className={["today__hero", auroraBurst ? "today__hero--burst" : ""]
+          .filter(Boolean)
+          .join(" ")}
+        initial={{ opacity: 0 }}
+        animate={{ opacity: 1 }}
+        transition={{ duration: 0.38, ease: [0.4, 0, 0.2, 1] }}
+      >
+        <div className="today__hero-inner">
+          {/* Hero rows */}
+          <div className="today__hero-top">
+            <div className="today__hero-left">
+              <div className="today__hero-greeting-row">
+                <p className="today__hero-greeting">{getGreeting(currentHour)}</p>
+                <div className="today__hero-dateline">
+                  <span className="today__hero-date-day">{dayAbbr}</span>
+                  <span className="today__hero-date-sep">·</span>
+                  <span className="today__hero-date-month">{monthAbbr}</span>
+                  <span className="today__hero-date-num">{dayNum}</span>
+                </div>
+              </div>
+              {userName && (
+                <div className="today__hero-name-ring">
+                  <span className="today__hero-name">{userName}</span>
+
+                  <div
+                    className="today__hero-ring"
+                    role="meter"
+                    aria-valuenow={percentage}
+                    aria-valuemin={0}
+                    aria-valuemax={100}
+                    aria-label={`${percentage}% complete today`}
+                  >
+                    <svg
+                      viewBox="0 0 50 50"
+                      className="today__hero-ring-svg"
+                      aria-hidden="true"
+                    >
+                      <circle
+                        cx="25"
+                        cy="25"
+                        r={RING_R}
+                        className="today__hero-ring-track"
+                      />
+                      <circle
+                        cx="25"
+                        cy="25"
+                        r={RING_R}
+                        className={[
+                          "today__hero-ring-fill",
+                          percentage === 100
+                            ? "today__hero-ring-fill--complete"
+                            : "",
+                        ].join(" ")}
+                        strokeDasharray={`${strokeDash} ${RING_CIRC}`}
+                      />
+                    </svg>
+                    <div className="today__hero-ring-center">
+                      <span className="today__hero-ring-pct-wrap">
+                        <AnimatePresence mode="popLayout" initial={false}>
+                          <motion.span
+                            key={percentage}
+                            className="today__hero-ring-pct"
+                            initial={{ y: 6, opacity: 0 }}
+                            animate={{ y: 0, opacity: 1 }}
+                            exit={{ y: -6, opacity: 0 }}
+                            transition={{ duration: 0.22, ease: "easeOut" }}
+                            style={{ display: "block" }}
+                          >
+                            {percentage}
+                          </motion.span>
+                        </AnimatePresence>
+                      </span>
+                      <span className="today__hero-ring-sym">%</span>
+                    </div>
+                  </div>
+                </div>
+              )}
+            </div>
+          </div>
+
+          {/* Animated motivational copy */}
+          <AnimatePresence mode="wait">
+            <motion.p
+              key={copyKey}
+              className="today__hero-copy"
+              initial={{ opacity: 0, y: 5 }}
+              animate={{ opacity: 1, y: 0 }}
+              exit={{ opacity: 0, y: -5 }}
+              transition={{ duration: 0.22 }}
+            >
+              <span className="today__hero-copy-title">{copy.title}</span>
+              <span className="today__hero-copy-sep"> · </span>
+              <span className="today__hero-copy-sub">{copy.sub}</span>
+            </motion.p>
+          </AnimatePresence>
+        </div>
+      </motion.div>
+
+      {/* ---- Confetti ---- */}
+      <AnimatePresence>
+        {showConfetti && <Confetti onDone={() => setShowConfetti(false)} />}
+      </AnimatePresence>
+
+      {/* ---- Perfect day banner ---- */}
+      <AnimatePresence>
+        {percentage === 100 && (
+          <motion.div
+            className="today__celebration"
+            initial={{ opacity: 0, scale: 0.95, y: -8 }}
+            animate={{ opacity: 1, scale: 1, y: 0 }}
+            exit={{ opacity: 0, scale: 0.95, y: -8 }}
+            transition={{ type: "spring", stiffness: 320, damping: 28 }}
+            role="status"
+            aria-live="assertive"
+          >
+            <span className="today__celebration-icon" aria-hidden="true">
+              <SparkleIcon size={28} />
+            </span>
+            <div>
+              <p className="today__celebration-title">
+                Perfect day{userName ? `, ${userName}` : ""}!
+              </p>
+              <p className="today__celebration-sub">
+                All {total} done
+                {appStreak > 1 ? ` · ${appStreak}-day streak` : ""}
+              </p>
+            </div>
+          </motion.div>
+        )}
+      </AnimatePresence>
+
+      {/* ---- Return after break banner ---- */}
+      <AnimatePresence>
+        {isReturning && daysSince >= 2 && (
+          <motion.div
+            className="today__return-banner"
+            initial={{ opacity: 0, y: -12 }}
+            animate={{ opacity: 1, y: 0 }}
+            exit={{ opacity: 0, y: -12 }}
+            transition={{ duration: 0.28 }}
+          >
+            <span className="today__return-icon"><WaveIcon size={22} /></span>
+            <div className="today__return-body">
+              <p className="today__return-title">
+                Welcome back{userName ? `, ${userName}` : ""}.
+              </p>
+              <p className="today__return-sub">
+                Today is a fresh start.
+                {daysSince > 0
+                  ? ` Last active ${daysSince} day${daysSince === 1 ? "" : "s"} ago.`
+                  : ""}
+              </p>
+            </div>
+          </motion.div>
+        )}
+      </AnimatePresence>
+
+      {/* ---- Goal banner ---- */}
+      {goal && (
+        <div className="today__goal-banner">
+          <span className="today__goal-label">Goal</span>
+          <span className="today__goal-text">{goal}</span>
+        </div>
+      )}
+
+      {/* ---- Empty state ---- */}
+      {todayHabits.length === 0 && <EmptyTodayState userName={userName} />}
+
+      {/* ---- Core 3 - pinned habits ---- */}
+      {(() => {
+        const pinned = todayHabits.filter((h) => h.isPinned);
+        if (pinned.length === 0) return null;
+        const pinnedDone = pinned.filter((h) => isCompleted(h.id)).length;
+        return (
+          <section
+            className="today__section today__section--core"
+            data-slot="pinned"
+          >
+            <div className="today__section-header">
+              <div className="today__section-left">
+                <span className="today__section-icon"><StarIcon size={16} /></span>
+                <h3 className="today__section-title">Core habits</h3>
+              </div>
+              <span className="today__section-count">
+                <span className="today__section-count-inner">
+                  <AnimatePresence mode="popLayout" initial={false}>
+                    <motion.span
+                      key={pinnedDone}
+                      className="today__section-count-num"
+                      initial={{ y: 9, opacity: 0 }}
+                      animate={{ y: 0, opacity: 1 }}
+                      exit={{ y: -9, opacity: 0 }}
+                      transition={{ duration: 0.18 }}
+                    >
+                      {pinnedDone}
+                    </motion.span>
+                  </AnimatePresence>
+                </span>
+                /{pinned.length}
+              </span>
+            </div>
+            <ul className="today__list">
+              {pinned.map((habit, i) => (
+                <HabitCard
+                  key={habit.id}
+                  habit={habit}
+                  done={isCompleted(habit.id)}
+                  skipped={isSkipped(habit.id)}
+                  streak={getStreak(habit.id)}
+                  onToggle={() => handleToggle(habit.id)}
+                  index={i}
+                />
+              ))}
+            </ul>
+          </section>
+        );
+      })()}
+
+      {/* ---- Time slot sections ---- */}
+      {orderedSlots.map(({ slot, label }) => {
+        const slotHabits = todayHabits.filter((h) => h.timeSlot === slot);
+        if (slotHabits.length === 0) return null;
+
+        const slotDone = slotHabits.filter((h) => isCompleted(h.id)).length;
+        const slotComplete = slotDone === slotHabits.length;
+
+        return (
+          <section key={slot} className="today__section" data-slot={slot}>
+            <div
+              className={[
+                "today__section-header",
+                slotComplete ? "today__section-header--complete" : "",
+              ].join(" ")}
+            >
+              <div className="today__section-left">
+                <span className="today__section-icon"><SlotIcon slot={slot} size={16} /></span>
+                <h3 className="today__section-title">{label}</h3>
+              </div>
+              <span
+                className={[
+                  "today__section-count",
+                  slotComplete ? "today__section-count--complete" : "",
+                ].join(" ")}
+                aria-live="polite"
+              >
+                <span className="today__section-count-inner">
+                  <AnimatePresence mode="popLayout" initial={false}>
+                    <motion.span
+                      key={slotDone}
+                      className="today__section-count-num"
+                      initial={{ y: 9, opacity: 0 }}
+                      animate={{ y: 0, opacity: 1 }}
+                      exit={{ y: -9, opacity: 0 }}
+                      transition={{ duration: 0.18 }}
+                    >
+                      {slotDone}
+                    </motion.span>
+                  </AnimatePresence>
+                </span>
+                /{slotHabits.length}
+              </span>
+            </div>
+
+            <ul className="today__list">
+              {slotHabits.map((habit, i) => (
+                <HabitCard
+                  key={habit.id}
+                  habit={habit}
+                  done={isCompleted(habit.id)}
+                  skipped={isSkipped(habit.id)}
+                  streak={getStreak(habit.id)}
+                  onToggle={() => handleToggle(habit.id)}
+                  index={i}
+                />
+              ))}
+            </ul>
+          </section>
+        );
+      })}
+
+      {/* ---- Persistent count pill above bottom nav ---- */}
+      {todayHabits.length > 0 && (
+        <div className="today__count-bar" aria-live="polite">
+          <motion.div
+            className="today__count-pill"
+            animate={pillBump ? { scale: [1, 1.12, 1] } : {}}
+            transition={{ duration: 0.35, ease: [0.4, 0, 0.2, 1] }}
+          >
+            <NumRoll n={completed} />
+            <span className="today__count-sep">/</span>
+            <span>{total}</span>
+          </motion.div>
+        </div>
+      )}
+
+      {/* ---- Milestone overlay ---- */}
+      <AnimatePresence>
+        {activeMilestone && (
+          <MilestoneOverlay
+            milestone={activeMilestone}
+            onDone={() => setActiveMilestone(null)}
+          />
+        )}
+      </AnimatePresence>
+
+      {/* ---- Save toast ---- */}
+      <AnimatePresence>
+        {showToast && (
+          <motion.div
+            className="today__toast"
+            initial={{ opacity: 0, y: 8 }}
+            animate={{ opacity: 1, y: 0 }}
+            exit={{ opacity: 0, y: 8 }}
+            transition={{ duration: 0.18 }}
+            aria-live="polite"
+          >
+            Saved ✓
+          </motion.div>
+        )}
+      </AnimatePresence>
+    </div>
+  );
+}

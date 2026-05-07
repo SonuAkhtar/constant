@@ -1,0 +1,86 @@
+.install-prompt__backdrop {
+  position: fixed;
+  inset: 0;
+  z-index: 50;
+  background: rgba(0, 0, 0, 0.35);
+  backdrop-filter: blur(4px);
+  -webkit-backdrop-filter: blur(4px);
+  display: flex;
+  align-items: flex-end;
+  justify-content: center;
+}
+
+.install-prompt__sheet {
+  width: 100%;
+  max-width: var(--max-width);
+  background: var(--color-surface);
+  border-radius: var(--radius-xl) var(--radius-xl) 0 0;
+  padding: var(--space-5);
+  padding-bottom: max(var(--space-6), env(safe-area-inset-bottom));
+  box-shadow: var(--shadow-lg);
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-4);
+}
+
+.install-prompt__icon-wrap {
+  width: 48px;
+  height: 48px;
+  border-radius: var(--radius-lg);
+  overflow: hidden;
+}
+
+.install-prompt__body {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-2);
+}
+
+.install-prompt__title {
+  font-family: var(--font-display);
+  font-size: var(--font-lg);
+  font-weight: var(--weight-bold);
+  color: var(--color-text);
+}
+
+.install-prompt__sub {
+  font-size: var(--font-sm);
+  color: var(--color-text-muted);
+  line-height: 1.5;
+}
+
+.install-prompt__actions {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-2);
+}
+
+.install-prompt__install {
+  width: 100%;
+  padding: var(--space-4);
+  background: var(--color-primary);
+  color: #fff;
+  border-radius: var(--radius-md);
+  font-family: var(--font-display);
+  font-size: var(--font-base);
+  font-weight: var(--weight-bold);
+  box-shadow: 0 4px 12px rgba(76, 96, 86, 0.18);
+  transition: opacity var(--ease-base), box-shadow var(--ease-base);
+}
+
+.install-prompt__install:hover { box-shadow: var(--glow-primary); }
+.install-prompt__install:active { opacity: 0.9; }
+
+.install-prompt__dismiss {
+  width: 100%;
+  padding: var(--space-3);
+  font-size: var(--font-sm);
+  color: var(--color-text-faint);
+  text-align: center;
+  background: none;
+  border: none;
+  cursor: pointer;
+  transition: color var(--ease-base);
+}
+
+.install-prompt__dismiss:hover { color: var(--color-text-muted); }

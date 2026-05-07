@@ -1,0 +1,178 @@
+:root {
+  --font-sans:
+    -apple-system, BlinkMacSystemFont, "Segoe UI", system-ui, sans-serif;
+  --font-display:
+    "Plus Jakarta Sans", -apple-system, BlinkMacSystemFont, "Segoe UI",
+    system-ui, sans-serif;
+
+  /* Fluid type scale */
+  --font-xs: clamp(10px, 2.5vw, 12px);
+  --font-sm: clamp(11px, 3vw, 13px);
+  --font-base: clamp(13px, 3.5vw, 14px);
+  --font-md: clamp(14px, 4vw, 16px);
+  --font-lg: clamp(17px, 4.5vw, 20px);
+  --font-xl: clamp(20px, 5.5vw, 22px);
+  --font-2xl: clamp(26px, 7vw, 30px);
+  --font-hero: clamp(28px, 8vw, 36px);
+
+  --weight-regular: 400;
+  --weight-medium: 500;
+  --weight-semibold: 600;
+  --weight-bold: 700;
+
+  --leading-tight: 1.2;
+  --leading-normal: 1.5;
+
+  --tracking-tight: -0.02em;
+  --tracking-base: 0em;
+  --tracking-caps: 0.05em;
+
+  --space-1: 4px;
+  --space-2: 8px;
+  --space-3: 12px;
+  --space-4: 16px;
+  --space-5: 20px;
+  --space-6: 24px;
+  --space-7: 28px;
+  --space-8: 32px;
+
+  /* Radii — minimum 16px for inputs/small, 32px for cards/buttons (Design.md: min 2rem) */
+  --radius-sm: 12px;
+  --radius-md: 16px;
+  --radius-lg: 24px;
+  --radius-xl: 32px;
+  --radius-full: 9999px;
+
+  --ease-base: 200ms ease;
+  --ease-fast: 150ms ease;
+  --ease-slow: 300ms ease;
+  --ease-spring: cubic-bezier(0.34, 1.56, 0.64, 1);
+  --ease-out: cubic-bezier(0.4, 0, 0.2, 1);
+
+  --header-height: 64px;
+  --nav-height: 104px;
+  --max-width: 480px;
+
+  /* Time-slot accent colours — muted to complement low-saturation palette */
+  --slot-morning: #b07d20;
+  --slot-morning-dim: rgba(176, 125, 32, 0.09);
+  --slot-afternoon: #2e7d9e;
+  --slot-afternoon-dim: rgba(46, 125, 158, 0.08);
+  --slot-evening: #7c5cbf;
+  --slot-evening-dim: rgba(124, 92, 191, 0.09);
+  --slot-night: #4a4f8a;
+  --slot-night-dim: rgba(74, 79, 138, 0.09);
+
+  /* ---- Light mode — Serene Wellness palette ---- */
+  --color-bg:             #f9f9f7;
+  --color-surface:        #ffffff;
+  --color-surface-alt:    #eeeeec;
+  --color-surface-raised: #f4f4f2;
+  --color-surface-overlay: #ffffff;
+  --color-border:         #c2c8c3;
+
+  /* Primary — Sage Green */
+  --color-primary:       #4c6056;
+  --color-primary-light: #65796e;
+  --color-primary-dim:   rgba(76, 96, 86, 0.09);
+  --color-primary-text:  #374b41;
+
+  /* Secondary accent — Dusty Sage */
+  --color-accent:       #535f58;
+  --color-accent-light: #6b7771;
+  --color-accent-dim:   rgba(83, 95, 88, 0.1);
+
+  --color-success:     #3d6b4f;
+  --color-success-dim: rgba(61, 107, 79, 0.09);
+  --color-warning:     #92600a;
+  --color-streak:      #b07d20;
+  --color-error:       #ba1a1a;
+
+  --color-text:       #1a1c1b;
+  --color-text-muted: #424844;
+  --color-text-faint: #737874;
+
+  --color-header-bg: rgba(249, 249, 247, 0.92);
+  --color-nav-bg:    rgba(249, 249, 247, 0.97);
+
+  --gradient-brand: linear-gradient(135deg, #1a1c1b 0%, #4c6056 100%);
+
+  --glow-primary: 0 0 20px 4px rgba(76, 96, 86, 0.2);
+  --glow-accent:  0 0 20px 4px rgba(83, 95, 88, 0.15);
+
+  --elevation-0: var(--color-bg);
+  --elevation-1: var(--color-surface);
+  --elevation-2: var(--color-surface-raised);
+  --elevation-3: var(--color-surface-overlay);
+
+  /* Shadows — sage-tinted ambient (Design.md: soft diffused with primary tint at 5-10%) */
+  --shadow-sm: 0 1px 4px rgba(76, 96, 86, 0.07), 0 1px 2px rgba(76, 96, 86, 0.04);
+  --shadow-md: 0 4px 20px rgba(76, 96, 86, 0.09);
+  --shadow-lg: 0 8px 40px rgba(76, 96, 86, 0.11);
+
+  --heatmap-low:       rgba(76, 96, 86, 0.12);
+  --heatmap-medium:    rgba(76, 96, 86, 0.35);
+  --heatmap-high:      rgba(76, 96, 86, 0.62);
+  --heatmap-very-high: #4c6056;
+
+  /* -----------------------------------------------------------------------
+     Semantic typography roles
+     ----------------------------------------------------------------------- */
+  --font-role-greeting:   var(--font-xl);
+  --font-role-day-num:    var(--font-xl);
+  --font-role-date-part:  var(--font-sm);
+  --font-role-page-title: var(--font-xl);
+  --font-role-section:    var(--font-md);
+  --font-role-card-title: var(--font-md);
+  --font-role-stat-value: var(--font-2xl);
+  --font-role-stat-label: var(--font-sm);
+  --font-role-body:       var(--font-base);
+  --font-role-label:      var(--font-sm);
+  --font-role-caption:    var(--font-xs);
+  --font-role-ring-pct:   clamp(18px, 5vw, 22px);
+}
+
+[data-theme="dark"] {
+  --color-bg:             #0f1210;
+  --color-surface:        #1a1e1b;
+  --color-surface-alt:    #22261f;
+  --color-surface-raised: #282d29;
+  --color-surface-overlay: #2e342e;
+  --color-border:         #2d3530;
+
+  --color-primary:       #b6ccbe;
+  --color-primary-light: #d1e8da;
+  --color-primary-dim:   rgba(182, 204, 190, 0.12);
+  --color-primary-text:  #b6ccbe;
+
+  --color-accent:       #bdcac1;
+  --color-accent-light: #d9e6dd;
+  --color-accent-dim:   rgba(189, 202, 193, 0.1);
+
+  --color-success:     #5a9b72;
+  --color-success-dim: rgba(90, 155, 114, 0.12);
+  --color-warning:     #f0a830;
+  --color-streak:      #f0a830;
+  --color-error:       #ffb4ab;
+
+  --color-text:       #e2e5e2;
+  --color-text-muted: #9aa09a;
+  --color-text-faint: #5a6058;
+
+  --color-header-bg: rgba(15, 18, 16, 0.9);
+  --color-nav-bg:    rgba(15, 18, 16, 0.97);
+
+  --gradient-brand: linear-gradient(135deg, #e2e5e2 0%, #b6ccbe 100%);
+
+  --glow-primary: 0 0 20px 4px rgba(182, 204, 190, 0.22);
+  --glow-accent:  0 0 20px 4px rgba(189, 202, 193, 0.15);
+
+  --shadow-sm: 0 1px 3px rgba(0, 0, 0, 0.32);
+  --shadow-md: 0 4px 16px rgba(0, 0, 0, 0.44);
+  --shadow-lg: 0 8px 32px rgba(0, 0, 0, 0.56);
+
+  --heatmap-low:       rgba(182, 204, 190, 0.15);
+  --heatmap-medium:    rgba(182, 204, 190, 0.4);
+  --heatmap-high:      rgba(182, 204, 190, 0.65);
+  --heatmap-very-high: #b6ccbe;
+}

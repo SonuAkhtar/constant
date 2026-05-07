@@ -1,0 +1,354 @@
+.habit-form__overlay {
+  position: fixed;
+  inset: 0;
+  z-index: 40;
+  background: rgba(0, 0, 0, 0.45);
+  backdrop-filter: blur(4px);
+  -webkit-backdrop-filter: blur(4px);
+}
+
+.habit-form__panel {
+  position: fixed;
+  inset: 0;
+  z-index: 50;
+  margin: auto;
+  top: auto;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  max-width: var(--max-width);
+  background: var(--color-surface);
+  border-top: 1px solid var(--color-border);
+  border-radius: var(--radius-xl) var(--radius-xl) 0 0;
+  box-shadow: var(--shadow-lg);
+  max-height: 92vh;
+  overflow-y: auto;
+  padding-bottom: env(safe-area-inset-bottom);
+  transition: background var(--ease-slow);
+}
+
+/* ---- Drag handle ---- */
+
+.habit-form__handle {
+  width: 36px;
+  height: 4px;
+  border-radius: var(--radius-full);
+  background: var(--color-border);
+  margin: var(--space-3) auto var(--space-1);
+}
+
+/* ---- Header ---- */
+
+.habit-form__header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: var(--space-4) var(--space-5) 0;
+}
+
+.habit-form__title {
+  font-family: var(--font-display);
+  font-size: var(--font-lg);
+  font-weight: var(--weight-bold);
+  color: var(--color-text);
+}
+
+.habit-form__close {
+  width: 28px;
+  height: 28px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: var(--radius-full);
+  background: var(--color-surface-alt);
+  color: var(--color-text-muted);
+  font-size: var(--font-sm);
+  transition: background var(--ease-base), color var(--ease-base);
+}
+
+.habit-form__close:hover {
+  background: var(--color-primary-dim);
+  color: var(--color-primary);
+}
+
+/* ---- Body ---- */
+
+.habit-form__body {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-5);
+  padding: var(--space-5);
+  padding-bottom: var(--space-3);
+}
+
+.habit-form__field {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-2);
+}
+
+.habit-form__label-row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+
+.habit-form__label {
+  font-size: var(--font-sm);
+  font-weight: var(--weight-semibold);
+  color: var(--color-text-muted);
+}
+
+.habit-form__char-count {
+  font-size: var(--font-xs);
+  color: var(--color-text-faint);
+  font-variant-numeric: tabular-nums;
+}
+
+.habit-form__optional {
+  font-weight: var(--weight-regular);
+  color: var(--color-text-faint);
+}
+
+.habit-form__input {
+  width: 100%;
+  padding: var(--space-3) var(--space-4);
+  background: var(--color-surface-alt);
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-md);
+  color: var(--color-text);
+  font-size: var(--font-base);
+  outline: none;
+  transition: border-color var(--ease-base), box-shadow var(--ease-base);
+}
+
+.habit-form__input::placeholder { color: var(--color-text-faint); }
+
+.habit-form__input:focus {
+  border-color: var(--color-primary);
+  box-shadow: 0 0 0 3px var(--color-primary-dim);
+  background: var(--color-surface);
+}
+
+/* ---- Time slots ---- */
+
+.habit-form__slots {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: var(--space-2);
+}
+
+.habit-form__slot {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 3px;
+  padding: var(--space-2) var(--space-1);
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-md);
+  font-size: var(--font-xs);
+  font-weight: var(--weight-semibold);
+  color: var(--color-text-muted);
+  background: var(--color-surface-alt);
+  transition: all var(--ease-base);
+}
+
+.habit-form__slot-icon {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: var(--color-text-muted);
+}
+
+.habit-form__slot--active .habit-form__slot-icon {
+  color: var(--color-primary);
+}
+
+.habit-form__slot--active {
+  background: var(--color-primary-dim);
+  border-color: var(--color-primary);
+  color: var(--color-primary);
+}
+
+/* ---- Frequency pills ---- */
+
+.habit-form__freq-pills {
+  display: flex;
+  gap: var(--space-2);
+}
+
+.habit-form__freq-pill {
+  flex: 1;
+  padding: var(--space-2) var(--space-3);
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-full);
+  font-size: var(--font-sm);
+  font-weight: var(--weight-semibold);
+  color: var(--color-text-muted);
+  background: var(--color-surface-alt);
+  transition: all var(--ease-base);
+  text-align: center;
+}
+
+.habit-form__freq-pill--active {
+  background: var(--color-primary-dim);
+  border-color: var(--color-primary);
+  color: var(--color-primary);
+}
+
+/* ---- Custom day toggles ---- */
+
+.habit-form__days {
+  display: flex;
+  gap: var(--space-2);
+  margin-top: var(--space-1);
+}
+
+.habit-form__day {
+  flex: 1;
+  aspect-ratio: 1;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-full);
+  font-size: var(--font-xs);
+  font-weight: var(--weight-bold);
+  color: var(--color-text-muted);
+  background: var(--color-surface-alt);
+  transition: all var(--ease-base);
+}
+
+.habit-form__day--active {
+  background: var(--color-primary-dim);
+  border-color: var(--color-primary);
+  color: var(--color-primary);
+}
+
+/* ---- Reminder time input ---- */
+
+.habit-form__time-input {
+  max-width: 160px;
+  color-scheme: normal;
+}
+
+.habit-form__time-clear {
+  align-self: flex-start;
+  font-size: var(--font-xs);
+  font-weight: var(--weight-semibold);
+  color: var(--color-text-muted);
+  text-decoration: underline;
+  padding: 0;
+  background: none;
+  transition: color var(--ease-base);
+}
+
+.habit-form__time-clear:hover { color: var(--color-text); }
+
+/* ---- Icon search ---- */
+
+.habit-form__search {
+  width: 100%;
+  padding: var(--space-2) var(--space-3);
+  background: var(--color-surface-alt);
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-md);
+  color: var(--color-text);
+  font-size: var(--font-sm);
+  outline: none;
+  transition: border-color var(--ease-base);
+}
+
+.habit-form__search::placeholder { color: var(--color-text-faint); }
+
+.habit-form__search:focus {
+  border-color: var(--color-primary);
+}
+
+/* ---- Icon grid ---- */
+
+.habit-form__icons {
+  display: grid;
+  grid-template-columns: repeat(6, 1fr);
+  gap: var(--space-2);
+}
+
+.habit-form__no-results {
+  grid-column: 1 / -1;
+  text-align: center;
+  font-size: var(--font-sm);
+  color: var(--color-text-faint);
+  padding: var(--space-4) 0;
+}
+
+.habit-form__icon-btn {
+  aspect-ratio: 1;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 20px;
+  border-radius: var(--radius-md);
+  border: 1px solid var(--color-border);
+  background: var(--color-surface-alt);
+  transition: all var(--ease-base);
+}
+
+.habit-form__icon-btn--active {
+  border-color: var(--color-primary);
+  background: var(--color-primary-dim);
+  transform: scale(1.1);
+}
+
+/* ---- Duplicate name warning ---- */
+
+.habit-form__duplicate-warning {
+  font-size: var(--font-xs);
+  color: var(--color-warning);
+  margin-top: var(--space-1);
+  padding-left: var(--space-1);
+}
+
+/* ---- Sticky footer + submit ---- */
+
+.habit-form__footer {
+  position: sticky;
+  bottom: 0;
+  padding: var(--space-3) var(--space-5);
+  padding-bottom: max(var(--space-4), env(safe-area-inset-bottom));
+  background: var(--color-surface);
+  border-top: 1px solid var(--color-border);
+  z-index: 1;
+  transition: background var(--ease-slow);
+}
+
+.habit-form__submit {
+  width: 100%;
+  padding: var(--space-4);
+  background: var(--color-primary);
+  color: #fff;
+  border-radius: var(--radius-md);
+  font-family: var(--font-display);
+  font-size: var(--font-base);
+  font-weight: var(--weight-bold);
+  letter-spacing: 0.2px;
+  transition:
+    opacity    var(--ease-base),
+    transform  var(--ease-fast),
+    box-shadow var(--ease-base);
+  box-shadow: 0 4px 12px rgba(76, 96, 86, 0.18);
+}
+
+.habit-form__submit:hover  { box-shadow: var(--glow-primary); }
+.habit-form__submit:active { transform: scale(0.98); opacity: 0.9; }
+
+.habit-form__submit--shake {
+  animation: form-shake 0.38s ease;
+}
+
+@keyframes form-shake {
+  0%, 100% { transform: translateX(0); }
+  20%       { transform: translateX(-7px); }
+  40%       { transform: translateX(7px); }
+  60%       { transform: translateX(-4px); }
+  80%       { transform: translateX(4px); }
+}

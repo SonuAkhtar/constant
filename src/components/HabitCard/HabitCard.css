@@ -1,0 +1,376 @@
+/* ---- Swipe gesture wrapper ---- */
+
+.habit-card-wrap {
+  position: relative;
+  border-radius: var(--radius-xl);
+}
+
+.habit-card__swipe-bg {
+  position: absolute;
+  inset: 0;
+  background: var(--color-primary);
+  border-radius: var(--radius-xl);
+  display: flex;
+  align-items: center;
+  padding-left: var(--space-4);
+  z-index: 0;
+}
+
+.habit-card__swipe-left {
+  position: absolute;
+  inset: 0;
+  display: flex;
+  align-items: center;
+  justify-content: flex-end;
+  padding-right: var(--space-3);
+  border-radius: var(--radius-xl);
+  z-index: 0;
+}
+
+.habit-card__left-action {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 4px;
+  width: 60px;
+  height: 52px;
+  border-radius: var(--radius-md);
+  font-size: var(--font-xs);
+  font-weight: var(--weight-semibold);
+  transition: transform var(--ease-fast);
+}
+
+.habit-card__left-action:active {
+  transform: scale(0.94);
+}
+
+.habit-card__left-action--skip {
+  background: var(--color-surface-alt);
+  color: var(--color-text-muted);
+  border: 1px solid var(--color-border);
+}
+
+.habit-card__backdrop {
+  position: fixed;
+  inset: 0;
+  z-index: 9;
+  background: transparent;
+  cursor: default;
+}
+
+.habit-card__drag-layer {
+  position: relative;
+  z-index: 1;
+  touch-action: pan-y;
+}
+
+/* ---- Card ---- */
+
+.habit-card {
+  width: 100%;
+  display: flex;
+  align-items: center;
+  gap: var(--space-3);
+  padding: var(--space-3) var(--space-4);
+  background: var(--color-surface);
+  border: 1px solid var(--color-border);
+  border-left-width: 3px;
+  border-left-color: transparent;
+  border-radius: var(--radius-xl);
+  box-shadow: var(--shadow-sm);
+  text-align: left;
+  min-height: 72px;
+  transition:
+    background var(--ease-base),
+    border-color var(--ease-base),
+    box-shadow var(--ease-base),
+    opacity var(--ease-base);
+  -webkit-tap-highlight-color: transparent;
+}
+
+.habit-card:active {
+  transform: scale(0.985);
+}
+
+/* ---- Slot accent - custom props + border ---- */
+
+.habit-card[data-slot="morning"] {
+  --slot-color: var(--slot-morning);
+  --slot-dim: var(--slot-morning-dim);
+  border-left-color: var(--slot-morning);
+}
+.habit-card[data-slot="afternoon"] {
+  --slot-color: var(--slot-afternoon);
+  --slot-dim: var(--slot-afternoon-dim);
+  border-left-color: var(--slot-afternoon);
+}
+.habit-card[data-slot="evening"] {
+  --slot-color: var(--slot-evening);
+  --slot-dim: var(--slot-evening-dim);
+  border-left-color: var(--slot-evening);
+}
+.habit-card[data-slot="night"] {
+  --slot-color: var(--slot-night);
+  --slot-dim: var(--slot-night-dim);
+  border-left-color: var(--slot-night);
+}
+
+/* ---- Done state ---- */
+
+.habit-card--done {
+  background: var(--color-primary-dim);
+  border-color: rgba(76, 96, 86, 0.2);
+  border-left-color: var(--color-primary);
+  box-shadow: none;
+  opacity: 1;
+}
+
+/* ---- Icon badge ---- */
+
+.habit-card__badge {
+  width: 40px;
+  height: 40px;
+  border-radius: 10px;
+  background: var(--slot-dim, var(--color-primary-dim));
+  color: var(--slot-color, var(--color-primary));
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+  border: 1px solid rgba(0, 0, 0, 0.04);
+  box-shadow:
+    inset 0 1px 0 rgba(255, 255, 255, 0.5),
+    inset 0 -1px 0 rgba(0, 0, 0, 0.04);
+  transition:
+    background var(--ease-base),
+    box-shadow var(--ease-base);
+}
+
+.habit-card:not(.habit-card--done):hover .habit-card__badge {
+  box-shadow: 0 0 14px 4px var(--slot-dim, var(--color-primary-dim));
+}
+
+.habit-card--done .habit-card__badge {
+  background: var(--color-primary-dim);
+  opacity: 0.75;
+}
+
+.habit-card__badge-icon {
+  font-size: 20px;
+  line-height: 1;
+}
+
+/* ---- Body ---- */
+
+.habit-card__body {
+  flex: 1;
+  min-width: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+}
+
+.habit-card__title-row {
+  display: flex;
+  align-items: center;
+  gap: var(--space-2);
+  min-width: 0;
+}
+
+.habit-card__title {
+  font-family: var(--font-display);
+  font-size: 16px;
+  font-weight: var(--weight-bold);
+  letter-spacing: -0.3px;
+  color: var(--color-text);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  line-height: 1.25;
+  transition: color var(--ease-base);
+  flex: 1;
+  min-width: 0;
+}
+
+.habit-card__reminder-tag {
+  flex-shrink: 0;
+  font-size: 10px;
+  font-weight: var(--weight-semibold);
+  font-variant-numeric: tabular-nums;
+  color: var(--color-text-faint);
+  background: var(--color-surface-alt);
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-full);
+  padding: 1px 6px;
+  line-height: 1.6;
+}
+
+.habit-card__intention {
+  font-size: 11px;
+  color: var(--color-text-faint);
+  font-style: italic;
+  letter-spacing: 0.01em;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  opacity: 0.75;
+  margin-top: 1px;
+}
+
+.habit-card--done .habit-card__title {
+  color: var(--color-text-muted);
+  text-decoration: line-through;
+  text-decoration-color: var(--color-primary-text);
+  text-decoration-thickness: 1.5px;
+}
+
+[data-theme="dark"] .habit-card--done .habit-card__title {
+  text-decoration-color: var(--color-primary);
+}
+
+.habit-card__desc {
+  font-size: 14px;
+  color: var(--color-text-faint);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  letter-spacing: 0.01em;
+  line-height: 1.3;
+}
+
+/* ---- Skipped state ---- */
+
+.habit-card--skipped {
+  background: rgba(107, 107, 132, 0.06);
+  border-color: rgba(107, 107, 132, 0.18);
+  border-left-color: var(--slot-color, var(--color-text-faint));
+  box-shadow: none;
+  opacity: 0.78;
+}
+
+.habit-card--skipped .habit-card__title {
+  color: var(--color-text-muted);
+}
+
+.habit-card--skipped .habit-card__badge {
+  background: var(--color-surface-alt);
+  opacity: 0.7;
+}
+
+.habit-card__skipped-badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  margin-top: 3px;
+  font-size: var(--font-xs);
+  font-weight: var(--weight-semibold);
+  color: var(--color-text-muted);
+  background: var(--color-surface-alt);
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-full);
+  padding: 2px 8px;
+  line-height: 1.4;
+}
+
+.habit-card__check--skipped {
+  background: transparent;
+  border-color: var(--color-text-faint);
+  color: var(--color-text-faint);
+}
+
+/* ---- Streak ---- */
+
+.habit-card__streak {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  margin-top: 3px;
+}
+
+.habit-card__streak-flame {
+  font-size: 12px;
+  line-height: 1;
+}
+
+.habit-card__streak--hot .habit-card__streak-flame {
+  display: inline-block;
+  animation: streak-pulse 1.6s ease-in-out infinite;
+}
+
+@keyframes streak-pulse {
+  0%,
+  100% {
+    transform: scale(1);
+    filter: brightness(1);
+  }
+  50% {
+    transform: scale(1.25);
+    filter: brightness(1.3) drop-shadow(0 0 5px rgba(245, 158, 11, 0.7));
+  }
+}
+
+.habit-card__streak-text {
+  font-size: var(--font-xs);
+  font-weight: var(--weight-semibold);
+  color: var(--color-streak);
+  font-variant-numeric: tabular-nums;
+  display: inline-flex;
+  align-items: center;
+  gap: 1px;
+  overflow: hidden;
+}
+
+/* ---- Check circle ---- */
+
+.habit-card__check {
+  position: relative;
+  width: 32px;
+  height: 32px;
+  border-radius: var(--radius-full);
+  border: 2px solid var(--color-border);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+  overflow: visible;
+  transition:
+    border-color var(--ease-base),
+    background var(--ease-base);
+}
+
+.habit-card--done .habit-card__check {
+  background: var(--color-primary);
+  border-color: var(--color-primary);
+}
+
+.habit-card__ripple {
+  position: absolute;
+  inset: 0;
+  border-radius: var(--radius-full);
+  background: var(--color-primary);
+  pointer-events: none;
+  z-index: 0;
+}
+
+/* ---- Streak milestone shimmer (7+ day streak) ---- */
+
+@keyframes card-shimmer {
+  0% {
+    background-position: 200% center;
+  }
+  100% {
+    background-position: -200% center;
+  }
+}
+
+.habit-card--milestone:not(.habit-card--done) {
+  background: linear-gradient(
+    105deg,
+    var(--color-surface) 30%,
+    color-mix(in srgb, var(--color-streak) 7%, var(--color-surface)) 50%,
+    var(--color-surface) 70%
+  );
+  background-size: 300% 100%;
+  animation: card-shimmer 3s ease-in-out infinite;
+}

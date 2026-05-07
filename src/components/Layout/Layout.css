@@ -1,0 +1,28 @@
+.layout {
+  display: flex;
+  flex-direction: column;
+  height: 100vh;
+  height: 100dvh;
+  max-width: var(--max-width);
+  margin: 0 auto;
+  position: relative;
+  /* safe-area top: status bar / notch / Dynamic Island clearance */
+  padding-top: env(safe-area-inset-top);
+}
+
+.layout__main {
+  flex: 1;
+  overflow-y: auto;
+  overflow-x: hidden;
+  /* bottom padding must clear the floating nav + safe-area home indicator */
+  padding-bottom: calc(var(--nav-height) + env(safe-area-inset-bottom));
+  scroll-padding-bottom: var(--nav-height);
+  -webkit-overflow-scrolling: touch;
+  /* prevent subpixel rendering issues on iOS during scroll */
+  -webkit-backface-visibility: hidden;
+  backface-visibility: hidden;
+}
+
+.layout__page {
+  min-height: 100%;
+}

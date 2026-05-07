@@ -1,0 +1,626 @@
+.profile {
+  padding: var(--space-5) var(--space-4);
+  padding-bottom: calc(var(--nav-height) + var(--space-5));
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-4);
+}
+
+.profile__card {
+  background: var(--color-surface);
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-xl);
+  box-shadow: var(--shadow-sm);
+}
+
+.profile__avatar-card {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  padding: var(--space-6) var(--space-5);
+  gap: var(--space-3);
+}
+
+.profile__avatar-wrap {
+  position: relative;
+  width: 78px;
+  height: 78px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+}
+
+.profile__avatar-ring {
+  position: absolute;
+  inset: 0;
+}
+
+.profile__avatar {
+  width: 64px;
+  height: 64px;
+  border-radius: var(--radius-full);
+  background: var(--color-primary);
+  color: #ffffff;
+  font-family: var(--font-display);
+  font-size: var(--font-xl);
+  font-weight: var(--weight-bold);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  letter-spacing: -0.01em;
+  flex-shrink: 0;
+  position: relative;
+  z-index: 1;
+}
+
+/* Ring SVG elements */
+.profile__ring-track {
+  fill: none;
+  stroke: var(--color-border);
+  stroke-width: 3;
+}
+
+.profile__ring-fill {
+  fill: none;
+  stroke-width: 3;
+  stroke-linecap: round;
+  transition: stroke-dashoffset 0.6s ease;
+}
+
+.profile__ring-fill--partial {
+  stroke: var(--color-text-faint);
+  opacity: 0.5;
+}
+
+.profile__ring-fill--half {
+  stroke: var(--color-primary);
+  stroke-dasharray: 6 4;
+  animation: ring-spin 4s linear infinite;
+}
+
+.profile__ring-fill--complete {
+  stroke: var(--color-primary);
+}
+
+.profile__avatar-ring--complete {
+  filter: drop-shadow(0 0 5px rgba(76, 96, 86, 0.45));
+  animation: ring-pulse 2s ease-in-out infinite;
+}
+
+@keyframes ring-spin {
+  from { transform: rotate(-90deg); transform-origin: 39px 39px; }
+  to   { transform: rotate(270deg); transform-origin: 39px 39px; }
+}
+
+@keyframes ring-pulse {
+  0%, 100% { filter: drop-shadow(0 0 4px rgba(76, 96, 86, 0.38)); }
+  50%       { filter: drop-shadow(0 0 10px rgba(76, 96, 86, 0.55)); }
+}
+
+/* Mini ring for Today stat */
+.profile__mini-ring {
+  display: block;
+}
+
+.profile__mini-track {
+  fill: none;
+  stroke: var(--color-border);
+  stroke-width: 2.5;
+}
+
+.profile__mini-fill {
+  fill: none;
+  stroke: var(--color-primary);
+  stroke-width: 2.5;
+  stroke-linecap: round;
+  transition: stroke-dashoffset 0.5s ease;
+}
+
+.profile__stat-value--ring {
+  font-size: 0;
+  line-height: 0;
+}
+
+.profile__name {
+  font-family: var(--font-display);
+  font-size: var(--font-2xl);
+  font-weight: var(--weight-bold);
+  color: var(--color-text);
+  letter-spacing: var(--tracking-tight);
+  text-align: center;
+  line-height: 1.2;
+  margin: 0;
+}
+
+.profile__focuses {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--space-2);
+  justify-content: center;
+}
+
+.profile__focus-pill {
+  font-size: var(--font-xs);
+  font-weight: var(--weight-semibold);
+  color: var(--color-text-muted);
+  background: var(--color-surface-alt);
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-full);
+  padding: 4px 12px;
+  line-height: 1.4;
+  white-space: nowrap;
+}
+
+/* ---- Edit profile button ---- */
+
+.profile__edit-btn {
+  font-size: var(--font-xs);
+  font-weight: var(--weight-bold);
+  color: var(--color-primary-text);
+  background: var(--color-primary-dim);
+  border: 1.5px solid rgba(76, 96, 86, 0.3);
+  border-radius: var(--radius-full);
+  padding: 5px 16px;
+  transition: all var(--ease-base);
+}
+
+.profile__edit-btn:hover {
+  background: var(--color-primary);
+  border-color: var(--color-primary);
+  color: #ffffff;
+}
+
+/* ---- Inline edit block ---- */
+
+.profile__edit-block {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: var(--space-4);
+  width: 100%;
+}
+
+.profile__edit-name-input {
+  width: 100%;
+  max-width: 260px;
+  padding: var(--space-3) var(--space-4);
+  background: var(--color-surface);
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-md);
+  font-family: var(--font-display);
+  font-size: var(--font-md);
+  font-weight: var(--weight-bold);
+  color: var(--color-text);
+  text-align: left;
+  outline: none;
+  transition: border-color var(--ease-base);
+}
+
+.profile__edit-name-input:focus {
+  border-color: var(--color-primary);
+}
+
+.profile__edit-focuses {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--space-2);
+  justify-content: center;
+}
+
+.profile__focus-toggle {
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+  font-size: var(--font-xs);
+  font-weight: var(--weight-semibold);
+  color: var(--color-text-muted);
+  background: var(--color-surface-alt);
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-full);
+  padding: 4px 12px;
+  transition: all var(--ease-base);
+}
+
+.profile__focus-toggle--active {
+  background: var(--color-primary-dim);
+  border-color: var(--color-primary);
+  color: var(--color-primary-text);
+}
+
+.profile__edit-actions {
+  display: flex;
+  gap: var(--space-3);
+}
+
+.profile__edit-cancel {
+  padding: var(--space-2) var(--space-5);
+  border-radius: var(--radius-md);
+  font-size: var(--font-sm);
+  font-weight: var(--weight-semibold);
+  color: var(--color-text-muted);
+  background: var(--color-surface-alt);
+  border: 1px solid var(--color-border);
+  transition: all var(--ease-base);
+}
+
+.profile__edit-save {
+  padding: var(--space-2) var(--space-5);
+  border-radius: var(--radius-md);
+  font-size: var(--font-sm);
+  font-weight: var(--weight-bold);
+  color: #fff;
+  background: var(--color-primary);
+  transition: opacity var(--ease-base);
+}
+
+.profile__edit-save:hover { opacity: 0.9; }
+
+/* ---- Stats card ---- */
+
+.profile__stats-card {
+  display: flex;
+  align-items: stretch;
+}
+
+.profile__stat {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: var(--space-1);
+  padding: var(--space-5) var(--space-3);
+}
+
+.profile__stat-value {
+  font-family: var(--font-display);
+  font-size: var(--font-2xl);
+  font-weight: var(--weight-bold);
+  color: var(--color-text);
+  letter-spacing: var(--tracking-tight);
+  line-height: 1;
+  font-variant-numeric: tabular-nums;
+}
+
+.profile__stat-label {
+  font-size: var(--font-role-label);
+  font-weight: var(--weight-semibold);
+  color: var(--color-text-muted);
+  letter-spacing: 0.02em;
+  text-align: center;
+}
+
+.profile__stat-divider {
+  width: 1px;
+  background: var(--color-border);
+  align-self: stretch;
+  margin: var(--space-4) 0;
+}
+
+.profile__settings-card {
+  padding: var(--space-4) var(--space-5);
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-4);
+}
+
+.profile__section-heading {
+  font-family: var(--font-display);
+  font-size: var(--font-role-body);
+  font-weight: var(--weight-bold);
+  color: var(--color-text-muted);
+  letter-spacing: var(--tracking-caps);
+  text-transform: uppercase;
+  margin: 0;
+}
+
+.profile__setting-row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+
+.profile__setting-label {
+  font-size: var(--font-role-section);
+  font-weight: var(--weight-semibold);
+  color: var(--color-text);
+}
+
+.profile__toggle {
+  position: relative;
+  width: 44px;
+  height: 24px;
+  border-radius: var(--radius-full);
+  background: var(--color-primary);
+  border: none;
+  cursor: pointer;
+  flex-shrink: 0;
+  transition: background 0.2s ease;
+}
+
+.profile__toggle[aria-pressed="true"] {
+  background: #3a3a4e;
+}
+
+[data-theme="dark"] .profile__toggle[aria-pressed="true"] {
+  background: #4a4a62;
+}
+
+.profile__toggle-thumb {
+  position: absolute;
+  top: 2px;
+  left: 2px;
+  width: 20px;
+  height: 20px;
+  border-radius: var(--radius-full);
+  background: #ffffff;
+  box-shadow: 0 1px 4px rgba(0, 0, 0, 0.22);
+  transition: transform 0.2s ease;
+}
+
+.profile__toggle-thumb--on {
+  transform: translateX(20px);
+}
+
+.profile__journey-card {
+  padding: var(--space-4) var(--space-5);
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-4);
+}
+
+.profile__journey-stats {
+  display: flex;
+  gap: var(--space-2);
+}
+
+.profile__journey-stat {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 2px;
+  padding: var(--space-3) var(--space-2);
+  background: var(--color-surface-alt);
+  border-radius: var(--radius-md);
+}
+
+.profile__journey-value {
+  font-family: var(--font-display);
+  font-size: var(--font-xl);
+  font-weight: var(--weight-bold);
+  color: var(--color-text);
+  line-height: 1;
+  font-variant-numeric: tabular-nums;
+}
+
+.profile__journey-label {
+  font-size: var(--font-role-label);
+  font-weight: var(--weight-semibold);
+  color: var(--color-text-muted);
+  text-align: center;
+}
+
+.profile__journey-quote {
+  font-size: var(--font-sm);
+  color: var(--color-text-muted);
+  font-style: italic;
+  line-height: var(--leading-normal);
+  padding: var(--space-3) var(--space-4);
+  background: var(--color-primary-dim);
+  border-radius: var(--radius-md);
+  border-left: 3px solid var(--color-primary);
+  margin: 0;
+}
+
+/* =========================================================================
+   30-DAY GOAL
+   ========================================================================= */
+
+.profile__goal-card {}
+
+.profile__goal-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: var(--space-3);
+}
+
+.profile__goal-edit-btn {
+  font-size: var(--font-xs);
+  font-weight: var(--weight-semibold);
+  color: var(--color-text-faint);
+  background: var(--color-surface-alt);
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-full);
+  padding: 3px 12px;
+  transition: all var(--ease-base);
+}
+
+.profile__goal-edit-btn:hover {
+  color: var(--color-primary-text);
+  border-color: var(--color-primary);
+}
+
+.profile__goal-set-btn {
+  font-size: var(--font-sm);
+  font-weight: var(--weight-semibold);
+  color: var(--color-primary-text);
+  padding: var(--space-3) 0;
+  background: none;
+  border: none;
+  text-align: left;
+}
+
+.profile__goal-edit {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-3);
+}
+
+.profile__goal-input {
+  width: 100%;
+  padding: var(--space-3) var(--space-4);
+  background: var(--color-surface);
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-md);
+  font-size: var(--font-base);
+  color: var(--color-text);
+  outline: none;
+  transition: border-color var(--ease-base);
+}
+
+.profile__goal-input:focus { border-color: var(--color-primary); }
+.profile__goal-input::placeholder { color: var(--color-text-faint); }
+
+.profile__goal-display {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-2);
+}
+
+.profile__goal-text {
+  font-size: var(--font-role-section);
+  font-weight: var(--weight-semibold);
+  color: var(--color-text);
+  font-style: italic;
+}
+
+.profile__goal-days {
+  font-size: var(--font-xs);
+  color: var(--color-text-muted);
+  font-variant-numeric: tabular-nums;
+}
+
+.profile__goal-bar {
+  height: 4px;
+  background: var(--color-surface-alt);
+  border-radius: var(--radius-full);
+  overflow: hidden;
+}
+
+.profile__goal-bar-fill {
+  height: 100%;
+  background: var(--color-primary);
+  border-radius: var(--radius-full);
+  transition: width 0.6s ease;
+}
+
+.profile__goal-review {
+  font-size: var(--font-sm);
+  font-weight: var(--weight-semibold);
+  color: var(--color-primary-text);
+  margin-top: var(--space-1);
+}
+
+/* =========================================================================
+   MILESTONE MOMENTS
+   ========================================================================= */
+
+.profile__moments-list {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-3);
+  margin-top: var(--space-3);
+}
+
+.profile__moment {
+  display: flex;
+  align-items: flex-start;
+  gap: var(--space-3);
+}
+
+.profile__moment-icon {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 36px;
+  height: 36px;
+  border-radius: 10px;
+  background: var(--color-primary-dim);
+  color: var(--color-primary);
+  flex-shrink: 0;
+}
+
+.profile__moment-message {
+  font-size: var(--font-role-body);
+  font-weight: var(--weight-semibold);
+  color: var(--color-text);
+  line-height: 1.4;
+}
+
+.profile__moment-date {
+  font-size: var(--font-xs);
+  color: var(--color-text-faint);
+  margin-top: 2px;
+  font-variant-numeric: tabular-nums;
+}
+
+/* =========================================================================
+   DATA & BACKUP
+   ========================================================================= */
+
+.profile__data-privacy {
+  font-size: var(--font-sm);
+  color: var(--color-text-muted);
+  margin-bottom: var(--space-4);
+  line-height: 1.5;
+}
+
+.profile__data-actions {
+  display: flex;
+  gap: var(--space-3);
+}
+
+.profile__data-btn {
+  flex: 1;
+  padding: var(--space-3);
+  border-radius: var(--radius-md);
+  font-size: var(--font-sm);
+  font-weight: var(--weight-semibold);
+  color: var(--color-text);
+  background: var(--color-surface-alt);
+  border: 1px solid var(--color-border);
+  text-align: center;
+  transition: all var(--ease-base);
+}
+
+.profile__data-btn:hover {
+  border-color: var(--color-primary);
+  color: var(--color-primary-text);
+}
+
+.profile__data-btn--import {
+  color: var(--color-text-muted);
+}
+
+.profile__data-phone {
+  font-size: var(--font-xs);
+  color: var(--color-text-muted);
+  margin-bottom: var(--space-4);
+}
+
+.profile__signout-btn {
+  width: 100%;
+  margin-top: var(--space-4);
+  padding: var(--space-3);
+  border-radius: var(--radius-md);
+  font-size: var(--font-sm);
+  font-weight: var(--weight-semibold);
+  color: var(--color-error, #ef4444);
+  background: transparent;
+  border: 1px solid var(--color-error, #ef4444);
+  transition: all var(--ease-base);
+}
+
+.profile__signout-btn:hover {
+  background: var(--color-error, #ef4444);
+  color: #fff;
+}
+
+.profile__goal-card,
+.profile__moments-card,
+.profile__data-card {
+  padding: var(--space-4) var(--space-5);
+}
