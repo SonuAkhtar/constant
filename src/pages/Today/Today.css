@@ -509,6 +509,141 @@
 }
 
 /* =========================================================================
+   DATE NAVIGATION STRIP
+   ========================================================================= */
+
+.today__date-strip {
+  display: flex;
+  gap: var(--space-2);
+  overflow-x: auto;
+  scrollbar-width: none;
+  -ms-overflow-style: none;
+  padding-bottom: 2px;
+}
+
+.today__date-strip::-webkit-scrollbar { display: none; }
+
+.today__date-chip {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 3px;
+  padding: var(--space-2) 0;
+  border-radius: var(--radius-md);
+  border: 1px solid var(--color-border);
+  background: var(--color-surface);
+  flex-shrink: 0;
+  width: 46px;
+  transition: all var(--ease-base);
+}
+
+.today__date-chip:active { transform: scale(0.95); }
+
+.today__date-chip--selected {
+  background: var(--color-primary-dim);
+  border-color: var(--color-primary);
+}
+
+.today__date-chip-day {
+  font-size: 9px;
+  font-weight: var(--weight-bold);
+  color: var(--color-text-muted);
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+  line-height: 1;
+}
+
+.today__date-chip-num {
+  font-size: 17px;
+  font-weight: 800;
+  color: var(--color-text);
+  font-variant-numeric: tabular-nums;
+  line-height: 1;
+  letter-spacing: -0.03em;
+}
+
+.today__date-chip--today .today__date-chip-day {
+  color: var(--color-primary-text);
+}
+
+.today__date-chip--selected .today__date-chip-day {
+  color: var(--color-primary-text);
+}
+
+.today__date-chip--selected .today__date-chip-num {
+  color: var(--color-primary-text);
+}
+
+.today__date-chip--disabled {
+  opacity: 0.3;
+  cursor: not-allowed;
+  pointer-events: none;
+}
+
+/* =========================================================================
+   PAST DATE BANNER
+   ========================================================================= */
+
+.today__past-banner {
+  display: flex;
+  align-items: center;
+  gap: var(--space-2);
+  padding: var(--space-3) var(--space-4);
+  background: var(--color-surface-alt);
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-lg);
+}
+
+.today__past-banner-icon {
+  flex-shrink: 0;
+  color: var(--color-text-muted);
+}
+
+.today__past-banner-text {
+  flex: 1;
+  font-size: var(--font-sm);
+  font-weight: var(--weight-semibold);
+  color: var(--color-text-muted);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.today__past-banner-count {
+  font-weight: var(--weight-bold);
+  color: var(--color-primary-text);
+}
+
+.today__past-banner-back {
+  flex-shrink: 0;
+  font-size: var(--font-xs);
+  font-weight: var(--weight-bold);
+  color: var(--color-primary-text);
+  padding: 4px 12px;
+  background: var(--color-primary-dim);
+  border: 1px solid rgba(76, 96, 86, 0.22);
+  border-radius: var(--radius-full);
+  transition: opacity var(--ease-base);
+}
+
+.today__past-banner-back:active { opacity: 0.7; }
+
+.today__past-empty {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: var(--space-3);
+  padding: var(--space-8) var(--space-4);
+  color: var(--color-text-faint);
+}
+
+.today__past-empty-text {
+  font-size: var(--font-sm);
+  color: var(--color-text-muted);
+  text-align: center;
+}
+
+/* =========================================================================
    TIME SLOT SECTIONS - slot-color scoped via data-slot
    ========================================================================= */
 

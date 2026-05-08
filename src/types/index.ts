@@ -12,9 +12,9 @@ export interface Habit {
   isCustom?: boolean
   isPinned?: boolean
   isArchived?: boolean
-  frequency?: HabitFrequency   // defaults to 'daily'
-  customDays?: number[]        // 0=Sun … 6=Sat, used when frequency='custom'
-  reminderTime?: string        // 'HH:MM', optional per-habit reminder
+  frequency?: HabitFrequency
+  customDays?: number[]
+  reminderTime?: string
 }
 
 export interface Milestone {

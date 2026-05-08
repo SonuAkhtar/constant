@@ -2,7 +2,7 @@ import { useState, useMemo } from 'react'
 import { AnimatePresence, motion, Reorder, useDragControls } from 'framer-motion'
 import { useHabitStore } from '../../store/useHabitStore'
 import HabitForm from '../../components/HabitForm/HabitForm'
-import { SlotIcon, FlameIcon } from '../../components/Icons'
+import { HabitIcon, FlameIcon } from '../../components/Icons'
 import type { Habit, TimeSlot, Streak } from '../../types'
 import './Habits.css'
 
@@ -101,7 +101,7 @@ function HabitRow({
               </svg>
             )}
           </button>
-          <span className="habits-page__row-icon"><SlotIcon slot={habit.timeSlot} size={18} /></span>
+          <span className="habits-page__row-icon"><HabitIcon icon={habit.icon} size={18} /></span>
           <div className="habits-page__row-body">
             <p className="habits-page__row-title">{habit.title}</p>
             {habit.description && (
@@ -112,7 +112,7 @@ function HabitRow({
       ) : (
         <>
           <DragHandle onPointerDown={onDragStart} />
-          <span className="habits-page__row-icon"><SlotIcon slot={habit.timeSlot} size={18} /></span>
+          <span className="habits-page__row-icon"><HabitIcon icon={habit.icon} size={18} /></span>
           <div className="habits-page__row-body">
             <p className="habits-page__row-title">{habit.title}</p>
             {habit.description && (
@@ -248,7 +248,6 @@ export default function Habits() {
         </button>
       </div>
 
-      {/* ---- Search bar ---- */}
       {!organizing && (
         <div className="habits-page__search-wrap">
           <svg className="habits-page__search-icon" width="15" height="15" viewBox="0 0 15 15" fill="none" aria-hidden="true">
@@ -268,7 +267,6 @@ export default function Habits() {
         </div>
       )}
 
-      {/* ---- Search results ---- */}
       {search.trim() && (
         <div className="habits-page__search-results">
           {searchResults.length === 0 ? (
@@ -276,7 +274,7 @@ export default function Habits() {
           ) : (
             searchResults.map(habit => (
               <div key={habit.id} className="habits-page__row" data-slot={habit.timeSlot}>
-                <span className="habits-page__row-icon"><SlotIcon slot={habit.timeSlot} size={18} /></span>
+                <span className="habits-page__row-icon"><HabitIcon icon={habit.icon} size={18} /></span>
                 <div className="habits-page__row-body">
                   <p className="habits-page__row-title">{habit.title}</p>
                   <p className="habits-page__row-desc habits-page__row-slot-label">
@@ -296,7 +294,6 @@ export default function Habits() {
         </div>
       )}
 
-      {/* ---- Slot sections (hidden during search) ---- */}
       {!search.trim() && SLOTS.map(({ slot, label, time }) => {
         const slotHabits = activeHabits.filter(h => h.timeSlot === slot)
         if (slotHabits.length === 0) return null
@@ -338,7 +335,6 @@ export default function Habits() {
         )
       })}
 
-      {/* ---- Archived section ---- */}
       {!organizing && !search.trim() && archivedHabits.length > 0 && (
         <section className="habits-page__section habits-page__section--archived">
           <button
@@ -359,7 +355,7 @@ export default function Habits() {
               >
                 {archivedHabits.map(habit => (
                   <div key={habit.id} className="habits-page__row habits-page__row--archived" data-slot={habit.timeSlot}>
-                    <span className="habits-page__row-icon" style={{ opacity: 0.5 }}><SlotIcon slot={habit.timeSlot} size={18} /></span>
+                    <span className="habits-page__row-icon" style={{ opacity: 0.5 }}><HabitIcon icon={habit.icon} size={18} /></span>
                     <div className="habits-page__row-body">
                       <p className="habits-page__row-title" style={{ opacity: 0.55 }}>{habit.title}</p>
                     </div>
@@ -377,7 +373,6 @@ export default function Habits() {
         </section>
       )}
 
-      {/* ---- FAB (hidden in organize mode) ---- */}
       {!organizing && !search.trim() && (
         <HabitForm defaultSlot="morning">
           <button className="habits-page__fab" aria-label="Add habit">
@@ -388,7 +383,6 @@ export default function Habits() {
         </HabitForm>
       )}
 
-      {/* ---- Organize action bar ---- */}
       <AnimatePresence>
         {organizing && (
           <motion.div

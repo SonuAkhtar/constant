@@ -476,7 +476,6 @@ export default function Progress() {
         </div>
       </div>
 
-      {/* ---- Personal Bests ---- */}
       <div className="progress-page__bests">
         <div className="progress-page__bests-header">
           <h3 className="progress-page__bests-title">Personal Bests</h3>

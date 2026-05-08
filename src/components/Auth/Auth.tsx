@@ -31,7 +31,9 @@ export default function Auth() {
   const dropdownRef = useRef<HTMLDivElement>(null)
   const searchRef   = useRef<HTMLInputElement>(null)
 
-  const fullPhone = `${selectedCountry.dial}${phone.replace(/\D/g, '')}`
+  const digits = phone.replace(/\D/g, '')
+  const fullPhone = `${selectedCountry.dial}${digits}`
+  const isPhoneValid = digits.length >= 6 && digits.length <= 15
 
   const filteredCountries = COUNTRY_CODES.filter(c =>
     c.name.toLowerCase().includes(countrySearch.toLowerCase()) ||
@@ -55,8 +57,7 @@ export default function Auth() {
   }, [showDropdown])
 
   async function handleContinue() {
-    const digits = phone.replace(/\D/g, '')
-    if (!digits || digits.length < 6) { setError('Enter a valid phone number'); return }
+    if (!isPhoneValid) return
     setError('')
     const { error: err } = await signIn(fullPhone)
     if (err) setError(err)
@@ -93,9 +94,7 @@ export default function Auth() {
         >
           <p className="auth__card-label">Enter your phone number to continue</p>
 
-          {/* Phone row */}
           <div className="auth__phone-row">
-            {/* Country picker */}
             <div className="auth__country-wrap" ref={dropdownRef}>
               <button
                 type="button"
@@ -174,7 +173,7 @@ export default function Auth() {
           <button
             className="auth__submit-btn"
             onClick={handleContinue}
-            disabled={loading}
+            disabled={loading || !isPhoneValid}
           >
             {loading
               ? <span className="auth__spinner auth__spinner--dark" />

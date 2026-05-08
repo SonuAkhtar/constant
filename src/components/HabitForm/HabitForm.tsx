@@ -2,7 +2,7 @@ import { useState, useMemo, useEffect } from 'react'
 import * as Dialog from '@radix-ui/react-dialog'
 import { motion, AnimatePresence, useDragControls, type PanInfo } from 'framer-motion'
 import { useHabitStore } from '../../store/useHabitStore'
-import { SlotIcon } from '../Icons'
+import { SlotIcon, HabitIcon, HABIT_ICON_OPTIONS } from '../Icons'
 import type { Habit, TimeSlot, HabitFrequency } from '../../types'
 import './HabitForm.css'
 
@@ -39,22 +39,20 @@ export default function HabitForm({ defaultSlot, habit, children, open: openProp
 
   const [title,       setTitle]       = useState('')
   const [description, setDescription] = useState('')
-  const [intention,   setIntention]   = useState('')
   const [timeSlot,    setTimeSlot]    = useState<TimeSlot>(defaultSlot)
   const [frequency,   setFrequency]   = useState<HabitFrequency>('daily')
   const [customDays,  setCustomDays]  = useState<number[]>([1, 2, 3, 4, 5])
-  const [reminderTime, setReminderTime] = useState<string>('')
+  const [icon,        setIcon]        = useState<string>('water')
   const [shaking,     setShaking]     = useState(false)
 
   useEffect(() => {
     if (open) {
       setTitle(habit?.title ?? '')
       setDescription(habit?.description ?? '')
-      setIntention(habit?.intention ?? '')
       setTimeSlot(habit?.timeSlot ?? defaultSlot)
       setFrequency(habit?.frequency ?? 'daily')
       setCustomDays(habit?.customDays ?? [1, 2, 3, 4, 5])
-      setReminderTime(habit?.reminderTime ?? '')
+      setIcon(HABIT_ICON_OPTIONS.some(o => o.key === habit?.icon) ? habit!.icon : 'water')
     }
   // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [open])
@@ -74,11 +72,10 @@ export default function HabitForm({ defaultSlot, habit, children, open: openProp
     if (next) {
       setTitle(habit?.title ?? '')
       setDescription(habit?.description ?? '')
-      setIntention(habit?.intention ?? '')
       setTimeSlot(habit?.timeSlot ?? defaultSlot)
       setFrequency(habit?.frequency ?? 'daily')
       setCustomDays(habit?.customDays ?? [1, 2, 3, 4, 5])
-      setReminderTime(habit?.reminderTime ?? '')
+      setIcon(HABIT_ICON_OPTIONS.some(o => o.key === habit?.icon) ? habit!.icon : 'water')
     }
   }
 
@@ -99,12 +96,10 @@ export default function HabitForm({ defaultSlot, habit, children, open: openProp
     const payload: Omit<Habit, 'id' | 'isCustom'> = {
       title:       title.trim(),
       description: description.trim() || undefined,
-      intention:   intention.trim() || undefined,
       timeSlot,
-      icon:        timeSlot,
+      icon,
       frequency,
       customDays:  frequency === 'custom' ? customDays : undefined,
-      reminderTime: reminderTime || undefined,
     }
     if (isEditMode && habit) {
       editHabit(habit.id, payload)
@@ -210,24 +205,6 @@ export default function HabitForm({ defaultSlot, habit, children, open: openProp
                   </div>
 
                   <div className="habit-form__field">
-                    <div className="habit-form__label-row">
-                      <label className="habit-form__label" htmlFor="habit-intention">
-                        Your why <span className="habit-form__optional">(optional)</span>
-                      </label>
-                      <span className="habit-form__char-count">{intention.length}/100</span>
-                    </div>
-                    <input
-                      id="habit-intention"
-                      className="habit-form__input"
-                      type="text"
-                      placeholder="e.g. I want more energy for my family"
-                      value={intention}
-                      onChange={e => setIntention(e.target.value)}
-                      maxLength={100}
-                    />
-                  </div>
-
-                  <div className="habit-form__field">
                     <label className="habit-form__label">Time of day</label>
                     <div className="habit-form__slots">
                       {SLOT_OPTIONS.map(({ slot, label }) => (
@@ -239,6 +216,24 @@ export default function HabitForm({ defaultSlot, habit, children, open: openProp
                         >
                           <span className="habit-form__slot-icon"><SlotIcon slot={slot} size={14} /></span>
                           <span>{label}</span>
+                        </button>
+                      ))}
+                    </div>
+                  </div>
+
+                  <div className="habit-form__field">
+                    <label className="habit-form__label">Icon</label>
+                    <div className="habit-form__icon-grid">
+                      {HABIT_ICON_OPTIONS.map(({ key, label }) => (
+                        <button
+                          key={key}
+                          type="button"
+                          className={['habit-form__icon-btn', icon === key ? 'habit-form__icon-btn--active' : ''].join(' ')}
+                          onClick={() => setIcon(key)}
+                          aria-label={label}
+                        >
+                          <HabitIcon icon={key} size={20} />
+                          <span className="habit-form__icon-label">{label}</span>
                         </button>
                       ))}
                     </div>
@@ -271,28 +266,6 @@ export default function HabitForm({ defaultSlot, habit, children, open: openProp
                           </button>
                         ))}
                       </div>
-                    )}
-                  </div>
-
-                  <div className="habit-form__field">
-                    <label className="habit-form__label" htmlFor="habit-time">
-                      Reminder <span className="habit-form__optional">(optional)</span>
-                    </label>
-                    <input
-                      id="habit-time"
-                      className="habit-form__input habit-form__time-input"
-                      type="time"
-                      value={reminderTime}
-                      onChange={e => setReminderTime(e.target.value)}
-                    />
-                    {reminderTime && (
-                      <button
-                        type="button"
-                        className="habit-form__time-clear"
-                        onClick={() => setReminderTime('')}
-                      >
-                        Remove reminder
-                      </button>
                     )}
                   </div>
 

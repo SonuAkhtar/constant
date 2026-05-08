@@ -1,5 +1,3 @@
-/* Shared SVG icon set — replaces all emoji throughout the app */
-
 export function SlotIcon({ slot, size = 18 }: { slot: string; size?: number }) {
   const p = { width: size, height: size, viewBox: '0 0 18 18', fill: 'none', 'aria-hidden': true as const }
   if (slot === 'morning') return (
@@ -127,6 +125,124 @@ export function TapIcon({ size = 22 }: { size?: number }) {
         stroke="currentColor" strokeWidth="1.6" strokeLinecap="round" strokeLinejoin="round" />
     </svg>
   )
+}
+
+export const HABIT_ICON_OPTIONS: { key: string; label: string }[] = [
+  { key: 'water',    label: 'Water'    },
+  { key: 'run',      label: 'Run'      },
+  { key: 'gym',      label: 'Gym'      },
+  { key: 'meditate', label: 'Meditate' },
+  { key: 'book',     label: 'Read'     },
+  { key: 'sleep',    label: 'Sleep'    },
+  { key: 'coffee',   label: 'Coffee'   },
+  { key: 'meal',     label: 'Eat'      },
+  { key: 'music',    label: 'Music'    },
+  { key: 'journal',  label: 'Journal'  },
+  { key: 'heart',    label: 'Health'   },
+  { key: 'bike',     label: 'Bike'     },
+  { key: 'medicine', label: 'Medicine' },
+  { key: 'plant',    label: 'Nature'   },
+  { key: 'focus',    label: 'Focus'    },
+  { key: 'stretch',  label: 'Stretch'  },
+]
+
+export function HabitIcon({ icon, size = 20 }: { icon: string; size?: number }) {
+  if (icon === 'morning' || icon === 'afternoon' || icon === 'evening' || icon === 'night') {
+    return <SlotIcon slot={icon} size={size} />
+  }
+  const p = { width: size, height: size, viewBox: '0 0 20 20', fill: 'none', 'aria-hidden': true as const }
+  const lp = { stroke: 'currentColor', strokeWidth: 1.6, strokeLinecap: 'round' as const, strokeLinejoin: 'round' as const }
+  switch (icon) {
+    case 'water': return (
+      <svg {...p}><path d="M10 3C8 6 4 10 4 13.5a6 6 0 0012 0C16 10 12 6 10 3Z" {...lp} /></svg>
+    )
+    case 'run': return (
+      <svg {...p}>
+        <circle cx="13.5" cy="3.5" r="1.5" fill="currentColor" />
+        <path d="M12 5l-2 4.5-2.5 5M12 5l1 4 2.5 4.5M12 5l-3 2.5M12 5l2.5 1.5" {...lp} />
+      </svg>
+    )
+    case 'gym': return (
+      <svg {...p}><path d="M4 10h12M5 7.5v5M15 7.5v5M3 8.5v3M17 8.5v3" {...lp} /></svg>
+    )
+    case 'meditate': return (
+      <svg {...p}>
+        <circle cx="10" cy="4" r="1.8" {...lp} />
+        <path d="M7.5 10c0-1 1.2-2.5 2.5-2.5S12.5 9 12.5 10l-1 6.5h-3L7.5 10zM5.5 12c0-1 2-1.5 2-1.5M14.5 12c0-1-2-1.5-2-1.5" {...lp} />
+      </svg>
+    )
+    case 'book': return (
+      <svg {...p}>
+        <path d="M3 5h7v12H3V5zM10 5h7v12h-7V5zM10 5v12" {...lp} />
+        <path d="M3 5l7-1.5 7 1.5" {...lp} />
+      </svg>
+    )
+    case 'sleep': return (
+      <svg {...p}><path d="M15 13.5A7 7 0 015.5 4 7 7 0 1015 13.5z" {...lp} /></svg>
+    )
+    case 'coffee': return (
+      <svg {...p}>
+        <path d="M4 8h9v5.5a2 2 0 01-2 2H6a2 2 0 01-2-2V8z" {...lp} />
+        <path d="M13 10h2.5a1.5 1.5 0 010 3H13" {...lp} />
+        <path d="M7 5c-.5-1 .5-2 .5-2M10.5 4.5c-.5-1 .5-2 .5-2" {...lp} />
+      </svg>
+    )
+    case 'meal': return (
+      <svg {...p}><path d="M6.5 2v7M5 2v4a1.5 1.5 0 003 0V2M14.5 2v16M12.5 2v5a2 2 0 004 0V2" {...lp} /></svg>
+    )
+    case 'music': return (
+      <svg {...p}>
+        <path d="M8 16V6.5l8-2.5v9" {...lp} />
+        <circle cx="6" cy="16" r="2.5" {...lp} />
+        <circle cx="14" cy="13.5" r="2.5" {...lp} />
+      </svg>
+    )
+    case 'journal': return (
+      <svg {...p}>
+        <rect x="3.5" y="2.5" width="11" height="15" rx="1.5" {...lp} />
+        <path d="M6.5 7h5M6.5 10h5M6.5 13h3.5" {...lp} />
+        <path d="M13.5 13.5l2.5-2.5 1 1-2.5 2.5-1-1z" {...lp} />
+      </svg>
+    )
+    case 'heart': return (
+      <svg {...p}><path d="M10 16.5C4 12.5 2 7 2.5 5.5A4.5 4.5 0 0110 4a4.5 4.5 0 017.5 1.5C18 7 16 12.5 10 16.5Z" {...lp} /></svg>
+    )
+    case 'bike': return (
+      <svg {...p}>
+        <circle cx="5.5" cy="13.5" r="3.5" {...lp} />
+        <circle cx="14.5" cy="13.5" r="3.5" {...lp} />
+        <path d="M5.5 13.5L10 7l4.5 6.5M10 7l2.5-3" {...lp} />
+        <circle cx="12.5" cy="4" r="1" fill="currentColor" />
+      </svg>
+    )
+    case 'medicine': return (
+      <svg {...p}>
+        <rect x="4" y="7.5" width="12" height="6" rx="3" {...lp} />
+        <path d="M10 7.5v6" {...lp} />
+      </svg>
+    )
+    case 'plant': return (
+      <svg {...p}>
+        <path d="M10 17V9" {...lp} />
+        <path d="M10 9C10 9 4 7 4.5 2.5c0 0 6 .5 5.5 6.5z" {...lp} />
+        <path d="M10 12.5c0 0 5.5-1 5.5-5.5 0 0-6 0-5.5 5.5z" {...lp} />
+      </svg>
+    )
+    case 'focus': return (
+      <svg {...p}>
+        <circle cx="10" cy="10" r="8" {...lp} />
+        <circle cx="10" cy="10" r="4.5" {...lp} />
+        <circle cx="10" cy="10" r="1.5" fill="currentColor" />
+      </svg>
+    )
+    case 'stretch': return (
+      <svg {...p}>
+        <circle cx="10" cy="3.5" r="1.5" {...lp} />
+        <path d="M10 5.5v7.5M7 8l3 1.5 3-1.5M10 13l-2.5 4M10 13l2.5 4" {...lp} />
+      </svg>
+    )
+    default: return <SlotIcon slot="morning" size={size} />
+  }
 }
 
 export function SwipeIcon({ direction = 'right', size = 22 }: { direction?: 'left' | 'right'; size?: number }) {

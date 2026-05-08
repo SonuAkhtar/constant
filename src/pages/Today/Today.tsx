@@ -1,6 +1,6 @@
 import { useState, useEffect, useRef, useMemo } from "react";
 import { useNavigate } from "react-router-dom";
-import { format, differenceInCalendarDays, parseISO } from "date-fns";
+import { format, differenceInCalendarDays, parseISO, subDays } from "date-fns";
 import { motion, AnimatePresence } from "framer-motion";
 import { useHabitStore } from "../../store/useHabitStore";
 import { useOnboardingStore } from "../../store/useOnboardingStore";
@@ -48,8 +48,6 @@ function getGreeting(h: number): string {
   if (h < 21) return "Good evening";
   return "Good night";
 }
-
-// ---- Confetti ----------------------------------------------------------------
 
 const CONFETTI_COLORS = [
   "#c94f2a",
@@ -110,8 +108,6 @@ function Confetti({ onDone }: { onDone: () => void }) {
   );
 }
 
-// ---- Milestone overlay -------------------------------------------------------
-
 function MilestoneOverlay({
   milestone,
   onDone,
@@ -148,8 +144,6 @@ function MilestoneOverlay({
     </motion.div>
   );
 }
-
-// ---- Empty state -------------------------------------------------------------
 
 function EmptyTodayState({ userName }: { userName: string }) {
   const navigate = useNavigate();
@@ -223,8 +217,6 @@ function EmptyTodayState({ userName }: { userName: string }) {
   );
 }
 
-// ---- Rolling number helper ---------------------------------------------------
-
 function NumRoll({ n }: { n: number }) {
   return (
     <span className="today__progress-count-wrap">
@@ -244,16 +236,13 @@ function NumRoll({ n }: { n: number }) {
   );
 }
 
-// ---- Ring constants ----------------------------------------------------------
-
 const RING_R = 20;
 const RING_CIRC = +(2 * Math.PI * RING_R).toFixed(2);
-
-// ---- Page -------------------------------------------------------------------
 
 export default function Today() {
   const {
     getTodayHabits,
+    getScheduledHabits,
     toggleHabit,
     isCompleted,
     isSkipped,
@@ -262,9 +251,18 @@ export default function Today() {
     getAppStreak,
     getLastActiveDate,
   } = useHabitStore();
-  const { userName, goal } = useOnboardingStore();
+  const { userName, goal, joinedAt } = useOnboardingStore();
+
+  const [selectedDate, setSelectedDate] = useState(() => format(new Date(), 'yyyy-MM-dd'));
+  const isViewingToday = selectedDate === format(new Date(), 'yyyy-MM-dd');
+
   const todayHabits = getTodayHabits();
+  const viewHabits = isViewingToday ? todayHabits : getScheduledHabits(selectedDate);
+
   const { completed, total, percentage } = getDayProgress();
+  const { completed: viewCompleted, total: viewTotal } = isViewingToday
+    ? { completed, total }
+    : getDayProgress(selectedDate);
 
   const now = new Date();
   const dayAbbr = format(now, "EEE");
@@ -277,6 +275,12 @@ export default function Today() {
     const idx = currentHour < 12 ? 0 : currentHour < 17 ? 1 : currentHour < 21 ? 2 : 3;
     return [...SLOTS.slice(idx), ...SLOTS.slice(0, idx)];
   }, [currentHour]);
+
+  const slotsToRender = isViewingToday ? orderedSlots : SLOTS;
+
+  const weekDates = useMemo(() =>
+    Array.from({ length: 7 }, (_, i) => format(subDays(new Date(), 6 - i), 'yyyy-MM-dd'))
+  , []);
 
   const [ringMounted, setRingMounted] = useState(false);
   const [showConfetti, setShowConfetti] = useState(false);
@@ -298,7 +302,6 @@ export default function Today() {
     : 0;
   const toastTimer = useRef<ReturnType<typeof window.setTimeout> | null>(null);
 
-  // Check if the date changed while the app was open (overnight edge case)
   const [todayDate, setTodayDate] = useState(format(new Date(), "yyyy-MM-dd"));
   useEffect(() => {
     const id = setInterval(() => {
@@ -362,12 +365,10 @@ export default function Today() {
   }
 
   function handleToggle(habitId: string) {
-    const wasCompleted = isCompleted(habitId);
-    const milestone = toggleHabit(habitId);
-    if (!wasCompleted) {
-      showSaveToast();
-      if (milestone) setActiveMilestone(milestone);
-    }
+    const wasCompleted = isCompleted(habitId, selectedDate);
+    const milestone = toggleHabit(habitId, selectedDate);
+    showSaveToast();
+    if (!wasCompleted && isViewingToday && milestone) setActiveMilestone(milestone);
   }
 
   const strokeDash = ringMounted ? (percentage / 100) * RING_CIRC : 0;
@@ -376,7 +377,6 @@ export default function Today() {
 
   return (
     <div className="today">
-      {/* ---- Hero card ---- */}
       <motion.div
         className={["today__hero", auroraBurst ? "today__hero--burst" : ""]
           .filter(Boolean)
@@ -386,7 +386,6 @@ export default function Today() {
         transition={{ duration: 0.38, ease: [0.4, 0, 0.2, 1] }}
       >
         <div className="today__hero-inner">
-          {/* Hero rows */}
           <div className="today__hero-top">
             <div className="today__hero-left">
               <div className="today__hero-greeting-row">
@@ -458,7 +457,6 @@ export default function Today() {
             </div>
           </div>
 
-          {/* Animated motivational copy */}
           <AnimatePresence mode="wait">
             <motion.p
               key={copyKey}
@@ -476,14 +474,56 @@ export default function Today() {
         </div>
       </motion.div>
 
-      {/* ---- Confetti ---- */}
+      <div className="today__date-strip">
+        {weekDates.map(date => {
+          const isToday = date === format(new Date(), 'yyyy-MM-dd')
+          const isSelected = date === selectedDate
+          const isDisabled = !!joinedAt && date < joinedAt
+          return (
+            <button
+              key={date}
+              className={[
+                'today__date-chip',
+                isSelected ? 'today__date-chip--selected' : '',
+                isToday ? 'today__date-chip--today' : '',
+                isDisabled ? 'today__date-chip--disabled' : '',
+              ].filter(Boolean).join(' ')}
+              onClick={() => !isDisabled && setSelectedDate(date)}
+              aria-pressed={isSelected}
+              aria-disabled={isDisabled}
+              tabIndex={isDisabled ? -1 : 0}
+            >
+              <span className="today__date-chip-day">
+                {isToday ? 'Today' : format(parseISO(date), 'EEE')}
+              </span>
+              <span className="today__date-chip-num">{format(parseISO(date), 'd')}</span>
+            </button>
+          )
+        })}
+      </div>
+
+      {!isViewingToday && (
+        <div className="today__past-banner">
+          <svg width="15" height="15" viewBox="0 0 15 15" fill="none" aria-hidden="true" className="today__past-banner-icon">
+            <rect x="1" y="3" width="13" height="11" rx="2" stroke="currentColor" strokeWidth="1.4"/>
+            <path d="M5 1v3M10 1v3M1 7h13" stroke="currentColor" strokeWidth="1.4" strokeLinecap="round"/>
+          </svg>
+          <span className="today__past-banner-text">
+            {format(parseISO(selectedDate), 'EEEE, MMMM d')}
+            {' · '}<span className="today__past-banner-count">{viewCompleted}/{viewTotal} done</span>
+          </span>
+          <button className="today__past-banner-back" onClick={() => setSelectedDate(format(new Date(), 'yyyy-MM-dd'))}>
+            Today
+          </button>
+        </div>
+      )}
+
       <AnimatePresence>
         {showConfetti && <Confetti onDone={() => setShowConfetti(false)} />}
       </AnimatePresence>
 
-      {/* ---- Perfect day banner ---- */}
       <AnimatePresence>
-        {percentage === 100 && (
+        {isViewingToday && percentage === 100 && (
           <motion.div
             className="today__celebration"
             initial={{ opacity: 0, scale: 0.95, y: -8 }}
@@ -509,9 +549,8 @@ export default function Today() {
         )}
       </AnimatePresence>
 
-      {/* ---- Return after break banner ---- */}
       <AnimatePresence>
-        {isReturning && daysSince >= 2 && (
+        {isViewingToday && isReturning && daysSince >= 2 && (
           <motion.div
             className="today__return-banner"
             initial={{ opacity: 0, y: -12 }}
@@ -535,7 +574,6 @@ export default function Today() {
         )}
       </AnimatePresence>
 
-      {/* ---- Goal banner ---- */}
       {goal && (
         <div className="today__goal-banner">
           <span className="today__goal-label">Goal</span>
@@ -543,14 +581,27 @@ export default function Today() {
         </div>
       )}
 
-      {/* ---- Empty state ---- */}
-      {todayHabits.length === 0 && <EmptyTodayState userName={userName} />}
+      {viewHabits.length === 0 && isViewingToday && <EmptyTodayState userName={userName} />}
+      {viewHabits.length === 0 && !isViewingToday && (
+        <motion.div
+          className="today__past-empty"
+          initial={{ opacity: 0, y: 12 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ duration: 0.3 }}
+        >
+          <svg width="44" height="44" viewBox="0 0 44 44" fill="none" aria-hidden="true">
+            <rect x="4" y="8" width="36" height="30" rx="5" stroke="var(--color-border)" strokeWidth="1.6"/>
+            <path d="M14 4v6M30 4v6M4 18h36" stroke="var(--color-border)" strokeWidth="1.6" strokeLinecap="round"/>
+            <path d="M14 26h16M17 32h10" stroke="var(--color-border)" strokeWidth="1.6" strokeLinecap="round"/>
+          </svg>
+          <p className="today__past-empty-text">No habits were scheduled on this day.</p>
+        </motion.div>
+      )}
 
-      {/* ---- Core 3 - pinned habits ---- */}
       {(() => {
-        const pinned = todayHabits.filter((h) => h.isPinned);
+        const pinned = viewHabits.filter((h) => h.isPinned);
         if (pinned.length === 0) return null;
-        const pinnedDone = pinned.filter((h) => isCompleted(h.id)).length;
+        const pinnedDone = pinned.filter((h) => isCompleted(h.id, selectedDate)).length;
         return (
           <section
             className="today__section today__section--core"
@@ -584,8 +635,8 @@ export default function Today() {
                 <HabitCard
                   key={habit.id}
                   habit={habit}
-                  done={isCompleted(habit.id)}
-                  skipped={isSkipped(habit.id)}
+                  done={isCompleted(habit.id, selectedDate)}
+                  skipped={isSkipped(habit.id, selectedDate)}
                   streak={getStreak(habit.id)}
                   onToggle={() => handleToggle(habit.id)}
                   index={i}
@@ -596,12 +647,11 @@ export default function Today() {
         );
       })()}
 
-      {/* ---- Time slot sections ---- */}
-      {orderedSlots.map(({ slot, label }) => {
-        const slotHabits = todayHabits.filter((h) => h.timeSlot === slot);
+      {slotsToRender.map(({ slot, label }) => {
+        const slotHabits = viewHabits.filter((h) => h.timeSlot === slot);
         if (slotHabits.length === 0) return null;
 
-        const slotDone = slotHabits.filter((h) => isCompleted(h.id)).length;
+        const slotDone = slotHabits.filter((h) => isCompleted(h.id, selectedDate)).length;
         const slotComplete = slotDone === slotHabits.length;
 
         return (
@@ -646,8 +696,8 @@ export default function Today() {
                 <HabitCard
                   key={habit.id}
                   habit={habit}
-                  done={isCompleted(habit.id)}
-                  skipped={isSkipped(habit.id)}
+                  done={isCompleted(habit.id, selectedDate)}
+                  skipped={isSkipped(habit.id, selectedDate)}
                   streak={getStreak(habit.id)}
                   onToggle={() => handleToggle(habit.id)}
                   index={i}
@@ -658,22 +708,20 @@ export default function Today() {
         );
       })}
 
-      {/* ---- Persistent count pill above bottom nav ---- */}
-      {todayHabits.length > 0 && (
+      {viewHabits.length > 0 && (
         <div className="today__count-bar" aria-live="polite">
           <motion.div
             className="today__count-pill"
             animate={pillBump ? { scale: [1, 1.12, 1] } : {}}
             transition={{ duration: 0.35, ease: [0.4, 0, 0.2, 1] }}
           >
-            <NumRoll n={completed} />
+            <NumRoll n={viewCompleted} />
             <span className="today__count-sep">/</span>
-            <span>{total}</span>
+            <span>{viewTotal}</span>
           </motion.div>
         </div>
       )}
 
-      {/* ---- Milestone overlay ---- */}
       <AnimatePresence>
         {activeMilestone && (
           <MilestoneOverlay
@@ -683,7 +731,6 @@ export default function Today() {
         )}
       </AnimatePresence>
 
-      {/* ---- Save toast ---- */}
       <AnimatePresence>
         {showToast && (
           <motion.div

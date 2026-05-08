@@ -1,8 +1,6 @@
 import { supabase } from './supabase'
 import type { Habit, HabitLog, Milestone } from '../types'
 
-// ---- Auth ---------------------------------------------------------------
-
 export async function findOrCreateUser(phone: string): Promise<{ userId: string; error: string | null }> {
   const { data: existing, error: findErr } = await supabase
     .from('users')
@@ -22,8 +20,6 @@ export async function findOrCreateUser(phone: string): Promise<{ userId: string;
   if (createErr) return { userId: '', error: createErr.message }
   return { userId: created.id, error: null }
 }
-
-// ---- Habits -------------------------------------------------------------
 
 export async function fetchHabits(userId: string): Promise<Habit[]> {
   const { data } = await supabase
@@ -57,8 +53,6 @@ export async function deleteHabit(habitId: string): Promise<void> {
   await supabase.from('habits').delete().eq('id', habitId)
 }
 
-// ---- Habit logs ---------------------------------------------------------
-
 export async function fetchLogs(userId: string): Promise<HabitLog[]> {
   const { data } = await supabase
     .from('habit_logs')
@@ -79,8 +73,6 @@ export async function upsertLog(userId: string, log: HabitLog): Promise<void> {
   })
 }
 
-// ---- Milestones ---------------------------------------------------------
-
 export async function fetchMilestones(userId: string): Promise<Milestone[]> {
   const { data } = await supabase
     .from('milestones')
@@ -97,8 +89,6 @@ export async function upsertMilestone(userId: string, milestone: Milestone): Pro
     date:    milestone.date,
   }, { onConflict: 'user_id,type' })
 }
-
-// ---- Profile (onboarding) -----------------------------------------------
 
 export async function fetchProfile(userId: string) {
   const { data } = await supabase
@@ -126,8 +116,6 @@ export async function upsertProfile(userId: string, profile: {
     updated_at:           new Date().toISOString(),
   })
 }
-
-// ---- Row → type mappers -------------------------------------------------
 
 function rowToHabit(row: Record<string, unknown>): Habit {
   return {

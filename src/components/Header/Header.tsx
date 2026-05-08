@@ -49,7 +49,6 @@ export default function Header({ scrolled = false }: Props) {
       </div>
 
       <div className="header__actions">
-        {/* Contextual badge */}
         <AnimatePresence mode="wait">
           {isHabits ? (
             <motion.div
@@ -93,7 +92,6 @@ export default function Header({ scrolled = false }: Props) {
           )}
         </AnimatePresence>
 
-        {/* Theme toggle with spin */}
         <button
           className="header__theme-toggle"
           onClick={toggleTheme}

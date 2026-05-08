@@ -44,9 +44,7 @@ function AvatarRing({ pct }: { pct: number }) {
       height="78"
       aria-hidden="true"
     >
-      {/* track */}
       <circle cx="39" cy="39" r={RING_R} className="profile__ring-track" />
-      {/* fill */}
       <circle
         cx="39"
         cy="39"
@@ -233,7 +231,6 @@ export default function Profile() {
 
   return (
     <div className="profile">
-      {/* ---- Avatar card ---- */}
       <div className="profile__card profile__avatar-card">
         <div className="profile__avatar-wrap">
           <AvatarRing pct={todayPct} />
@@ -303,7 +300,6 @@ export default function Profile() {
         )}
       </div>
 
-      {/* ---- Stats card ---- */}
       <div className="profile__card profile__stats-card">
         <div className="profile__stat">
           <span className="profile__stat-value">
@@ -329,7 +325,6 @@ export default function Profile() {
         </div>
       </div>
 
-      {/* ---- 30-day goal ---- */}
       <div className="profile__card profile__goal-card">
         <div className="profile__goal-header">
           <h2 className="profile__section-heading">30-Day Goal</h2>
@@ -401,7 +396,6 @@ export default function Profile() {
         )}
       </div>
 
-      {/* ---- Milestone moments ---- */}
       {milestones.length > 0 && (
         <div className="profile__card profile__moments-card">
           <h2 className="profile__section-heading">Moments</h2>
@@ -421,7 +415,6 @@ export default function Profile() {
         </div>
       )}
 
-      {/* ---- Appearance ---- */}
       <div className="profile__card profile__settings-card">
         <h2 className="profile__section-heading">Appearance</h2>
         <div className="profile__setting-row">
@@ -444,7 +437,6 @@ export default function Profile() {
         </div>
       </div>
 
-      {/* ---- Data & backup ---- */}
       <div className="profile__card profile__data-card">
         <h2 className="profile__section-heading">Your Data</h2>
         <p className="profile__data-privacy">
@@ -478,7 +470,6 @@ export default function Profile() {
         </button>
       </div>
 
-      {/* ---- Your journey ---- */}
       <div className="profile__card profile__journey-card">
         <h2 className="profile__section-heading">Your Journey</h2>
         <div className="profile__journey-stats">

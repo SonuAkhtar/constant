@@ -8,7 +8,7 @@ import {
   type PanInfo,
 } from "framer-motion";
 import type { Habit, Streak } from "../../types";
-import { SlotIcon, FlameIcon } from "../Icons";
+import { HabitIcon, FlameIcon } from "../Icons";
 import "./HabitCard.css";
 
 interface Props {
@@ -65,7 +65,6 @@ export default function HabitCard({
       transition={{ delay: index * 0.05, duration: 0.28 }}
     >
       <div className="habit-card-wrap">
-        {/* Right swipe reveal - Complete */}
         {!cardDisabled && (
           <motion.div
             className="habit-card__swipe-bg"
@@ -89,7 +88,6 @@ export default function HabitCard({
           </motion.div>
         )}
 
-        {/* Draggable card layer */}
         <motion.div
           className="habit-card__drag-layer"
           style={{ x }}
@@ -116,7 +114,7 @@ export default function HabitCard({
             transition={justCompleted ? { duration: 0.38 } : {}}
           >
             <div className="habit-card__badge">
-              <SlotIcon slot={habit.timeSlot} size={20} />
+              <HabitIcon icon={habit.icon} size={20} />
             </div>
 
             <div className="habit-card__body">

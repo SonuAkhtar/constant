@@ -95,6 +95,7 @@ interface HabitState {
     completed: number;
     percentage: number;
   };
+  getScheduledHabits: (date: string) => Habit[];
   getWeeklyProgress: () => DailyProgress[];
   getMonthlyProgress: () => DailyProgress[];
   getPersonalBests: () => PersonalBests;
@@ -162,7 +163,6 @@ function checkMilestones(
     }
   }
 
-  // Total completions across all habits
   const totalCompletions = logs.filter((l) => l.completed).length;
   const completionMilestones = [
     {
@@ -356,6 +356,12 @@ export const useHabitStore = create<HabitState>()(
         if (userId && habit) upsertHabit(userId, habit);
       },
 
+      getScheduledHabits: (date) => {
+        const { habits } = get()
+        const dow = new Date(`${date}T00:00:00`).getDay()
+        return habits.filter(h => !h.isArchived && isScheduledOn(h, dow))
+      },
+
       getStreak: (habitId) => computeStreak(get().logs, habitId),
 
       getAppStreak: () => {
@@ -531,7 +537,7 @@ export const useHabitStore = create<HabitState>()(
       },
 
       addHabit: (habit) => {
-        const id = `custom-${Date.now()}`;
+        const id = crypto.randomUUID();
         const newHabit: Habit = { ...habit, id, isCustom: true };
         const sortOrder = get().habits.filter(
           (h) => h.timeSlot === habit.timeSlot,
@@ -591,15 +597,18 @@ export const useHabitStore = create<HabitState>()(
         try {
           const data = JSON.parse(json);
           if (Array.isArray(data.habits) && Array.isArray(data.logs)) {
-            set({
-              habits: data.habits,
-              logs: data.logs,
-              milestones: Array.isArray(data.milestones) ? data.milestones : [],
-            });
+            const habits: Habit[] = data.habits;
+            const logs: HabitLog[] = data.logs;
+            const milestones: Milestone[] = Array.isArray(data.milestones) ? data.milestones : [];
+            set({ habits, logs, milestones });
+            const userId = uid();
+            if (userId) {
+              habits.forEach((h, i) => upsertHabit(userId, h, i));
+              logs.forEach(l => upsertLog(userId, l));
+              milestones.forEach(m => upsertMilestone(userId, m));
+            }
           }
-        } catch {
-          // invalid JSON - ignore silently
-        }
+        } catch { /* */ }
       },
 
       reset: () => set({ habits: [], logs: [], milestones: [] }),

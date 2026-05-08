@@ -1,5 +1,6 @@
 import { create } from 'zustand'
 import { persist } from 'zustand/middleware'
+import { format } from 'date-fns'
 import { upsertProfile, fetchProfile } from '../lib/db'
 import { useAuthStore } from './useAuthStore'
 
@@ -11,6 +12,7 @@ interface OnboardingState {
   focuses:     string[]
   goal:        string
   goalSetDate: string
+  joinedAt:    string
   loadFromDb:    (userId: string) => Promise<void>
   complete:      (name: string, focuses: string[]) => void
   updateProfile: (name: string, focuses: string[]) => void
@@ -27,6 +29,7 @@ export const useOnboardingStore = create<OnboardingState>()(
       focuses:     [],
       goal:        '',
       goalSetDate: '',
+      joinedAt:    '',
 
       loadFromDb: async (userId) => {
         const profile = await fetchProfile(userId)
@@ -41,7 +44,8 @@ export const useOnboardingStore = create<OnboardingState>()(
       },
 
       complete: (name, focuses) => {
-        set({ completed: true, userName: name.trim(), focuses })
+        const joinedAt = format(new Date(), 'yyyy-MM-dd')
+        set({ completed: true, userName: name.trim(), focuses, joinedAt })
         const userId = uid()
         if (userId) upsertProfile(userId, { ...get(), completed: true, userName: name.trim(), focuses })
       },
