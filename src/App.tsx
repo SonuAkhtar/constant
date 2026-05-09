@@ -1,6 +1,5 @@
 import { useEffect, useState } from "react";
 import { BrowserRouter, Routes, Route } from "react-router-dom";
-import logoUrl from "./assets/logo.png";
 import { motion } from "framer-motion";
 import Layout from "./components/Layout/Layout";
 import Auth from "./components/Auth/Auth";
@@ -38,7 +37,7 @@ function AppSpinner() {
   return (
     <div className="app-loading">
       <motion.img
-        src={logoUrl}
+        src="/new-logo-full.png"
         className="app-loading__logo"
         alt="Constant"
         animate={{ scale: [1, 1.1, 1] }}
@@ -61,7 +60,7 @@ function Onboarding({ onDone, onBack }: { onDone: (name: string) => void; onBack
   return (
     <div className="app-onboarding">
       <div className="app-onboarding__bg" aria-hidden="true" />
-      <img src={logoUrl} className="app-onboarding__logo-float" alt="Constant" />
+      <img src="/new-logo-full.png" className="app-onboarding__logo-float" alt="Constant" />
       <motion.div
         className="app-onboarding__card"
         initial={{ opacity: 0, y: 20 }}

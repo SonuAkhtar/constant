@@ -7,7 +7,7 @@ export default defineConfig({
     react(),
     VitePWA({
       registerType: 'autoUpdate',
-      includeAssets: ['logo.png', 'c-logo.png'],
+      includeAssets: ['new-logo-full.png', 'new-logo-c-only.png'],
       manifest: {
         name: 'Constant',
         short_name: 'Constant',
@@ -18,8 +18,8 @@ export default defineConfig({
         orientation: 'portrait',
         start_url: '/',
         icons: [
-          { src: 'c-logo.png', sizes: '1024x1024', type: 'image/png', purpose: 'any' },
-          { src: 'c-logo.png', sizes: '1024x1024', type: 'image/png', purpose: 'maskable' },
+          { src: 'new-logo-c-only.png', sizes: '1024x1024', type: 'image/png', purpose: 'any' },
+          { src: 'new-logo-c-only.png', sizes: '1024x1024', type: 'image/png', purpose: 'maskable' },
         ],
       },
     }),

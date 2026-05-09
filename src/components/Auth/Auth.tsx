@@ -2,7 +2,6 @@ import { useState, useRef, useEffect } from 'react'
 import { motion, AnimatePresence } from 'framer-motion'
 import { useAuthStore } from '../../store/useAuthStore'
 import { COUNTRY_CODES, type CountryCode } from '../../data/countryCodes'
-import logoUrl from '../../assets/logo.png'
 import './Auth.css'
 
 const INDIA = COUNTRY_CODES.find(c => c.code === 'IN')!
@@ -58,7 +57,7 @@ export default function Auth() {
   return (
     <div className="auth">
       <div className="auth__bg" aria-hidden="true" />
-      <img src={logoUrl} className="auth__logo-float" alt="Constant" />
+      <img src="/new-logo-full.png" className="auth__logo-float" alt="Constant" />
 
       <motion.div
         className="auth__content"
