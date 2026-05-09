@@ -3,6 +3,7 @@ import { motion, AnimatePresence } from 'framer-motion'
 import { useLocation } from 'react-router-dom'
 import { useHabitStore } from '../../store/useHabitStore'
 import { useThemeStore } from '../../store/useThemeStore'
+import cLogoUrl from '../../assets/c-logo.png'
 import './Header.css'
 
 interface Props {
@@ -45,7 +46,7 @@ export default function Header({ scrolled = false }: Props) {
   return (
     <header className={['header', scrolled ? 'header--scrolled' : ''].join(' ')}>
       <div className="header__brand">
-        <img src="/c-logo.png" className="header__logo" alt="Constant" />
+        <img src={cLogoUrl} className="header__logo" alt="Constant" />
         <span className="header__app-name">Constant</span>
       </div>
 

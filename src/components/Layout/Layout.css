@@ -14,7 +14,7 @@
   flex: 1;
   overflow-y: auto;
   overflow-x: hidden;
-  padding-bottom: calc(72px + env(safe-area-inset-bottom) + 16px);
+  padding-bottom: calc(72px + 16px + env(safe-area-inset-bottom) + 16px);
   scroll-padding-bottom: 72px;
   -webkit-overflow-scrolling: touch;
   -webkit-backface-visibility: hidden;
