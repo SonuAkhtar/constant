@@ -208,7 +208,7 @@ export default function Profile() {
     const url = URL.createObjectURL(blob);
     const a = document.createElement("a");
     a.href = url;
-    a.download = `bestofme-backup-${format(new Date(), "yyyy-MM-dd")}.json`;
+    a.download = `constant-backup-${format(new Date(), "yyyy-MM-dd")}.json`;
     a.click();
     URL.revokeObjectURL(url);
   }

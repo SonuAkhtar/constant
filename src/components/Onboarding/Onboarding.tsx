@@ -31,7 +31,7 @@ const DEFAULT_STARTERS = [
 
 const STEP_LABELS = ['Focus', 'Your Name', 'First Habit', 'Quick start']
 
-const TAGLINE = 'Build daily habits that compound into the best version of yourself.'
+const TAGLINE = 'wellness, routine, progress'
 
 function WordFadeIn({ text, startDelay = 0.7 }: { text: string; startDelay?: number }) {
   const words = text.split(' ')
@@ -216,7 +216,7 @@ export default function Onboarding() {
               transition={{ delay: 0.3, duration: 0.4 }}
               className="onboarding__text"
             >
-              <h1 className="onboarding__title">Best of Me</h1>
+              <h1 className="onboarding__title">Constant</h1>
               <p className="onboarding__subtitle">
                 <WordFadeIn text={TAGLINE} startDelay={0.7} />
               </p>

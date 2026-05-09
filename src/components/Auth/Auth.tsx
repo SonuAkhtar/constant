@@ -6,19 +6,6 @@ import './Auth.css'
 
 const INDIA = COUNTRY_CODES.find(c => c.code === 'IN')!
 
-function LogoMark() {
-  return (
-    <svg width="52" height="52" viewBox="0 0 30 30" fill="none" className="auth__logo-mark" aria-hidden="true">
-      <rect width="30" height="30" rx="8" fill="var(--color-primary)" />
-      <polyline
-        points="4.5,21 9.5,14.5 13.5,17 18.5,9 25,11.5"
-        stroke="white" strokeWidth="2.2"
-        strokeLinecap="round" strokeLinejoin="round" fill="none"
-      />
-    </svg>
-  )
-}
-
 export default function Auth() {
   const { signIn, loading } = useAuthStore()
 
@@ -60,12 +47,17 @@ export default function Auth() {
     if (!isPhoneValid) return
     setError('')
     const { error: err } = await signIn(fullPhone)
-    if (err) setError(err)
+    if (err) {
+      setError(err)
+    } else {
+      window.history.replaceState({}, '', '/')
+    }
   }
 
   return (
     <div className="auth">
       <div className="auth__bg" aria-hidden="true" />
+      <img src="/logo.png" className="auth__logo-float" alt="Constant" />
 
       <motion.div
         className="auth__content"
@@ -73,19 +65,6 @@ export default function Auth() {
         animate={{ opacity: 1, y: 0 }}
         transition={{ duration: 0.3, ease: [0.4, 0, 0.2, 1] }}
       >
-        <motion.div
-          className="auth__brand"
-          initial={{ opacity: 0, y: 10 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ delay: 0.06, duration: 0.3 }}
-        >
-          <LogoMark />
-          <div className="auth__brand-text">
-            <h1 className="auth__title">Best of Me</h1>
-            <p className="auth__subtitle">Your daily habit companion</p>
-          </div>
-        </motion.div>
-
         <motion.div
           className="auth__card"
           initial={{ opacity: 0, y: 12 }}

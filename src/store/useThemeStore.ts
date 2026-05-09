@@ -24,6 +24,6 @@ export const useThemeStore = create<ThemeState>()(
         document.documentElement.setAttribute('data-theme', get().theme)
       },
     }),
-    { name: 'bestofme-theme' }
+    { name: 'constant-theme' }
   )
 )

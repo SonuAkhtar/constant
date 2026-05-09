@@ -10,9 +10,17 @@
   flex-direction: column;
   align-items: center;
   justify-content: center;
+  gap: var(--space-5);
   background: var(--color-bg);
-  padding: var(--space-6);
+  padding: env(safe-area-inset-top) var(--space-6) calc(var(--space-6) + env(safe-area-inset-bottom));
   overflow: hidden;
+}
+
+.auth__logo-float {
+  width: 30vh;
+  height: 30vh;
+  object-fit: contain;
+  flex-shrink: 0;
 }
 
 .auth__bg {
@@ -33,7 +41,7 @@
   max-width: 380px;
   display: flex;
   flex-direction: column;
-  gap: var(--space-6);
+  gap: var(--space-4);
   position: relative;
   z-index: 1;
 }
@@ -60,20 +68,20 @@
 
 .auth__brand {
   display: flex;
+  flex-direction: column;
   align-items: center;
-  gap: var(--space-4);
+  gap: var(--space-3);
+  text-align: center;
 }
 
 .auth__logo-mark {
-  border-radius: 14px;
-  box-shadow: 0 6px 24px rgba(76, 96, 86, 0.18);
+  width: 96px;
+  height: 96px;
+  border-radius: 24px;
+  box-shadow: 0 8px 32px rgba(76, 96, 86, 0.22), 0 2px 8px rgba(0, 0, 0, 0.08);
+  object-fit: contain;
+  display: block;
   flex-shrink: 0;
-}
-
-.auth__brand-text {
-  display: flex;
-  flex-direction: column;
-  gap: 3px;
 }
 
 .auth__title {
@@ -243,7 +251,7 @@
   background: var(--color-surface-alt);
   border: 1px solid var(--color-border);
   border-radius: var(--radius-md);
-  font-size: var(--font-sm);
+  font-size: max(16px, var(--font-sm));
   color: var(--color-text);
   outline: none;
   transition: border-color var(--ease-base);
@@ -321,7 +329,7 @@
   background: var(--color-surface-alt);
   border: 1.5px solid var(--color-border);
   border-radius: var(--radius-lg);
-  font-size: var(--font-base);
+  font-size: max(16px, var(--font-base));
   color: var(--color-text);
   outline: none;
   transition: border-color var(--ease-base);

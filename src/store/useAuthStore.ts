@@ -29,7 +29,7 @@ export const useAuthStore = create<AuthState>()(
       signOut: () => set({ userId: null, phone: null }),
     }),
     {
-      name: 'bestofme-auth',
+      name: 'constant-auth',
       partialize: (state) => ({ userId: state.userId, phone: state.phone }),
     }
   )

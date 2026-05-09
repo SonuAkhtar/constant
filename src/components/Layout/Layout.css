@@ -14,11 +14,9 @@
   flex: 1;
   overflow-y: auto;
   overflow-x: hidden;
-  /* bottom padding must clear the floating nav + safe-area home indicator */
-  padding-bottom: calc(var(--nav-height) + env(safe-area-inset-bottom));
-  scroll-padding-bottom: var(--nav-height);
+  padding-bottom: calc(72px + env(safe-area-inset-bottom) + 16px);
+  scroll-padding-bottom: 72px;
   -webkit-overflow-scrolling: touch;
-  /* prevent subpixel rendering issues on iOS during scroll */
   -webkit-backface-visibility: hidden;
   backface-visibility: hidden;
 }

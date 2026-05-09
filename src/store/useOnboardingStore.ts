@@ -71,6 +71,6 @@ export const useOnboardingStore = create<OnboardingState>()(
 
       reset: () => set({ completed: false, userName: '', focuses: [], goal: '', goalSetDate: '' }),
     }),
-    { name: 'bestofme-onboarding' }
+    { name: 'constant-onboarding' }
   )
 )

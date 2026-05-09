@@ -1,12 +1,16 @@
-@import './styles/tokens.css';
+@import "./styles/tokens.css";
 
-*, *::before, *::after {
+*,
+*::before,
+*::after {
   box-sizing: border-box;
   margin: 0;
   padding: 0;
 }
 
-html, body, #root {
+html,
+body,
+#root {
   height: 100%;
   width: 100%;
 }
@@ -27,7 +31,9 @@ body {
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
   overflow-x: hidden;
-  transition: background-color var(--ease-slow), color var(--ease-slow);
+  transition:
+    background-color var(--ease-slow),
+    color var(--ease-slow);
 }
 
 button {
@@ -37,7 +43,9 @@ button {
   background: none;
 }
 
-input, select, textarea {
+input,
+select,
+textarea {
   font-family: inherit;
   font-size: max(16px, 1em);
 }
@@ -59,7 +67,9 @@ a {
 }
 
 @media (prefers-reduced-motion: reduce) {
-  *, *::before, *::after {
+  *,
+  *::before,
+  *::after {
     animation-duration: 0.01ms !important;
     animation-iteration-count: 1 !important;
     transition-duration: 0.01ms !important;
@@ -78,17 +88,14 @@ a {
   background: var(--color-bg);
 }
 
-.app-loading__ring {
-  width: 36px;
-  height: 36px;
-  border: 3px solid var(--color-border);
-  border-top-color: var(--color-primary);
-  border-radius: 50%;
-  animation: app-spin 0.65s linear infinite;
-}
-
-@keyframes app-spin {
-  to { transform: rotate(360deg); }
+.app-loading__logo {
+  width: 96px;
+  height: 96px;
+  border-radius: 22px;
+  object-fit: contain;
+  box-shadow:
+    0 8px 32px rgba(76, 96, 86, 0.18),
+    0 2px 8px rgba(0, 0, 0, 0.07);
 }
 
 /* ---- Onboarding name-prompt screen ---- */
@@ -98,23 +105,36 @@ a {
   inset: 0;
   z-index: 200;
   display: flex;
+  flex-direction: column;
   align-items: center;
   justify-content: center;
+  gap: var(--space-5);
   background: var(--color-bg);
-  padding: var(--space-6);
+  padding: env(safe-area-inset-top) var(--space-6) calc(var(--space-6) + env(safe-area-inset-bottom));
   overflow: hidden;
+}
+
+.app-onboarding__logo-float {
+  width: 30vh;
+  height: 30vh;
+  object-fit: contain;
+  flex-shrink: 0;
 }
 
 .app-onboarding__bg {
   position: absolute;
   inset: 0;
-  background: radial-gradient(ellipse 80% 55% at 50% 15%, var(--color-primary-dim) 0%, transparent 70%);
+  background: radial-gradient(
+    ellipse 80% 55% at 50% 15%,
+    var(--color-primary-dim) 0%,
+    transparent 70%
+  );
   pointer-events: none;
 }
 
 .app-onboarding__card {
   width: 100%;
-  max-width: 360px;
+  max-width: 400px;
   display: flex;
   flex-direction: column;
   gap: var(--space-4);
@@ -127,6 +147,12 @@ a {
   align-items: center;
   gap: var(--space-3);
   margin-bottom: var(--space-2);
+}
+
+.app-onboarding__logo-img {
+  border-radius: 12px;
+  object-fit: contain;
+  flex-shrink: 0;
 }
 
 .app-onboarding__app-name {
@@ -190,7 +216,9 @@ a {
   font-weight: var(--weight-semibold);
   font-family: inherit;
   cursor: pointer;
-  transition: opacity var(--ease-base), transform var(--ease-base);
+  transition:
+    opacity var(--ease-base),
+    transform var(--ease-base);
 }
 
 [data-theme="dark"] .app-onboarding__btn {
@@ -202,5 +230,25 @@ a {
   cursor: not-allowed;
 }
 
-.app-onboarding__btn:not(:disabled):hover { opacity: 0.88; }
-.app-onboarding__btn:not(:disabled):active { transform: scale(0.98); }
+.app-onboarding__btn:not(:disabled):hover {
+  opacity: 0.88;
+}
+.app-onboarding__btn:not(:disabled):active {
+  transform: scale(0.98);
+}
+
+.app-onboarding__back {
+  background: none;
+  border: none;
+  font-size: var(--font-sm);
+  font-weight: var(--weight-semibold);
+  color: var(--color-text-muted);
+  cursor: pointer;
+  text-align: center;
+  padding: var(--space-1) 0;
+  transition: color var(--ease-base);
+}
+
+.app-onboarding__back:hover {
+  color: var(--color-text);
+}

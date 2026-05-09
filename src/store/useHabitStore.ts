@@ -613,6 +613,6 @@ export const useHabitStore = create<HabitState>()(
 
       reset: () => set({ habits: [], logs: [], milestones: [] }),
     }),
-    { name: "bestofme-habits" },
+    { name: "constant-habits" },
   ),
 );

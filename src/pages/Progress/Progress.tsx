@@ -413,14 +413,14 @@ export default function Progress() {
 
   async function handleShare() {
     const text = [
-      `My Best of Me week${userName ? ` (${userName})` : ""}:`,
+      `My Constant week${userName ? ` (${userName})` : ""}:`,
       `• ${weekAvg}% weekly average`,
       `• ${appStreak} day streak`,
       `• Best day: ${bestDay}% on ${bestDayDate}`,
       `• Longest streak ever: ${bests.longestStreakEver} days`,
     ].join("\n");
     if (navigator.share) {
-      await navigator.share({ title: "My Best of Me progress", text });
+      await navigator.share({ title: "My Constant progress", text });
     } else {
       await navigator.clipboard.writeText(text);
     }

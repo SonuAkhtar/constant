@@ -36,12 +36,18 @@ const DEFAULT_HABITS: { title: string; icon: string; timeSlot: TimeSlot }[] = [
 function AppSpinner() {
   return (
     <div className="app-loading">
-      <div className="app-loading__ring" />
+      <motion.img
+        src="/logo.png"
+        className="app-loading__logo"
+        alt="Constant"
+        animate={{ scale: [1, 1.1, 1] }}
+        transition={{ duration: 1.6, repeat: Infinity, ease: [0.4, 0, 0.2, 1] }}
+      />
     </div>
   );
 }
 
-function Onboarding({ onDone }: { onDone: (name: string) => void }) {
+function Onboarding({ onDone, onBack }: { onDone: (name: string) => void; onBack: () => void }) {
   const [name, setName] = useState("");
 
   function handleSubmit(e: React.FormEvent) {
@@ -54,27 +60,13 @@ function Onboarding({ onDone }: { onDone: (name: string) => void }) {
   return (
     <div className="app-onboarding">
       <div className="app-onboarding__bg" aria-hidden="true" />
+      <img src="/logo.png" className="app-onboarding__logo-float" alt="Constant" />
       <motion.div
         className="app-onboarding__card"
         initial={{ opacity: 0, y: 20 }}
         animate={{ opacity: 1, y: 0 }}
         transition={{ duration: 0.32, ease: [0.4, 0, 0.2, 1] }}
       >
-        <div className="app-onboarding__logo">
-          <svg width="48" height="48" viewBox="0 0 30 30" fill="none" aria-hidden="true">
-            <rect width="30" height="30" rx="8" fill="var(--color-primary)" />
-            <polyline
-              points="4.5,21 9.5,14.5 13.5,17 18.5,9 25,11.5"
-              stroke="white"
-              strokeWidth="2.2"
-              strokeLinecap="round"
-              strokeLinejoin="round"
-              fill="none"
-            />
-          </svg>
-          <span className="app-onboarding__app-name">Best of Me</span>
-        </div>
-
         <h1 className="app-onboarding__title">What's your name?</h1>
         <p className="app-onboarding__sub">
           We'll use it to personalize your experience.
@@ -99,6 +91,9 @@ function Onboarding({ onDone }: { onDone: (name: string) => void }) {
             Let's start →
           </button>
         </form>
+        <button className="app-onboarding__back" type="button" onClick={onBack}>
+          ← Change number
+        </button>
       </motion.div>
     </div>
   );
@@ -107,7 +102,7 @@ function Onboarding({ onDone }: { onDone: (name: string) => void }) {
 export default function App() {
   const { applyTheme } = useThemeStore();
   const { completed, loadFromDb: loadProfile, complete } = useOnboardingStore();
-  const { userId } = useAuthStore();
+  const { userId, signOut } = useAuthStore();
   const { loadFromDb: loadHabits, addHabit } = useHabitStore();
   const [syncing, setSyncing] = useState(false);
   const [dbLoaded, setDbLoaded] = useState(false);
@@ -139,7 +134,7 @@ export default function App() {
 
   if (!userId) return <Auth />;
   if (syncing || !dbLoaded) return <AppSpinner />;
-  if (!completed) return <Onboarding onDone={handleOnboardingDone} />;
+  if (!completed) return <Onboarding onDone={handleOnboardingDone} onBack={signOut} />;
 
   return (
     <BrowserRouter>
