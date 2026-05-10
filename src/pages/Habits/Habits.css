@@ -79,7 +79,8 @@
 .habits-page__section-meta {
   display: inline-flex;
   align-items: center;
-  font-size: var(--font-role-body);
+  gap: 5px;
+  font-size: var(--font-xs);
   font-weight: var(--weight-semibold);
   color: var(--color-text-muted);
   background: var(--color-surface-alt);
@@ -88,6 +89,72 @@
   border-radius: var(--radius-full);
   line-height: 1.4;
   flex-shrink: 0;
+}
+
+.habits-page__section-meta--btn {
+  cursor: pointer;
+  transition: border-color var(--ease-base), color var(--ease-base), background var(--ease-base);
+}
+
+.habits-page__section-meta--btn:hover {
+  border-color: var(--color-primary);
+  color: var(--color-primary-text);
+  background: var(--color-primary-dim);
+}
+
+.habits-page__meta-edit-icon {
+  opacity: 0.6;
+  flex-shrink: 0;
+}
+
+.habits-page__section-meta--btn:hover .habits-page__meta-edit-icon {
+  opacity: 1;
+}
+
+.habits-page__time-editor {
+  display: flex;
+  align-items: center;
+  gap: var(--space-2);
+  flex-shrink: 0;
+}
+
+.habits-page__time-input {
+  padding: 2px 8px;
+  background: var(--color-surface-alt);
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-sm);
+  color: var(--color-text);
+  font-size: var(--font-xs);
+  font-weight: var(--weight-semibold);
+  outline: none;
+  transition: border-color var(--ease-base);
+  min-width: 0;
+  width: 90px;
+}
+
+.habits-page__time-input:focus {
+  border-color: var(--color-primary);
+}
+
+.habits-page__time-sep {
+  font-size: var(--font-xs);
+  color: var(--color-text-faint);
+  flex-shrink: 0;
+}
+
+.habits-page__time-save {
+  padding: 3px 10px;
+  background: var(--color-primary);
+  color: #fff;
+  border-radius: var(--radius-full);
+  font-size: var(--font-xs);
+  font-weight: var(--weight-bold);
+  flex-shrink: 0;
+  transition: opacity var(--ease-base);
+}
+
+.habits-page__time-save:active {
+  opacity: 0.8;
 }
 
 .habits-page__row {
@@ -170,7 +237,7 @@
 
 .habits-page__row-title {
   font-family: var(--font-display);
-  font-size: 16px;
+  font-size: 14px;
   font-weight: var(--weight-bold);
   letter-spacing: -0.3px;
   color: var(--color-text);
@@ -181,7 +248,7 @@
 }
 
 .habits-page__row-desc {
-  font-size: 14px;
+  font-size: 12px;
   color: var(--color-text-faint);
   margin-top: 2px;
   white-space: nowrap;

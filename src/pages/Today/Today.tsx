@@ -4,16 +4,17 @@ import { format, differenceInCalendarDays, parseISO, subDays } from "date-fns";
 import { motion, AnimatePresence } from "framer-motion";
 import { useHabitStore } from "../../store/useHabitStore";
 import { useOnboardingStore } from "../../store/useOnboardingStore";
+import { useSlotTimingStore, formatSlotTime, getActiveSlotIndex } from "../../store/useSlotTimingStore";
 import HabitCard from "../../components/HabitCard/HabitCard";
 import { SlotIcon, SparkleIcon, TrophyIcon, StarIcon, WaveIcon } from "../../components/Icons";
 import type { Milestone, TimeSlot } from "../../types";
 import "./Today.css";
 
-const SLOTS: { slot: TimeSlot; label: string; time: string }[] = [
-  { slot: "morning", label: "Morning", time: "6am – 12pm" },
-  { slot: "afternoon", label: "Afternoon", time: "12pm – 5pm" },
-  { slot: "evening", label: "Evening", time: "5pm – 9pm" },
-  { slot: "night", label: "Night", time: "9pm – 11pm" },
+const SLOTS: { slot: TimeSlot; label: string }[] = [
+  { slot: "morning",   label: "Morning"   },
+  { slot: "afternoon", label: "Afternoon" },
+  { slot: "evening",   label: "Evening"   },
+  { slot: "night",     label: "Night"     },
 ];
 
 const COPY_TIERS = [
@@ -252,6 +253,7 @@ export default function Today() {
     getLastActiveDate,
   } = useHabitStore();
   const { userName, goal, joinedAt } = useOnboardingStore();
+  const { timings } = useSlotTimingStore();
 
   const [selectedDate, setSelectedDate] = useState(() => format(new Date(), 'yyyy-MM-dd'));
   const isViewingToday = selectedDate === format(new Date(), 'yyyy-MM-dd');
@@ -272,9 +274,9 @@ export default function Today() {
   const [currentHour, setCurrentHour] = useState(() => new Date().getHours());
 
   const orderedSlots = useMemo(() => {
-    const idx = currentHour < 12 ? 0 : currentHour < 17 ? 1 : currentHour < 21 ? 2 : 3;
+    const idx = getActiveSlotIndex(timings, currentHour);
     return [...SLOTS.slice(idx), ...SLOTS.slice(0, idx)];
-  }, [currentHour]);
+  }, [currentHour, timings]);
 
   const slotsToRender = isViewingToday ? orderedSlots : SLOTS;
 
@@ -665,6 +667,7 @@ export default function Today() {
               <div className="today__section-left">
                 <span className="today__section-icon"><SlotIcon slot={slot} size={16} /></span>
                 <h3 className="today__section-title">{label}</h3>
+                <span className="today__section-time">{formatSlotTime(timings[slot])}</span>
               </div>
               <span
                 className={[

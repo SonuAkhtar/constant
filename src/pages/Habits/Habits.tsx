@@ -1,17 +1,27 @@
 import { useState, useMemo } from 'react'
 import { AnimatePresence, motion, Reorder, useDragControls } from 'framer-motion'
 import { useHabitStore } from '../../store/useHabitStore'
+import { useSlotTimingStore, formatSlotTime } from '../../store/useSlotTimingStore'
 import HabitForm from '../../components/HabitForm/HabitForm'
 import { HabitIcon, FlameIcon } from '../../components/Icons'
 import type { Habit, TimeSlot, Streak } from '../../types'
 import './Habits.css'
 
-const SLOTS: { slot: TimeSlot; label: string; time: string }[] = [
-  { slot: 'morning',   label: 'Morning',   time: '6am – 12pm' },
-  { slot: 'afternoon', label: 'Afternoon', time: '12pm – 5pm' },
-  { slot: 'evening',   label: 'Evening',   time: '5pm – 9pm'  },
-  { slot: 'night',     label: 'Night',     time: '9pm – 11pm' },
+const SLOTS: { slot: TimeSlot; label: string }[] = [
+  { slot: 'morning',   label: 'Morning'   },
+  { slot: 'afternoon', label: 'Afternoon' },
+  { slot: 'evening',   label: 'Evening'   },
+  { slot: 'night',     label: 'Night'     },
 ]
+
+function ClockEditIcon() {
+  return (
+    <svg width="11" height="11" viewBox="0 0 11 11" fill="none" aria-hidden="true" className="habits-page__meta-edit-icon">
+      <circle cx="5.5" cy="5.5" r="4.5" stroke="currentColor" strokeWidth="1.3" />
+      <path d="M5.5 3v2.5l1.5 1" stroke="currentColor" strokeWidth="1.3" strokeLinecap="round" strokeLinejoin="round" />
+    </svg>
+  )
+}
 
 function EditIcon() {
   return (
@@ -170,12 +180,27 @@ function ReorderableRow({ habit, streak, selected, ...shared }: { habit: Habit; 
 
 export default function Habits() {
   const { habits, archiveHabit, unarchiveHabit, reorderHabits, getStreak, editHabit } = useHabitStore()
+  const { timings, setSlotTiming } = useSlotTimingStore()
   const [confirmArchive, setConfirmArchive] = useState<string | null>(null)
   const [shakingId, setShakingId]           = useState<string | null>(null)
   const [search, setSearch]                 = useState('')
   const [organizing, setOrganizing]         = useState(false)
   const [selected, setSelected]             = useState<Set<string>>(new Set())
   const [showArchived, setShowArchived]     = useState(false)
+  const [editingSlot, setEditingSlot]       = useState<TimeSlot | null>(null)
+  const [editStart, setEditStart]           = useState('')
+  const [editEnd, setEditEnd]               = useState('')
+
+  function handleStartEditTime(slot: TimeSlot) {
+    setEditingSlot(slot)
+    setEditStart(timings[slot].start)
+    setEditEnd(timings[slot].end)
+  }
+
+  function handleSaveTime() {
+    if (editingSlot) setSlotTiming(editingSlot, editStart, editEnd)
+    setEditingSlot(null)
+  }
 
   const activeHabits   = habits.filter(h => !h.isArchived)
   const archivedHabits = habits.filter(h => h.isArchived)
@@ -294,7 +319,7 @@ export default function Habits() {
         </div>
       )}
 
-      {!search.trim() && SLOTS.map(({ slot, label, time }) => {
+      {!search.trim() && SLOTS.map(({ slot, label }) => {
         const slotHabits = activeHabits.filter(h => h.timeSlot === slot)
         if (slotHabits.length === 0) return null
 
@@ -302,7 +327,31 @@ export default function Habits() {
           <section key={slot} className="habits-page__section" data-slot={slot}>
             <div className="habits-page__section-header">
               <h3 className="habits-page__section-title">{label}</h3>
-              <span className="habits-page__section-meta">{time}</span>
+              {editingSlot === slot ? (
+                <div className="habits-page__time-editor">
+                  <input
+                    type="time"
+                    className="habits-page__time-input"
+                    value={editStart}
+                    onChange={e => setEditStart(e.target.value)}
+                  />
+                  <span className="habits-page__time-sep">–</span>
+                  <input
+                    type="time"
+                    className="habits-page__time-input"
+                    value={editEnd}
+                    onChange={e => setEditEnd(e.target.value)}
+                  />
+                  <button className="habits-page__time-save" onClick={handleSaveTime}>Done</button>
+                </div>
+              ) : (
+                <button
+                  className="habits-page__section-meta habits-page__section-meta--btn"
+                  onClick={() => handleStartEditTime(slot)}
+                >
+                  {formatSlotTime(timings[slot])}<ClockEditIcon />
+                </button>
+              )}
             </div>
 
             <Reorder.Group

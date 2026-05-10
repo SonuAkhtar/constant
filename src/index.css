@@ -110,13 +110,13 @@ a {
   justify-content: center;
   gap: var(--space-5);
   background: var(--color-bg);
-  padding: env(safe-area-inset-top) var(--space-6) calc(var(--space-6) + env(safe-area-inset-bottom));
+  padding: env(safe-area-inset-top) var(--space-6)
+    calc(var(--space-6) + env(safe-area-inset-bottom));
   overflow: hidden;
 }
 
 .app-onboarding__logo-float {
-  width: 30vh;
-  height: 30vh;
+  height: 40vh;
   object-fit: contain;
   flex-shrink: 0;
 }

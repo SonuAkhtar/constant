@@ -6,14 +6,14 @@
     system-ui, sans-serif;
 
   /* Fluid type scale */
-  --font-xs: clamp(10px, 2.5vw, 12px);
-  --font-sm: clamp(11px, 3vw, 13px);
-  --font-base: clamp(13px, 3.5vw, 14px);
-  --font-md: clamp(14px, 4vw, 16px);
-  --font-lg: clamp(17px, 4.5vw, 20px);
-  --font-xl: clamp(20px, 5.5vw, 22px);
-  --font-2xl: clamp(26px, 7vw, 30px);
-  --font-hero: clamp(28px, 8vw, 36px);
+  --font-xs: clamp(9px, 2.2vw, 11px);
+  --font-sm: clamp(10px, 2.6vw, 12px);
+  --font-base: clamp(12px, 3vw, 13px);
+  --font-md: clamp(13px, 3.5vw, 14px);
+  --font-lg: clamp(14px, 3.8vw, 16px);
+  --font-xl: clamp(17px, 4.6vw, 19px);
+  --font-2xl: clamp(22px, 5.8vw, 25px);
+  --font-hero: clamp(24px, 6.5vw, 30px);
 
   --weight-regular: 400;
   --weight-medium: 500;
@@ -129,7 +129,7 @@
   --font-role-body:       var(--font-base);
   --font-role-label:      var(--font-sm);
   --font-role-caption:    var(--font-xs);
-  --font-role-ring-pct:   clamp(18px, 5vw, 22px);
+  --font-role-ring-pct:   clamp(15px, 4.2vw, 18px);
 }
 
 [data-theme="dark"] {

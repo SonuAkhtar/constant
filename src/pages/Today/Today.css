@@ -296,7 +296,7 @@
 
 .today__hero-ring-pct {
   font-family: var(--font-display);
-  font-size: clamp(18px, 5vw, 22px);
+  font-size: var(--font-role-ring-pct);
   font-weight: 800;
   color: var(--color-text);
   letter-spacing: -0.04em;
@@ -764,16 +764,11 @@
 }
 
 .today__section-time {
-  display: inline-flex;
-  align-items: center;
-  font-size: var(--font-role-body);
+  font-size: 10px;
   font-weight: var(--weight-semibold);
-  color: var(--color-text-muted);
-  background: var(--color-surface-alt);
-  border: 1px solid var(--color-border);
-  padding: 3px 10px;
-  border-radius: var(--radius-full);
-  line-height: 1.4;
+  color: var(--color-text-faint);
+  white-space: nowrap;
+  letter-spacing: 0.01em;
   flex-shrink: 0;
 }
 
