@@ -175,6 +175,10 @@ export default function Profile() {
   const [goalInput, setGoalInput] = useState(goal);
 
   const importRef = useRef<HTMLInputElement>(null);
+  const photoRef = useRef<HTMLInputElement>(null);
+  const [photoUrl, setPhotoUrl] = useState<string>(() =>
+    localStorage.getItem("constant-avatar-photo") ?? "",
+  );
 
   function handleEditOpen() {
     setEditName(userName);
@@ -213,6 +217,19 @@ export default function Profile() {
     URL.revokeObjectURL(url);
   }
 
+  function handlePhotoChange(e: React.ChangeEvent<HTMLInputElement>) {
+    const file = e.target.files?.[0];
+    if (!file) return;
+    const reader = new FileReader();
+    reader.onload = (evt) => {
+      const url = evt.target?.result as string;
+      setPhotoUrl(url);
+      localStorage.setItem("constant-avatar-photo", url);
+    };
+    reader.readAsDataURL(file);
+    e.target.value = "";
+  }
+
   function handleImport(e: React.ChangeEvent<HTMLInputElement>) {
     const file = e.target.files?.[0];
     if (!file) return;
@@ -232,13 +249,44 @@ export default function Profile() {
   return (
     <div className="profile">
       <div className="profile__card profile__avatar-card">
-        <div className="profile__avatar-wrap">
-          <AvatarRing pct={todayPct} />
-          <div className="profile__avatar" aria-hidden="true">
-            {editing ? getInitials(editName || userName) : initials}
-          </div>
+        <div className="profile__avatar-row">
+          <button
+            className="profile__avatar-wrap"
+            onClick={() => photoRef.current?.click()}
+            aria-label="Change profile photo"
+          >
+            <AvatarRing pct={todayPct} />
+            <div className="profile__avatar" aria-hidden="true">
+              {photoUrl ? (
+                <img src={photoUrl} className="profile__avatar-img" alt="" />
+              ) : (
+                editing ? getInitials(editName || userName) : initials
+              )}
+            </div>
+            <span className="profile__avatar-cam" aria-hidden="true">
+              <svg width="11" height="11" viewBox="0 0 11 11" fill="none">
+                <path d="M1 4a1 1 0 0 1 1-1h.38l.8-1.5h3.64l.8 1.5H9a1 1 0 0 1 1 1v4a1 1 0 0 1-1 1H2a1 1 0 0 1-1-1V4z" stroke="currentColor" strokeWidth="1" fill="none" strokeLinejoin="round"/>
+                <circle cx="5.5" cy="5.7" r="1.5" stroke="currentColor" strokeWidth="1"/>
+              </svg>
+            </span>
+          </button>
+          {!editing && (
+            <div className="profile__avatar-info">
+              <h1 className="profile__name">{userName || "You"}</h1>
+              {focuses.length > 0 && (
+                <div className="profile__focuses">
+                  {focuses.map((focus) => (
+                    <span key={focus} className="profile__focus-pill">{focus}</span>
+                  ))}
+                </div>
+              )}
+              <button className="profile__edit-btn" onClick={handleEditOpen} aria-label="Edit profile">
+                Edit profile
+              </button>
+            </div>
+          )}
         </div>
-        {editing ? (
+        {editing && (
           <div className="profile__edit-block">
             <input
               className="profile__edit-name-input"
@@ -255,9 +303,7 @@ export default function Profile() {
                   key={id}
                   className={[
                     "profile__focus-toggle",
-                    editFocuses.includes(id)
-                      ? "profile__focus-toggle--active"
-                      : "",
+                    editFocuses.includes(id) ? "profile__focus-toggle--active" : "",
                   ].join(" ")}
                   onClick={() => toggleFocus(id)}
                 >
@@ -266,10 +312,7 @@ export default function Profile() {
               ))}
             </div>
             <div className="profile__edit-actions">
-              <button
-                className="profile__edit-cancel"
-                onClick={() => setEditing(false)}
-              >
+              <button className="profile__edit-cancel" onClick={() => setEditing(false)}>
                 Cancel
               </button>
               <button className="profile__edit-save" onClick={handleEditSave}>
@@ -277,27 +320,14 @@ export default function Profile() {
               </button>
             </div>
           </div>
-        ) : (
-          <>
-            <h1 className="profile__name">{userName || "You"}</h1>
-            {focuses.length > 0 && (
-              <div className="profile__focuses">
-                {focuses.map((focus) => (
-                  <span key={focus} className="profile__focus-pill">
-                    {focus}
-                  </span>
-                ))}
-              </div>
-            )}
-            <button
-              className="profile__edit-btn"
-              onClick={handleEditOpen}
-              aria-label="Edit profile"
-            >
-              Edit profile
-            </button>
-          </>
         )}
+        <input
+          ref={photoRef}
+          type="file"
+          accept="image/*"
+          style={{ display: "none" }}
+          onChange={handlePhotoChange}
+        />
       </div>
 
       <div className="profile__card profile__stats-card">
@@ -415,24 +445,48 @@ export default function Profile() {
         </div>
       )}
 
+      <div className="profile__card profile__journey-card">
+        <h2 className="profile__section-heading">Your Journey</h2>
+        <div className="profile__journey-stats">
+          <div className="profile__journey-stat">
+            <span className="profile__journey-value">{daysSinceStart}</span>
+            <span className="profile__journey-label">days active</span>
+          </div>
+          <div className="profile__journey-stat">
+            <span className="profile__journey-value">{totalCompleted}</span>
+            <span className="profile__journey-label">habits done</span>
+          </div>
+          <div className="profile__journey-stat">
+            <span className="profile__journey-value">
+              {habits.filter((h) => !h.isArchived).length}
+            </span>
+            <span className="profile__journey-label">active habits</span>
+          </div>
+        </div>
+        <p className="profile__journey-quote">"{dailyQuote}"</p>
+      </div>
+
       <div className="profile__card profile__settings-card">
-        <h2 className="profile__section-heading">Appearance</h2>
         <div className="profile__setting-row">
-          <span className="profile__setting-label">Theme</span>
+          <span className="profile__setting-label">Appearance</span>
           <button
-            className="profile__toggle"
+            className={["profile__toggle", isDark ? "profile__toggle--dark" : ""].join(" ")}
             onClick={toggleTheme}
             aria-label={isDark ? "Switch to light mode" : "Switch to dark mode"}
             aria-pressed={isDark}
           >
-            <span
-              className={[
-                "profile__toggle-thumb",
-                isDark ? "profile__toggle-thumb--on" : "",
-              ]
-                .filter(Boolean)
-                .join(" ")}
-            />
+            <span className={["profile__toggle-thumb", isDark ? "profile__toggle-thumb--on" : ""].join(" ")}>
+              {isDark ? (
+                <svg width="11" height="11" viewBox="0 0 20 20" fill="currentColor" aria-hidden="true">
+                  <path d="M17 12A7 7 0 0 1 8 3a7 7 0 1 0 9 9z" />
+                </svg>
+              ) : (
+                <svg width="11" height="11" viewBox="0 0 20 20" fill="none" aria-hidden="true">
+                  <circle cx="10" cy="10" r="3.5" fill="currentColor" />
+                  <path d="M10 2v1.5M10 16.5V18M2 10h1.5M16.5 10H18M4.1 4.1l1 1M14.9 14.9l1 1M14.9 5.1l1-1M4.1 15.9l1-1" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" />
+                </svg>
+              )}
+            </span>
           </button>
         </div>
       </div>
@@ -468,27 +522,6 @@ export default function Profile() {
         <button className="profile__signout-btn" onClick={handleSignOut}>
           Sign out
         </button>
-      </div>
-
-      <div className="profile__card profile__journey-card">
-        <h2 className="profile__section-heading">Your Journey</h2>
-        <div className="profile__journey-stats">
-          <div className="profile__journey-stat">
-            <span className="profile__journey-value">{daysSinceStart}</span>
-            <span className="profile__journey-label">days active</span>
-          </div>
-          <div className="profile__journey-stat">
-            <span className="profile__journey-value">{totalCompleted}</span>
-            <span className="profile__journey-label">habits done</span>
-          </div>
-          <div className="profile__journey-stat">
-            <span className="profile__journey-value">
-              {habits.filter((h) => !h.isArchived).length}
-            </span>
-            <span className="profile__journey-label">active habits</span>
-          </div>
-        </div>
-        <p className="profile__journey-quote">"{dailyQuote}"</p>
       </div>
     </div>
   );

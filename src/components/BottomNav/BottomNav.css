@@ -1,8 +1,8 @@
 .bottom-nav {
   position: fixed;
-  bottom: calc(10px + env(safe-area-inset-bottom));
-  left: 10px;
-  right: 10px;
+  bottom: calc(0px + env(safe-area-inset-bottom));
+  left: 8px;
+  right: 8px;
   transform: translateZ(0);
   z-index: 20;
   display: flex;
@@ -70,12 +70,12 @@
   align-items: center;
   justify-content: center;
   gap: 4px;
-  padding: 0 10px;
+  padding: 0 4px;
   color: var(--color-text-faint);
   transition:
     color var(--ease-base),
     transform 0.28s cubic-bezier(0.34, 1.56, 0.64, 1);
-  min-width: 60px;
+  min-width: 44px;
 }
 
 /* ---- Icon bubble - circle that contains the pill ---- */
@@ -133,7 +133,7 @@
 }
 
 .bottom-nav__label {
-  font-size: 12px;
+  font-size: 10px;
   font-weight: var(--weight-semibold);
   letter-spacing: 0.1px;
   line-height: 1;

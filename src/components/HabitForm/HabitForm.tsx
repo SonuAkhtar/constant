@@ -23,13 +23,14 @@ const DAY_LABELS = ['S', 'M', 'T', 'W', 'T', 'F', 'S']
 
 interface Props {
   defaultSlot: TimeSlot
+  defaultTitle?: string
   habit?: Habit
   children?: React.ReactNode
   open?: boolean
   onOpenChange?: (open: boolean) => void
 }
 
-export default function HabitForm({ defaultSlot, habit, children, open: openProp, onOpenChange }: Props) {
+export default function HabitForm({ defaultSlot, defaultTitle, habit, children, open: openProp, onOpenChange }: Props) {
   const { addHabit, editHabit, habits } = useHabitStore()
   const isEditMode = !!habit
 
@@ -47,7 +48,7 @@ export default function HabitForm({ defaultSlot, habit, children, open: openProp
 
   useEffect(() => {
     if (open) {
-      setTitle(habit?.title ?? '')
+      setTitle(habit?.title ?? defaultTitle ?? '')
       setDescription(habit?.description ?? '')
       setTimeSlot(habit?.timeSlot ?? defaultSlot)
       setFrequency(habit?.frequency ?? 'daily')
@@ -70,7 +71,7 @@ export default function HabitForm({ defaultSlot, habit, children, open: openProp
       setOpenInternal(next)
     }
     if (next) {
-      setTitle(habit?.title ?? '')
+      setTitle(habit?.title ?? defaultTitle ?? '')
       setDescription(habit?.description ?? '')
       setTimeSlot(habit?.timeSlot ?? defaultSlot)
       setFrequency(habit?.frequency ?? 'daily')

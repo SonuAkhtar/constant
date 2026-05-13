@@ -52,11 +52,23 @@ function ProfileIcon({ active }: { active?: boolean }) {
   )
 }
 
+function WellnessIcon({ active }: { active?: boolean }) {
+  const w = active ? 1.8 : 1.5
+  return (
+    <svg width="22" height="22" viewBox="0 0 22 22" fill="none" aria-hidden="true">
+      <path d="M11 3.5C9 3.5 6 5.5 6 9c0 4 5 9 5 9s5-5 5-9c0-3.5-3-5.5-5-5.5z"
+        stroke="currentColor" strokeWidth={w} strokeLinejoin="round" />
+      <circle cx="11" cy="9" r="1.8" stroke="currentColor" strokeWidth={w - 0.2} />
+    </svg>
+  )
+}
+
 const NAV_ITEMS = [
-  { to: '/',         label: 'Today',    Icon: TodayIcon    },
-  { to: '/progress', label: 'Progress', Icon: ProgressIcon },
-  { to: '/habits',   label: 'Habits',   Icon: HabitsIcon   },
-  { to: '/profile',  label: 'Profile',  Icon: ProfileIcon  },
+  { to: '/',          label: 'Today',    Icon: TodayIcon    },
+  { to: '/progress',  label: 'Progress', Icon: ProgressIcon },
+  { to: '/habits',    label: 'Habits',   Icon: HabitsIcon   },
+  { to: '/wellness',  label: 'Wellness', Icon: WellnessIcon },
+  { to: '/profile',   label: 'Profile',  Icon: ProfileIcon  },
 ]
 
 export default function BottomNav() {

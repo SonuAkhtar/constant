@@ -1,0 +1,41 @@
+.wellness-page {
+  padding: var(--space-4) var(--space-5) var(--space-8);
+}
+
+.wellness-page__heading {
+  font-family: var(--font-display);
+  font-size: var(--font-xl);
+  font-weight: var(--weight-bold);
+  color: var(--color-text);
+  letter-spacing: -0.4px;
+  margin-bottom: var(--space-4);
+}
+
+.wellness-page__tab-bar {
+  display: flex;
+  background: var(--color-surface-alt);
+  border-radius: var(--radius-md);
+  padding: 3px;
+  margin-bottom: var(--space-5);
+}
+
+.wellness-page__tab {
+  flex: 1;
+  padding: var(--space-2) var(--space-3);
+  font-size: var(--font-sm);
+  font-weight: var(--weight-semibold);
+  color: var(--color-text-muted);
+  border-radius: calc(var(--radius-md) - 3px);
+  transition: all var(--ease-base);
+}
+
+.wellness-page__tab--active {
+  background: var(--color-surface);
+  color: var(--color-primary-text);
+  box-shadow: var(--shadow-sm);
+}
+
+.wellness-page__panel {
+  /* prevent layout shift during AnimatePresence exit */
+  position: relative;
+}

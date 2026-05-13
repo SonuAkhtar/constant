@@ -64,3 +64,76 @@ export interface HabitStats {
   dailyData: HabitDayStat[]
   streak: Streak
 }
+
+// ── Skincare ────────────────────────────────────────────────────────────────
+
+export type SkinType =
+  | 'oily'
+  | 'dry'
+  | 'sensitive'
+  | 'combination'
+  | 'mature'
+  | 'hyperpigmentation'
+
+export type RoutineWhen = 'morning' | 'night' | 'daytime'
+export type EvidenceStrength = 'strongest' | 'strong' | 'moderate' | 'emerging' | 'insufficient'
+
+export interface SkincareStep {
+  id: string
+  step: number
+  name: string
+  summary: string
+  why: string
+  evidence: string
+  usage: string
+  notFor?: SkinType[]
+  timeSlot: TimeSlot
+  when: RoutineWhen
+}
+
+export interface DaytimeHabit {
+  id: string
+  icon: string
+  text: string
+}
+
+export interface Supplement {
+  id: string
+  name: string
+  strength: EvidenceStrength
+  benefit: string
+  dose: string
+  notes: string
+  recommended: boolean
+}
+
+export interface SkinTypeGuide {
+  type: SkinType
+  label: string
+  emoji: string
+  prioritise: string[]
+  avoid: string[]
+}
+
+// ── Workout ──────────────────────────────────────────────────────────────────
+
+export type ExperienceLevel = 'beginner' | 'intermediate'
+
+export interface Exercise {
+  id: string
+  name: string
+  muscles: string
+  sets: number
+  reps: string
+  rest: string
+  cue?: string
+}
+
+export interface WorkoutDay {
+  day: number
+  label: string
+  focus: string
+  summary: string
+  exercises: Exercise[]
+  isRest?: boolean
+}

@@ -18,8 +18,8 @@ export default defineConfig({
         orientation: 'portrait',
         start_url: '/',
         icons: [
-          { src: 'new-logo-c-only.png', sizes: '1024x1024', type: 'image/png', purpose: 'any' },
-          { src: 'new-logo-c-only.png', sizes: '1024x1024', type: 'image/png', purpose: 'maskable' },
+          { src: 'new-logo-full.png', sizes: '1024x1024', type: 'image/png', purpose: 'any' },
+          { src: 'new-logo-full.png', sizes: '1024x1024', type: 'image/png', purpose: 'maskable' },
         ],
       },
     }),

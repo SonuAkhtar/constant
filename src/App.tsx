@@ -7,6 +7,7 @@ import Today from "./pages/Today/Today";
 import Progress from "./pages/Progress/Progress";
 import Habits from "./pages/Habits/Habits";
 import Profile from "./pages/Profile/Profile";
+import Wellness from "./pages/Wellness/Wellness";
 import InstallPrompt from "./components/InstallPrompt/InstallPrompt";
 import { useThemeStore } from "./store/useThemeStore";
 import { useOnboardingStore } from "./store/useOnboardingStore";
@@ -143,6 +144,7 @@ export default function App() {
           <Route index element={<Today />} />
           <Route path="progress" element={<Progress />} />
           <Route path="habits" element={<Habits />} />
+          <Route path="wellness" element={<Wellness />} />
           <Route path="profile" element={<Profile />} />
         </Route>
       </Routes>
