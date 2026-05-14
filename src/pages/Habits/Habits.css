@@ -80,7 +80,7 @@
   display: inline-flex;
   align-items: center;
   gap: 5px;
-  font-size: var(--font-xs);
+  font-size: var(--font-sm);
   font-weight: var(--weight-semibold);
   color: var(--color-text-muted);
   background: var(--color-surface-alt);
@@ -124,7 +124,7 @@
   border: 1px solid var(--color-border);
   border-radius: var(--radius-sm);
   color: var(--color-text);
-  font-size: var(--font-xs);
+  font-size: var(--font-sm);
   font-weight: var(--weight-semibold);
   outline: none;
   transition: border-color var(--ease-base);
@@ -137,7 +137,7 @@
 }
 
 .habits-page__time-sep {
-  font-size: var(--font-xs);
+  font-size: var(--font-sm);
   color: var(--color-text-faint);
   flex-shrink: 0;
 }
@@ -147,7 +147,7 @@
   background: var(--color-primary);
   color: #fff;
   border-radius: var(--radius-full);
-  font-size: var(--font-xs);
+  font-size: var(--font-sm);
   font-weight: var(--weight-bold);
   flex-shrink: 0;
   transition: opacity var(--ease-base);
@@ -259,7 +259,7 @@
 }
 
 .habits-page__row-badge {
-  font-size: var(--font-xs);
+  font-size: var(--font-sm);
   font-weight: var(--weight-semibold);
   color: var(--color-text-faint);
   background: var(--color-surface-alt);
@@ -315,7 +315,7 @@
   width: 34px;
   height: 34px;
   border-radius: var(--radius-full);
-  font-size: var(--font-xs);
+  font-size: var(--font-sm);
   font-weight: var(--weight-bold);
   border: 1.5px solid transparent;
   flex-shrink: 0;
@@ -456,7 +456,7 @@
 }
 
 .habits-page__row-streak-num {
-  font-size: var(--font-xs);
+  font-size: var(--font-sm);
   font-weight: var(--weight-bold);
   color: var(--color-streak);
   font-variant-numeric: tabular-nums;
@@ -578,7 +578,7 @@
 }
 
 .habits-page__row-slot-label {
-  font-size: var(--font-xs);
+  font-size: var(--font-sm);
   color: var(--color-text-faint);
   font-style: italic;
 }
@@ -655,7 +655,7 @@
 }
 
 .habits-page__action--restore {
-  font-size: var(--font-xs);
+  font-size: var(--font-sm);
   font-weight: var(--weight-semibold);
   color: var(--color-primary-text);
   padding: var(--space-1) var(--space-3);
@@ -706,7 +706,7 @@
 }
 
 .habits-page__organize-clear {
-  font-size: var(--font-xs);
+  font-size: var(--font-sm);
   font-weight: var(--weight-semibold);
   color: var(--color-text-faint);
   padding: 2px 8px;
@@ -728,7 +728,7 @@
 }
 
 .habits-page__organize-move-label {
-  font-size: var(--font-xs);
+  font-size: var(--font-sm);
   color: var(--color-text-faint);
   font-weight: var(--weight-semibold);
   text-transform: uppercase;
@@ -781,7 +781,7 @@
 }
 
 .habits-page__confirm-sub {
-  font-size: var(--font-xs);
+  font-size: var(--font-sm);
   color: var(--color-text-faint);
   margin-top: var(--space-1);
   line-height: 1.4;

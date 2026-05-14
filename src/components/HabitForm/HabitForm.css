@@ -100,7 +100,7 @@
 }
 
 .habit-form__char-count {
-  font-size: var(--font-xs);
+  font-size: var(--font-sm);
   color: var(--color-text-faint);
   font-variant-numeric: tabular-nums;
 }
@@ -146,7 +146,7 @@
   padding: var(--space-2) var(--space-1);
   border: 1px solid var(--color-border);
   border-radius: var(--radius-md);
-  font-size: var(--font-xs);
+  font-size: var(--font-sm);
   font-weight: var(--weight-semibold);
   color: var(--color-text-muted);
   background: var(--color-surface-alt);
@@ -212,7 +212,7 @@
   justify-content: center;
   border: 1px solid var(--color-border);
   border-radius: var(--radius-full);
-  font-size: var(--font-xs);
+  font-size: var(--font-sm);
   font-weight: var(--weight-bold);
   color: var(--color-text-muted);
   background: var(--color-surface-alt);
@@ -234,7 +234,7 @@
 
 .habit-form__time-clear {
   align-self: flex-start;
-  font-size: var(--font-xs);
+  font-size: var(--font-sm);
   font-weight: var(--weight-semibold);
   color: var(--color-text-muted);
   text-decoration: underline;
@@ -288,7 +288,7 @@
 /* ---- Duplicate name warning ---- */
 
 .habit-form__duplicate-warning {
-  font-size: var(--font-xs);
+  font-size: var(--font-sm);
   color: var(--color-warning);
   margin-top: var(--space-1);
   padding-left: var(--space-1);

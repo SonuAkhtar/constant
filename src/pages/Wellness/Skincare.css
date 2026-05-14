@@ -33,7 +33,7 @@
 
 .skincare__section-title {
   font-family: var(--font-display);
-  font-size: var(--font-md);
+  font-size: var(--font-lg);
   font-weight: var(--weight-bold);
   color: var(--color-text);
   letter-spacing: var(--tracking-tight);
@@ -41,7 +41,7 @@
 }
 
 .skincare__section-sub {
-  font-size: var(--font-sm);
+  font-size: var(--font-base);
   color: var(--color-text-muted);
   margin-top: 3px;
   line-height: 1.5;
@@ -59,11 +59,11 @@
   display: inline-flex;
   align-items: center;
   gap: var(--space-1);
-  padding: var(--space-1) var(--space-3);
-  background: var(--color-surface-alt);
-  border: 1px solid var(--color-border);
+  padding: var(--space-2) var(--space-3);
+  background: var(--color-surface);
+  border: 1.5px solid var(--color-border);
   border-radius: var(--radius-full);
-  font-size: var(--font-xs);
+  font-size: var(--font-sm);
   font-weight: var(--weight-semibold);
   color: var(--color-text-muted);
   transition: all var(--ease-base);
@@ -71,9 +71,14 @@
 }
 
 .skincare__skin-chip--active {
-  background: var(--color-primary-dim);
+  background: var(--color-primary);
   border-color: var(--color-primary);
-  color: var(--color-primary-text);
+  color: #fff;
+  box-shadow: 0 2px 8px rgba(76, 96, 86, 0.28);
+}
+
+[data-theme="dark"] .skincare__skin-chip--active {
+  color: var(--color-bg);
 }
 
 /* ── Skin type guide ── */
@@ -100,7 +105,7 @@
 }
 
 .skincare__skin-guide-label {
-  font-size: var(--font-xs);
+  font-size: var(--font-sm);
   font-weight: var(--weight-bold);
   text-transform: uppercase;
   letter-spacing: 0.06em;
@@ -117,24 +122,33 @@
 }
 
 .skincare__skin-guide-list li {
-  font-size: var(--font-xs);
+  display: flex;
+  align-items: center;
+  gap: var(--space-2);
+  font-size: var(--font-sm);
   color: var(--color-text);
   line-height: 1.4;
-  padding-left: var(--space-2);
-  position: relative;
 }
 
 .skincare__skin-guide-list li::before {
   content: '✓';
-  position: absolute;
-  left: 0;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 20px;
+  height: 20px;
+  min-width: 20px;
+  border-radius: 50%;
+  background: rgba(61, 107, 79, 0.12);
   color: var(--color-success);
-  font-size: 10px;
-  top: 1px;
+  font-size: 11px;
+  font-weight: 700;
+  flex-shrink: 0;
 }
 
 .skincare__skin-guide-list--avoid li::before {
   content: '✕';
+  background: rgba(186, 26, 26, 0.1);
   color: var(--color-error);
 }
 
@@ -174,7 +188,7 @@
   border-radius: 50%;
   background: var(--color-primary-dim);
   color: var(--color-primary-text);
-  font-size: var(--font-xs);
+  font-size: var(--font-sm);
   font-weight: var(--weight-bold);
   display: flex;
   align-items: center;
@@ -192,7 +206,7 @@
 
 .skincare__step-name {
   font-family: var(--font-display);
-  font-size: var(--font-base);
+  font-size: var(--font-md);
   font-weight: var(--weight-bold);
   color: var(--color-text);
   letter-spacing: var(--tracking-tight);
@@ -200,7 +214,7 @@
 }
 
 .skincare__step-summary {
-  font-size: var(--font-sm);
+  font-size: var(--font-base);
   color: var(--color-text-muted);
   line-height: 1.5;
   white-space: nowrap;
@@ -232,7 +246,7 @@
 }
 
 .skincare__step-why {
-  font-size: var(--font-sm);
+  font-size: var(--font-base);
   color: var(--color-text);
   line-height: 1.65;
 }
@@ -242,14 +256,14 @@
   display: flex;
   flex-direction: column;
   gap: 4px;
-  font-size: var(--font-sm);
+  font-size: var(--font-base);
   color: var(--color-text-muted);
   line-height: 1.65;
 }
 
 .skincare__step-evidence-label,
 .skincare__step-usage-label {
-  font-size: 11px;
+  font-size: var(--font-sm);
   font-weight: var(--weight-bold);
   text-transform: uppercase;
   letter-spacing: 0.07em;
@@ -272,7 +286,7 @@
   color: var(--color-primary-text);
   border: 1px solid var(--color-border);
   border-radius: var(--radius-full);
-  font-size: var(--font-xs);
+  font-size: var(--font-sm);
   font-weight: var(--weight-semibold);
   transition: all var(--ease-base);
   align-self: flex-start;
@@ -314,7 +328,7 @@
 /* ── Principle note ── */
 
 .skincare__principle-note {
-  font-size: var(--font-xs);
+  font-size: var(--font-sm);
   color: var(--color-text-muted);
   line-height: var(--leading-normal);
   padding: var(--space-3) var(--space-4);
@@ -359,7 +373,7 @@
 }
 
 .skincare__daytime-text {
-  font-size: var(--font-sm);
+  font-size: var(--font-base);
   color: var(--color-text);
   line-height: 1.65;
 }
@@ -367,7 +381,7 @@
 /* ── Supplements ── */
 
 .skincare__supp-disclaimer {
-  font-size: var(--font-xs);
+  font-size: var(--font-sm);
   color: var(--color-text-muted);
   line-height: var(--leading-normal);
   padding: var(--space-2) var(--space-3);
@@ -420,14 +434,14 @@
 
 .skincare__supp-name {
   font-family: var(--font-display);
-  font-size: var(--font-sm);
+  font-size: var(--font-base);
   font-weight: var(--weight-bold);
   color: var(--color-text);
   letter-spacing: var(--tracking-tight);
 }
 
 .skincare__supp-benefit {
-  font-size: var(--font-sm);
+  font-size: var(--font-base);
   color: var(--color-text-muted);
   line-height: 1.5;
 }
@@ -435,7 +449,7 @@
 /* ── Evidence badge ── */
 
 .skincare__ev {
-  font-size: 10px;
+  font-size: var(--font-sm);
   font-weight: var(--weight-semibold);
   padding: 2px 8px;
   border-radius: var(--radius-full);
@@ -491,7 +505,7 @@
   display: flex;
   flex-direction: column;
   gap: 3px;
-  font-size: var(--font-sm);
+  font-size: var(--font-base);
   color: var(--color-text);
   padding-top: var(--space-2);
   border-top: 1px solid var(--color-border);
@@ -500,7 +514,7 @@
 }
 
 .skincare__supp-dose-label {
-  font-size: 11px;
+  font-size: var(--font-sm);
   font-weight: var(--weight-bold);
   text-transform: uppercase;
   letter-spacing: 0.07em;
@@ -508,7 +522,7 @@
 }
 
 .skincare__supp-notes {
-  font-size: var(--font-sm);
+  font-size: var(--font-base);
   color: var(--color-text-muted);
   line-height: 1.65;
   margin-top: var(--space-1);

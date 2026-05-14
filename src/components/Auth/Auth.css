@@ -167,7 +167,7 @@
 }
 
 .auth__divider-text {
-  font-size: var(--font-xs);
+  font-size: var(--font-sm);
   font-weight: var(--weight-semibold);
   color: var(--color-text-faint);
   letter-spacing: 0.06em;
@@ -312,7 +312,7 @@
 }
 
 .auth__item-dial {
-  font-size: var(--font-xs);
+  font-size: var(--font-sm);
   color: var(--color-text-muted);
   font-variant-numeric: tabular-nums;
   flex-shrink: 0;
@@ -485,7 +485,7 @@
 /* ---- Privacy note ---- */
 
 .auth__privacy {
-  font-size: var(--font-xs);
+  font-size: var(--font-sm);
   color: var(--color-text-faint);
   text-align: center;
   line-height: var(--leading-normal);

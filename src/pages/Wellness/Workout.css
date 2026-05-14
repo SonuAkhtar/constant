@@ -32,7 +32,7 @@
 
 .workout__level-label {
   font-family: var(--font-display);
-  font-size: var(--font-sm);
+  font-size: var(--font-base);
   font-weight: var(--weight-bold);
   color: var(--color-text);
   letter-spacing: var(--tracking-tight);
@@ -43,7 +43,7 @@
 }
 
 .workout__level-sub {
-  font-size: var(--font-xs);
+  font-size: var(--font-sm);
   color: var(--color-text-muted);
 }
 
@@ -55,7 +55,7 @@
 /* ── Beginner note ── */
 
 .workout__beginner-note {
-  font-size: var(--font-xs);
+  font-size: var(--font-sm);
   color: var(--color-text-muted);
   line-height: var(--leading-normal);
   padding: var(--space-3) var(--space-4);
@@ -68,66 +68,76 @@
 
 .workout__strip {
   display: flex;
-  gap: var(--space-1);
+  gap: 6px;
   overflow-x: auto;
-  padding-bottom: var(--space-1);
   -webkit-overflow-scrolling: touch;
   scrollbar-width: none;
+  padding: 2px 0 2px;
 }
 
 .workout__strip::-webkit-scrollbar {
   display: none;
 }
 
-.workout__day-chip {
+.workout__day-item {
+  flex: 1;
+  min-width: 40px;
   display: flex;
   flex-direction: column;
   align-items: center;
-  gap: 3px;
-  padding: var(--space-2) var(--space-2);
-  min-width: 48px;
+  gap: 5px;
+}
+
+.workout__day-chip {
+  position: relative;
+  width: 100%;
+  aspect-ratio: 1;
+  display: flex;
+  align-items: center;
+  justify-content: center;
   background: var(--color-surface);
   border: 1px solid var(--color-border);
-  border-radius: var(--radius-md);
-  flex-shrink: 0;
-  transition: all var(--ease-base);
+  border-radius: 50%;
+  overflow: hidden;
+  transition: border-color var(--ease-base);
   -webkit-tap-highlight-color: transparent;
 }
 
 .workout__day-chip--active {
-  background: var(--color-primary-dim);
-  border-color: var(--color-primary);
+  border-color: transparent;
 }
 
-.workout__day-chip--rest {
-  opacity: 0.65;
+.workout__day-pill {
+  position: absolute;
+  inset: 0;
+  border-radius: 50%;
+  background: var(--color-primary);
+  box-shadow: 0 2px 12px rgba(76, 96, 86, 0.30), 0 1px 4px rgba(76, 96, 86, 0.16);
+  z-index: 0;
 }
 
-.workout__day-chip--active.workout__day-chip--rest {
-  opacity: 1;
-}
-
-.workout__day-chip-label {
-  font-size: var(--font-xs);
-  font-weight: var(--weight-semibold);
-  color: var(--color-text-muted);
-}
-
-.workout__day-chip--active .workout__day-chip-label {
-  color: var(--color-primary-text);
-}
-
-.workout__day-chip-tag {
-  font-size: 9px;
+.workout__day-chip-name {
+  position: relative;
+  z-index: 1;
+  font-size: var(--font-sm);
   font-weight: var(--weight-bold);
-  color: var(--color-text-faint);
-  text-transform: uppercase;
-  letter-spacing: 0.04em;
+  color: var(--color-text);
+  letter-spacing: -0.2px;
+  line-height: 1;
 }
 
-.workout__day-chip--active .workout__day-chip-tag {
-  color: var(--color-primary-text);
+.workout__day-chip--active .workout__day-chip-name {
+  color: #fff;
 }
+
+.workout__day-today-dot {
+  width: 5px;
+  height: 5px;
+  border-radius: 50%;
+  background: var(--color-primary);
+  flex-shrink: 0;
+}
+
 
 /* ── Day card ── */
 
@@ -154,20 +164,20 @@
 
 .workout__day-label {
   font-family: var(--font-display);
-  font-size: var(--font-lg);
+  font-size: var(--font-xl);
   font-weight: var(--weight-bold);
   color: var(--color-text);
   letter-spacing: var(--tracking-tight);
 }
 
 .workout__day-focus {
-  font-size: var(--font-sm);
+  font-size: var(--font-base);
   color: var(--color-text-muted);
   margin-top: 3px;
 }
 
 .workout__rest-badge {
-  font-size: var(--font-xs);
+  font-size: var(--font-sm);
   font-weight: var(--weight-semibold);
   color: var(--color-text-muted);
   background: var(--color-surface-alt);
@@ -178,7 +188,7 @@
 }
 
 .workout__day-summary {
-  font-size: var(--font-sm);
+  font-size: var(--font-base);
   color: var(--color-text-muted);
   line-height: 1.65;
   padding: var(--space-3) var(--space-3);
@@ -227,14 +237,14 @@
 }
 
 .workout__exercise-name {
-  font-size: var(--font-base);
+  font-size: var(--font-md);
   font-weight: var(--weight-semibold);
   color: var(--color-text);
   line-height: 1.3;
 }
 
 .workout__exercise-meta {
-  font-size: var(--font-sm);
+  font-size: var(--font-base);
   color: var(--color-text-muted);
   font-variant-numeric: tabular-nums;
   margin-top: 1px;
@@ -266,13 +276,13 @@
   display: flex;
   flex-direction: column;
   gap: 3px;
-  font-size: var(--font-sm);
+  font-size: var(--font-base);
   color: var(--color-text-muted);
   line-height: 1.6;
 }
 
 .workout__exercise-row-label {
-  font-size: 11px;
+  font-size: var(--font-sm);
   font-weight: var(--weight-bold);
   text-transform: uppercase;
   letter-spacing: 0.07em;
@@ -284,6 +294,33 @@
   background: var(--color-surface-alt);
   border-radius: var(--radius-md);
   border-left: 2px solid var(--color-primary-dim);
+}
+
+/* ── Muscle models ── */
+
+.workout__muscle-models {
+  display: flex;
+  gap: var(--space-4);
+  padding: var(--space-2) var(--space-3);
+  background: var(--color-surface-alt);
+  border-radius: var(--radius-md);
+  justify-content: center;
+}
+
+.workout__muscle-model-item {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: var(--space-1);
+}
+
+.workout__muscle-model-label {
+  font-size: var(--font-sm);
+  font-weight: var(--weight-semibold);
+  color: var(--color-text-faint);
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
 }
 
 /* ── Panels ── */
@@ -307,7 +344,7 @@
 }
 
 .workout__panel-title {
-  font-size: var(--font-base);
+  font-size: var(--font-md);
   font-weight: var(--weight-semibold);
   color: var(--color-text);
 }
@@ -333,13 +370,13 @@
 }
 
 .workout__principle-title {
-  font-size: var(--font-sm);
+  font-size: var(--font-base);
   font-weight: var(--weight-bold);
   color: var(--color-text);
 }
 
 .workout__principle-body {
-  font-size: var(--font-sm);
+  font-size: var(--font-base);
   color: var(--color-text-muted);
   line-height: 1.65;
 }
@@ -382,7 +419,7 @@
 }
 
 .workout__nutrition-label {
-  font-size: 11px;
+  font-size: var(--font-sm);
   font-weight: var(--weight-bold);
   text-transform: uppercase;
   letter-spacing: 0.07em;
@@ -390,14 +427,14 @@
 }
 
 .workout__nutrition-value {
-  font-size: var(--font-sm);
+  font-size: var(--font-base);
   font-weight: var(--weight-semibold);
   color: var(--color-text);
   line-height: 1.4;
 }
 
 .workout__nutrition-detail {
-  font-size: var(--font-sm);
+  font-size: var(--font-base);
   color: var(--color-text-muted);
   line-height: 1.65;
 }
@@ -412,7 +449,7 @@
 }
 
 .workout__done-badge {
-  font-size: var(--font-xs);
+  font-size: var(--font-sm);
   font-weight: var(--weight-bold);
   color: var(--color-success);
   flex-shrink: 0;
@@ -437,7 +474,7 @@
 }
 
 .workout__tracker-label {
-  font-size: 10px;
+  font-size: var(--font-sm);
   font-weight: var(--weight-bold);
   text-transform: uppercase;
   letter-spacing: 0.07em;
@@ -471,12 +508,12 @@
 }
 
 .workout__weight-unit {
-  font-size: var(--font-xs);
+  font-size: var(--font-sm);
   color: var(--color-text-muted);
 }
 
 .workout__overload-hint {
-  font-size: var(--font-xs);
+  font-size: var(--font-sm);
   font-weight: var(--weight-semibold);
   color: var(--color-success);
 }
@@ -484,7 +521,7 @@
 .workout__done-btn {
   padding: var(--space-2) var(--space-3);
   border-radius: var(--radius-full);
-  font-size: var(--font-xs);
+  font-size: var(--font-sm);
   font-weight: var(--weight-semibold);
   color: var(--color-text-muted);
   background: var(--color-surface);
@@ -519,7 +556,7 @@
 
 .workout__timer-display {
   font-family: var(--font-display);
-  font-size: var(--font-md);
+  font-size: var(--font-lg);
   font-weight: var(--weight-bold);
   color: var(--color-text-muted);
   font-variant-numeric: tabular-nums;
@@ -555,7 +592,7 @@
   gap: 5px;
   padding: var(--space-2) var(--space-3);
   border-radius: var(--radius-full);
-  font-size: var(--font-xs);
+  font-size: var(--font-sm);
   font-weight: var(--weight-semibold);
   transition: all var(--ease-base);
   -webkit-tap-highlight-color: transparent;
@@ -583,6 +620,14 @@
 }
 
 /* ── Dark mode overrides ── */
+
+[data-theme="dark"] .workout__day-pill {
+  box-shadow: 0 2px 12px rgba(0, 0, 0, 0.44);
+}
+
+[data-theme="dark"] .workout__day-chip--active .workout__day-chip-name {
+  color: var(--color-bg);
+}
 
 [data-theme="dark"] .workout__weight-input {
   background: var(--color-surface-alt);

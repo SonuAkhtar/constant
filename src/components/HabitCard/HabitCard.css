@@ -36,7 +36,7 @@
   width: 60px;
   height: 52px;
   border-radius: var(--radius-md);
-  font-size: var(--font-xs);
+  font-size: var(--font-sm);
   font-weight: var(--weight-semibold);
   transition: transform var(--ease-fast);
 }
@@ -263,7 +263,7 @@
   align-items: center;
   gap: 4px;
   margin-top: 3px;
-  font-size: var(--font-xs);
+  font-size: var(--font-sm);
   font-weight: var(--weight-semibold);
   color: var(--color-text-muted);
   background: var(--color-surface-alt);
@@ -311,7 +311,7 @@
 }
 
 .habit-card__streak-text {
-  font-size: var(--font-xs);
+  font-size: var(--font-sm);
   font-weight: var(--weight-semibold);
   color: var(--color-streak);
   font-variant-numeric: tabular-nums;

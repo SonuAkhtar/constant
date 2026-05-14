@@ -239,7 +239,7 @@
 }
 
 .onboarding__focus-label {
-  font-size: var(--font-xs);
+  font-size: var(--font-sm);
   font-weight: var(--weight-semibold);
   color: var(--color-text-muted);
   transition: color var(--ease-base);
@@ -357,7 +357,7 @@
 }
 
 .onboarding__starter-time {
-  font-size: var(--font-xs);
+  font-size: var(--font-sm);
   color: var(--color-text-muted);
   text-transform: capitalize;
   margin-top: 1px;

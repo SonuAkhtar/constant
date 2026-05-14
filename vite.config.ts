@@ -7,7 +7,7 @@ export default defineConfig({
     react(),
     VitePWA({
       registerType: 'autoUpdate',
-      includeAssets: ['new-logo-full.png', 'new-logo-c-only.png'],
+      includeAssets: ['new-logo-full.png', 'c-logo.png'],
       manifest: {
         name: 'Constant',
         short_name: 'Constant',

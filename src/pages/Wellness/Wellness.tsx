@@ -6,9 +6,26 @@ import './Wellness.css'
 
 type WellnessTab = 'skincare' | 'workout'
 
-const TABS: { id: WellnessTab; label: string }[] = [
-  { id: 'skincare', label: 'Skincare' },
-  { id: 'workout',  label: 'Workout'  },
+function SkincareIcon() {
+  return (
+    <svg width="15" height="15" viewBox="0 0 16 16" fill="none" aria-hidden="true">
+      <path d="M8 2C8 2 4 6 4 9.5a4 4 0 008 0C12 6 8 2 8 2z" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" />
+      <path d="M6.5 9.5c0 1 .7 1.5 1.5 1.5" stroke="currentColor" strokeWidth="1.3" strokeLinecap="round" />
+    </svg>
+  )
+}
+
+function WorkoutIcon() {
+  return (
+    <svg width="15" height="15" viewBox="0 0 16 16" fill="none" aria-hidden="true">
+      <path d="M9 2L4.5 8.5H8L7 14l6.5-8H10L11.5 2z" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" />
+    </svg>
+  )
+}
+
+const TABS: { id: WellnessTab; label: string; Icon: () => JSX.Element }[] = [
+  { id: 'skincare', label: 'Skincare', Icon: SkincareIcon },
+  { id: 'workout',  label: 'Workout',  Icon: WorkoutIcon  },
 ]
 
 export default function Wellness() {
@@ -23,7 +40,7 @@ export default function Wellness() {
       <h1 className="wellness-page__heading">Wellness</h1>
 
       <div className="wellness-page__tab-bar" role="tablist" aria-label="Wellness sections">
-        {TABS.map(({ id, label }) => (
+        {TABS.map(({ id, label, Icon }) => (
           <button
             key={id}
             role="tab"
@@ -33,7 +50,15 @@ export default function Wellness() {
             className={['wellness-page__tab', tab === id ? 'wellness-page__tab--active' : ''].join(' ')}
             onClick={() => handleTab(id)}
           >
-            {label}
+            {tab === id && (
+              <motion.div
+                layoutId="wellness-pill"
+                className="wellness-page__tab-pill"
+                transition={{ type: 'spring', stiffness: 420, damping: 34 }}
+              />
+            )}
+            <span className="wellness-page__tab-icon"><Icon /></span>
+            <span className="wellness-page__tab-label">{label}</span>
           </button>
         ))}
       </div>

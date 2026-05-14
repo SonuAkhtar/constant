@@ -14,6 +14,8 @@ const SLOTS: { slot: TimeSlot; label: string }[] = [
   { slot: 'night',     label: 'Night'     },
 ]
 
+const SLOT_ORDER: TimeSlot[] = ['morning', 'afternoon', 'evening', 'night']
+
 function ClockEditIcon() {
   return (
     <svg width="11" height="11" viewBox="0 0 11 11" fill="none" aria-hidden="true" className="habits-page__meta-edit-icon">
@@ -198,7 +200,23 @@ export default function Habits() {
   }
 
   function handleSaveTime() {
-    if (editingSlot) setSlotTiming(editingSlot, editStart, editEnd)
+    if (!editingSlot) return
+    const idx = SLOT_ORDER.indexOf(editingSlot)
+
+    setSlotTiming(editingSlot, editStart, editEnd)
+
+    // cascade: next slot's start = this slot's end
+    if (idx < SLOT_ORDER.length - 1) {
+      const next = SLOT_ORDER[idx + 1]
+      setSlotTiming(next, editEnd, timings[next].end)
+    }
+
+    // cascade: previous slot's end = this slot's start
+    if (idx > 0) {
+      const prev = SLOT_ORDER[idx - 1]
+      setSlotTiming(prev, timings[prev].start, editStart)
+    }
+
     setEditingSlot(null)
   }
 

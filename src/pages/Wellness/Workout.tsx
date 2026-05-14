@@ -1,5 +1,7 @@
 import { useState, useEffect, useRef } from 'react'
 import { motion, AnimatePresence } from 'framer-motion'
+import Model from 'react-body-highlighter'
+import type { Muscle } from 'react-body-highlighter'
 import { workoutDays, beginnerDays, workoutPrinciples, nutritionTips } from '../../data/workout'
 import { useWorkoutStore } from '../../store/useWorkoutStore'
 import type { Exercise, ExperienceLevel } from '../../types'
@@ -27,6 +29,73 @@ function formatTime(s: number) {
   const m = Math.floor(s / 60)
   const sec = s % 60
   return `${m}:${sec.toString().padStart(2, '0')}`
+}
+
+// ── Muscle highlighter ────────────────────────────────────────────────────────
+
+const MUSCLE_MAP: Record<string, Muscle> = {
+  'chest':                          'chest',
+  'upper chest':                    'chest',
+  'pectorals':                      'chest',
+  'anterior delt':                  'front-deltoids',
+  'anterior deltoid':               'front-deltoids',
+  'medial deltoid':                 'front-deltoids',
+  'medial and anterior deltoid':    'front-deltoids',
+  'shoulders':                      'front-deltoids',
+  'delts':                          'front-deltoids',
+  'rear delts':                     'back-deltoids',
+  'posterior deltoid':              'back-deltoids',
+  'rotator cuff':                   'back-deltoids',
+  'triceps':                        'triceps',
+  'triceps long head':              'triceps',
+  'triceps lateral head':           'triceps',
+  'biceps':                         'biceps',
+  'brachialis':                     'biceps',
+  'brachioradialis':                'forearm',
+  'forearms':                       'forearm',
+  'lats':                           'upper-back',
+  'mid-back':                       'upper-back',
+  'rhomboids':                      'upper-back',
+  'upper back':                     'upper-back',
+  'lower traps':                    'trapezius',
+  'mid-traps':                      'trapezius',
+  'trapezius':                      'trapezius',
+  'traps':                          'trapezius',
+  'lower back':                     'lower-back',
+  'spine':                          'lower-back',
+  'abs':                            'abs',
+  'core':                           'abs',
+  'serratus anterior':              'abs',
+  'obliques':                       'obliques',
+  'quads':                          'quadriceps',
+  'quadriceps':                     'quadriceps',
+  'hamstrings':                     'hamstring',
+  'inner hamstrings':               'hamstring',
+  'glutes':                         'gluteal',
+  'glute':                          'gluteal',
+  'gastrocnemius':                  'calves',
+  'calves':                         'calves',
+  'soleus':                         'calves',
+  'adductors':                      'adductor',
+  'hip flexors':                    'quadriceps',
+}
+
+function parseMuscles(muscleStr: string): Muscle[] {
+  const tokens = muscleStr
+    .replace(/\([^)]+\)/g, '')
+    .split(',')
+    .map(s => s.trim().toLowerCase())
+    .filter(Boolean)
+
+  const result: Muscle[] = []
+  for (const token of tokens) {
+    const direct = MUSCLE_MAP[token]
+    if (direct) { if (!result.includes(direct)) result.push(direct); continue }
+    for (const [key, val] of Object.entries(MUSCLE_MAP)) {
+      if (token.includes(key)) { if (!result.includes(val)) result.push(val); break }
+    }
+  }
+  return result
 }
 
 function getOverloadIncrement(name: string): number {
@@ -106,6 +175,9 @@ function TimerIcon() {
 function ExerciseRow({ exercise }: { exercise: Exercise }) {
   const { weights, setWeight } = useWorkoutStore()
   const savedWeight = weights[exercise.id] ?? 0
+
+  const muscles = parseMuscles(exercise.muscles)
+  const modelData = muscles.length ? [{ name: exercise.name, muscles }] : []
 
   const [open, setOpen] = useState(false)
   const [done, setDone] = useState(false)
@@ -189,6 +261,33 @@ function ExerciseRow({ exercise }: { exercise: Exercise }) {
                 <div className="workout__exercise-row workout__exercise-cue">
                   <span className="workout__exercise-row-label">Coaching cue</span>
                   <span>{exercise.cue}</span>
+                </div>
+              )}
+
+              {modelData.length > 0 && (
+                <div className="workout__muscle-models">
+                  <div className="workout__muscle-model-item">
+                    <Model
+                      data={modelData}
+                      highlightedColors={['#4c6056']}
+                      bodyColor="#c8d0ca"
+                      style={{ flex: 1, width: '100%' }}
+                      svgStyle={{ width: '100%', display: 'block' }}
+                      type="anterior"
+                    />
+                    <span className="workout__muscle-model-label">Front</span>
+                  </div>
+                  <div className="workout__muscle-model-item">
+                    <Model
+                      data={modelData}
+                      highlightedColors={['#4c6056']}
+                      bodyColor="#c8d0ca"
+                      style={{ flex: 1, width: '100%' }}
+                      svgStyle={{ width: '100%', display: 'block' }}
+                      type="posterior"
+                    />
+                    <span className="workout__muscle-model-label">Back</span>
+                  </div>
                 </div>
               )}
 
@@ -351,21 +450,35 @@ export default function Workout() {
       <div className="workout__strip" role="group" aria-label="Select training day">
         {DAY_LABELS.map((label, i) => {
           const wd = days[i]
+          const isActive = selectedDay === i
+          const isToday = i === todayIndex
           return (
-            <button
-              key={label}
-              className={[
-                'workout__day-chip',
-                selectedDay === i ? 'workout__day-chip--active' : '',
-                wd.isRest ? 'workout__day-chip--rest' : '',
-              ].join(' ')}
-              onClick={() => setSelectedDay(i)}
-              aria-pressed={selectedDay === i}
-              aria-label={`${label}: ${wd.label}`}
-            >
-              <span className="workout__day-chip-label">{label}</span>
-              <span className="workout__day-chip-tag">{wd.isRest ? 'Rest' : wd.label}</span>
-            </button>
+            <div key={label} className="workout__day-item">
+              <button
+                className={[
+                  'workout__day-chip',
+                  isActive ? 'workout__day-chip--active' : '',
+                  wd.isRest ? 'workout__day-chip--rest' : '',
+                ].join(' ')}
+                onClick={() => setSelectedDay(i)}
+                aria-pressed={isActive}
+                aria-label={`${label}: ${wd.label}${isToday ? ', today' : ''}`}
+              >
+                {isActive && (
+                  <motion.div
+                    layoutId="workout-day-pill"
+                    className="workout__day-pill"
+                    transition={{ type: 'spring', stiffness: 380, damping: 32 }}
+                  />
+                )}
+                <span className="workout__day-chip-name">{label}</span>
+              </button>
+              <span
+                className="workout__day-today-dot"
+                aria-hidden="true"
+                style={{ visibility: isToday ? 'visible' : 'hidden' }}
+              />
+            </div>
           )
         })}
       </div>

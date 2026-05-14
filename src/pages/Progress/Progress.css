@@ -190,7 +190,7 @@
 }
 
 .progress-page__chart-legend-text {
-  font-size: var(--font-xs);
+  font-size: var(--font-sm);
   color: var(--color-text-muted);
 }
 
@@ -218,7 +218,7 @@
 }
 
 .progress-page__tooltip-date {
-  font-size: var(--font-xs);
+  font-size: var(--font-sm);
   color: var(--color-text-muted);
   margin-bottom: 2px;
 }
@@ -232,7 +232,7 @@
 }
 
 .progress-page__tooltip-sub {
-  font-size: var(--font-xs);
+  font-size: var(--font-sm);
   color: var(--color-text-muted);
 }
 
@@ -251,7 +251,7 @@
 }
 
 .progress-page__legend-label {
-  font-size: var(--font-xs);
+  font-size: var(--font-sm);
   color: var(--color-text-muted);
 }
 
@@ -262,7 +262,7 @@
 }
 
 .heatmap__col-label {
-  font-size: var(--font-xs);
+  font-size: var(--font-sm);
   font-weight: var(--weight-semibold);
   color: var(--color-text-muted);
   text-align: center;
@@ -414,7 +414,7 @@
   background: var(--color-surface-alt);
   border: 1px solid var(--color-border);
   border-radius: var(--radius-full);
-  font-size: var(--font-xs);
+  font-size: var(--font-sm);
   font-weight: var(--weight-semibold);
   color: var(--color-text-muted);
   transition: all var(--ease-base);
@@ -458,7 +458,7 @@
 }
 
 .progress-page__best-pill-label {
-  font-size: var(--font-xs);
+  font-size: var(--font-sm);
   font-weight: var(--weight-semibold);
   color: var(--color-text-muted);
 }
@@ -599,7 +599,7 @@
 }
 
 .ph-row__pct {
-  font-size: var(--font-xs);
+  font-size: var(--font-sm);
   font-weight: var(--weight-bold);
   min-width: 32px;
   text-align: right;

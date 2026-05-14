@@ -188,7 +188,7 @@
 
 /* Eyebrow - time of day */
 .today__hero-eyebrow {
-  font-size: var(--font-xs);
+  font-size: var(--font-sm);
   font-weight: var(--weight-bold);
   letter-spacing: var(--tracking-caps);
   text-transform: uppercase;
@@ -336,7 +336,7 @@
 /* ---- Completed count hint ---- */
 
 .today__hero-count {
-  font-size: var(--font-xs);
+  font-size: var(--font-sm);
   color: var(--color-text-muted);
   font-variant-numeric: tabular-nums;
 }
@@ -619,7 +619,7 @@
 
 .today__past-banner-back {
   flex-shrink: 0;
-  font-size: var(--font-xs);
+  font-size: var(--font-sm);
   font-weight: var(--weight-bold);
   color: var(--color-primary-text);
   padding: 4px 12px;
@@ -862,7 +862,7 @@
   z-index: 18;
   background: var(--color-text);
   color: var(--color-surface);
-  font-size: var(--font-xs);
+  font-size: var(--font-sm);
   font-weight: var(--weight-bold);
   letter-spacing: 0.02em;
   padding: 6px 16px;
@@ -1021,7 +1021,7 @@
 }
 
 .today__goal-label {
-  font-size: var(--font-xs);
+  font-size: var(--font-sm);
   font-weight: var(--weight-bold);
   color: var(--color-primary-text);
   background: var(--color-primary-dim);
@@ -1104,6 +1104,6 @@
 }
 
 .today__milestone-tap {
-  font-size: var(--font-xs);
+  font-size: var(--font-sm);
   color: var(--color-text-faint);
 }

@@ -188,7 +188,7 @@
 }
 
 .profile__focus-pill {
-  font-size: var(--font-xs);
+  font-size: var(--font-sm);
   font-weight: var(--weight-semibold);
   color: var(--color-text-muted);
   background: var(--color-surface-alt);
@@ -202,7 +202,7 @@
 /* ---- Edit profile button ---- */
 
 .profile__edit-btn {
-  font-size: var(--font-xs);
+  font-size: var(--font-sm);
   font-weight: var(--weight-bold);
   color: var(--color-primary-text);
   background: var(--color-primary-dim);
@@ -259,7 +259,7 @@
   display: inline-flex;
   align-items: center;
   gap: 5px;
-  font-size: var(--font-xs);
+  font-size: var(--font-sm);
   font-weight: var(--weight-semibold);
   color: var(--color-text-muted);
   background: var(--color-surface-alt);
@@ -476,7 +476,7 @@
 }
 
 .profile__goal-edit-btn {
-  font-size: var(--font-xs);
+  font-size: var(--font-sm);
   font-weight: var(--weight-semibold);
   color: var(--color-text-faint);
   background: var(--color-surface-alt);
@@ -536,7 +536,7 @@
 }
 
 .profile__goal-days {
-  font-size: var(--font-xs);
+  font-size: var(--font-sm);
   color: var(--color-text-muted);
   font-variant-numeric: tabular-nums;
 }
@@ -599,7 +599,7 @@
 }
 
 .profile__moment-date {
-  font-size: var(--font-xs);
+  font-size: var(--font-sm);
   color: var(--color-text-faint);
   margin-top: 2px;
   font-variant-numeric: tabular-nums;
@@ -644,7 +644,7 @@
 }
 
 .profile__data-phone {
-  font-size: var(--font-xs);
+  font-size: var(--font-sm);
   color: var(--color-text-muted);
   margin-bottom: var(--space-4);
 }
