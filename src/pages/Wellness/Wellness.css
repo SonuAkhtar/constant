@@ -1,11 +1,11 @@
 .wellness-page {
-  padding: var(--space-4) var(--space-5) var(--space-8);
+  padding: var(--page-padding-top) var(--page-padding-x) var(--space-8);
 }
 
 .wellness-page__heading {
   font-family: var(--font-display);
   font-size: var(--font-xl);
-  font-weight: var(--weight-bold);
+  font-weight: var(--weight-black);
   color: var(--color-text);
   letter-spacing: -0.4px;
   margin-bottom: var(--space-4);

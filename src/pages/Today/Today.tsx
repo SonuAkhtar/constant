@@ -5,8 +5,12 @@ import { motion, AnimatePresence } from "framer-motion";
 import { useHabitStore } from "../../store/useHabitStore";
 import { useOnboardingStore } from "../../store/useOnboardingStore";
 import { useSlotTimingStore, formatSlotTime, getActiveSlotIndex } from "../../store/useSlotTimingStore";
+import { useToastStore } from "../../store/useToastStore";
+import { haptic } from "../../utils/haptic";
 import HabitCard from "../../components/HabitCard/HabitCard";
-import { SlotIcon, SparkleIcon, TrophyIcon, StarIcon, WaveIcon } from "../../components/Icons";
+import { SlotIcon, SparkleIcon, StarIcon, WaveIcon } from "../../components/Icons";
+import { Confetti } from "../../components/Today/Confetti";
+import { MilestoneOverlay } from "../../components/Today/MilestoneOverlay";
 import type { Milestone, TimeSlot } from "../../types";
 import "./Today.css";
 
@@ -18,7 +22,7 @@ const SLOTS: { slot: TimeSlot; label: string }[] = [
 ];
 
 const COPY_TIERS = [
-  { min: 0, max: 0, title: "Fresh start.", sub: "Pick one habit to begin." },
+  { min: 0, max: 0, title: "Your day is wide open.", sub: "Start with one." },
   { min: 1, max: 29, title: "You're moving.", sub: "Keep the momentum going." },
   {
     min: 30,
@@ -26,13 +30,13 @@ const COPY_TIERS = [
     title: "Halfway there.",
     sub: "The second half is yours.",
   },
-  { min: 60, max: 89, title: "Almost perfect.", sub: "Just a few more to go." },
-  { min: 90, max: 99, title: "So close!", sub: "One last push." },
+  { min: 60, max: 89, title: "Almost there.", sub: "A few more to go." },
+  { min: 90, max: 99, title: "So close.", sub: "One last push." },
   {
     min: 100,
     max: 100,
-    title: "Perfect day.",
-    sub: "You showed up for yourself.",
+    title: "You showed up.",
+    sub: "That's what it takes.",
   },
 ] as const;
 
@@ -48,102 +52,6 @@ function getGreeting(h: number): string {
   if (h < 17) return "Good afternoon";
   if (h < 21) return "Good evening";
   return "Good night";
-}
-
-const CONFETTI_COLORS = [
-  "#c94f2a",
-  "#6366f1",
-  "#f97316",
-  "#22c55e",
-  "#c084fc",
-  "#22d3ee",
-  "#f59e0b",
-  "#818cf8",
-];
-
-function Confetti({ onDone }: { onDone: () => void }) {
-  useEffect(() => {
-    const id = setTimeout(onDone, 2600);
-    return () => clearTimeout(id);
-  }, [onDone]);
-
-  const particles = useMemo(
-    () =>
-      Array.from({ length: 30 }, (_, i) => ({
-        id: i,
-        color: CONFETTI_COLORS[i % CONFETTI_COLORS.length],
-        x: (Math.random() - 0.5) * 340,
-        y: Math.random() * 300 + 80,
-        rotate: Math.random() * 640 - 320,
-        delay: i * 0.036,
-        duration: 1.0 + Math.random() * 0.6,
-        w: 6 + Math.floor(Math.random() * 7),
-        h: 4 + Math.floor(Math.random() * 5),
-        round: Math.random() > 0.5,
-      })),
-    [],
-  );
-
-  return (
-    <div className="today__confetti" aria-hidden="true">
-      {particles.map((p) => (
-        <motion.div
-          key={p.id}
-          className="today__confetti-particle"
-          style={{
-            backgroundColor: p.color,
-            width: p.w,
-            height: p.h,
-            borderRadius: p.round ? "50%" : "2px",
-          }}
-          initial={{ x: 0, y: 0, opacity: 1, rotate: 0, scale: 1 }}
-          animate={{ x: p.x, y: p.y, opacity: 0, rotate: p.rotate, scale: 0.3 }}
-          transition={{
-            duration: p.duration,
-            delay: p.delay,
-            ease: [0.2, 0.8, 0.4, 1],
-          }}
-        />
-      ))}
-    </div>
-  );
-}
-
-function MilestoneOverlay({
-  milestone,
-  onDone,
-}: {
-  milestone: Milestone;
-  onDone: () => void;
-}) {
-  useEffect(() => {
-    navigator.vibrate?.([30, 20, 60, 20, 80]);
-    const id = setTimeout(onDone, 3000);
-    return () => clearTimeout(id);
-  }, [onDone]);
-
-  return (
-    <motion.div
-      className="today__milestone-overlay"
-      initial={{ opacity: 0 }}
-      animate={{ opacity: 1 }}
-      exit={{ opacity: 0 }}
-      transition={{ duration: 0.3 }}
-      onClick={onDone}
-    >
-      <motion.div
-        className="today__milestone-card"
-        initial={{ scale: 0.85, y: 40 }}
-        animate={{ scale: 1, y: 0 }}
-        exit={{ scale: 0.9, opacity: 0 }}
-        transition={{ type: "spring", stiffness: 320, damping: 26 }}
-      >
-        <span className="today__milestone-icon"><TrophyIcon size={48} /></span>
-        <p className="today__milestone-message">{milestone.message}</p>
-        <p className="today__milestone-tap">Tap to continue</p>
-      </motion.div>
-    </motion.div>
-  );
 }
 
 function EmptyTodayState({ userName }: { userName: string }) {
@@ -203,16 +111,14 @@ function EmptyTodayState({ userName }: { userName: string }) {
           />
         </svg>
       </div>
-      <h3 className="today__empty-title">No habits yet</h3>
+      <h3 className="today__empty-title">Your day is wide open</h3>
       <p className="today__empty-sub">
-        Start building your best day,
-        <br />
-        one habit at a time.
+        Add your first habit to start building your routine.
       </p>
       <button className="today__empty-cta" onClick={() => navigate("/habits")}>
         {userName
-          ? `Start your first habit, ${userName} →`
-          : "Set up your routine →"}
+          ? `Add your first habit, ${userName} →`
+          : "Add your first habit →"}
       </button>
     </motion.div>
   );
@@ -242,11 +148,11 @@ const RING_CIRC = +(2 * Math.PI * RING_R).toFixed(2);
 
 export default function Today() {
   const {
+    habits,
+    logs,
     getTodayHabits,
     getScheduledHabits,
     toggleHabit,
-    isCompleted,
-    isSkipped,
     getStreak,
     getDayProgress,
     getAppStreak,
@@ -258,8 +164,11 @@ export default function Today() {
   const [selectedDate, setSelectedDate] = useState(() => format(new Date(), 'yyyy-MM-dd'));
   const isViewingToday = selectedDate === format(new Date(), 'yyyy-MM-dd');
 
-  const todayHabits = getTodayHabits();
-  const viewHabits = isViewingToday ? todayHabits : getScheduledHabits(selectedDate);
+  const todayHabits = useMemo(() => getTodayHabits(), [habits, logs]); // eslint-disable-line react-hooks/exhaustive-deps
+  const viewHabits = useMemo(
+    () => isViewingToday ? todayHabits : getScheduledHabits(selectedDate),
+    [isViewingToday, todayHabits, selectedDate, habits, logs], // eslint-disable-line react-hooks/exhaustive-deps
+  );
 
   const { completed, total, percentage } = getDayProgress();
   const { completed: viewCompleted, total: viewTotal } = isViewingToday
@@ -284,9 +193,19 @@ export default function Today() {
     Array.from({ length: 7 }, (_, i) => format(subDays(new Date(), 6 - i), 'yyyy-MM-dd'))
   , []);
 
+  const completedSet = useMemo(
+    () => new Set(logs.filter(l => l.date === selectedDate && l.completed).map(l => l.habitId)),
+    [logs, selectedDate],
+  );
+  const skippedSet = useMemo(
+    () => new Set(logs.filter(l => l.date === selectedDate && l.skipped).map(l => l.habitId)),
+    [logs, selectedDate],
+  );
+
+  const pushToast = useToastStore(s => s.push);
+
   const [ringMounted, setRingMounted] = useState(false);
   const [showConfetti, setShowConfetti] = useState(false);
-  const [showToast, setShowToast] = useState(false);
   const [activeMilestone, setActiveMilestone] = useState<Milestone | null>(
     null,
   );
@@ -295,6 +214,15 @@ export default function Today() {
   const [pillBump, setPillBump] = useState(false);
   const auroraTriggeredRef = useRef(new Set<number>());
   const [auroraBurst, setAuroraBurst] = useState(false);
+  const [expandedSlots, setExpandedSlots] = useState<Set<TimeSlot>>(new Set());
+
+  function toggleSlotExpand(slot: TimeSlot) {
+    setExpandedSlots(prev => {
+      const next = new Set(prev);
+      next.has(slot) ? next.delete(slot) : next.add(slot);
+      return next;
+    });
+  }
 
   const appStreak = getAppStreak();
   const lastActiveDate = getLastActiveDate();
@@ -302,7 +230,6 @@ export default function Today() {
   const daysSince = lastActiveDate
     ? differenceInCalendarDays(new Date(), parseISO(lastActiveDate))
     : 0;
-  const toastTimer = useRef<ReturnType<typeof window.setTimeout> | null>(null);
 
   const [todayDate, setTodayDate] = useState(format(new Date(), "yyyy-MM-dd"));
   useEffect(() => {
@@ -329,12 +256,12 @@ export default function Today() {
   }, []);
 
   useEffect(() => {
-    if (percentage === 100 && prevPctRef.current < 100) {
+    if (percentage === 100 && prevPctRef.current < 100 && isViewingToday) {
       setShowConfetti(true);
-      navigator.vibrate?.([30, 20, 60, 20, 30]);
+      haptic('celebration');
     }
     prevPctRef.current = percentage;
-  }, [percentage]);
+  }, [percentage, isViewingToday]);
 
   useEffect(() => {
     if (completed > prevCompletedRef.current) {
@@ -360,16 +287,13 @@ export default function Today() {
     }
   }, [percentage]);
 
-  function showSaveToast() {
-    setShowToast(true);
-    if (toastTimer.current) clearTimeout(toastTimer.current);
-    toastTimer.current = window.setTimeout(() => setShowToast(false), 1400);
-  }
-
   function handleToggle(habitId: string) {
-    const wasCompleted = isCompleted(habitId, selectedDate);
+    const wasCompleted = completedSet.has(habitId);
     const milestone = toggleHabit(habitId, selectedDate);
-    showSaveToast();
+    pushToast('Saved ✓', undefined, {
+      label: 'Undo',
+      onClick: () => toggleHabit(habitId, selectedDate),
+    });
     if (!wasCompleted && isViewingToday && milestone) setActiveMilestone(milestone);
   }
 
@@ -391,7 +315,20 @@ export default function Today() {
           <div className="today__hero-top">
             <div className="today__hero-left">
               <div className="today__hero-greeting-row">
-                <p className="today__hero-greeting">{getGreeting(currentHour)}</p>
+                <div>
+                  <p className="today__hero-greeting">{getGreeting(currentHour)}</p>
+                  {appStreak >= 3 && (
+                    <p className="today__hero-streak-note">
+                      {appStreak >= 30
+                        ? `${appStreak} days straight. You've changed your habits.`
+                        : appStreak >= 14
+                        ? `${appStreak}-day streak. This is who you are now.`
+                        : appStreak >= 7
+                        ? `${appStreak} days in a row. Keep it going.`
+                        : `${appStreak} days in a row.`}
+                    </p>
+                  )}
+                </div>
                 <div className="today__hero-dateline">
                   <span className="today__hero-date-day">{dayAbbr}</span>
                   <span className="today__hero-date-sep">·</span>
@@ -399,6 +336,7 @@ export default function Today() {
                   <span className="today__hero-date-num">{dayNum}</span>
                 </div>
               </div>
+
               {userName && (
                 <div className="today__hero-name-ring">
                   <span className="today__hero-name">{userName}</span>
@@ -430,8 +368,12 @@ export default function Today() {
                           "today__hero-ring-fill",
                           percentage === 100
                             ? "today__hero-ring-fill--complete"
+                            : appStreak >= 30
+                            ? "today__hero-ring-fill--blazing"
+                            : appStreak >= 14
+                            ? "today__hero-ring-fill--hot"
                             : "",
-                        ].join(" ")}
+                        ].filter(Boolean).join(" ")}
                         strokeDasharray={`${strokeDash} ${RING_CIRC}`}
                       />
                     </svg>
@@ -476,7 +418,7 @@ export default function Today() {
         </div>
       </motion.div>
 
-      <div className="today__date-strip">
+      <div className="today__date-strip" role="radiogroup" aria-label="Select date">
         {weekDates.map(date => {
           const isToday = date === format(new Date(), 'yyyy-MM-dd')
           const isSelected = date === selectedDate
@@ -484,6 +426,10 @@ export default function Today() {
           return (
             <button
               key={date}
+              role="radio"
+              aria-checked={isSelected}
+              aria-disabled={isDisabled}
+              tabIndex={isDisabled ? -1 : 0}
               className={[
                 'today__date-chip',
                 isSelected ? 'today__date-chip--selected' : '',
@@ -491,9 +437,6 @@ export default function Today() {
                 isDisabled ? 'today__date-chip--disabled' : '',
               ].filter(Boolean).join(' ')}
               onClick={() => !isDisabled && setSelectedDate(date)}
-              aria-pressed={isSelected}
-              aria-disabled={isDisabled}
-              tabIndex={isDisabled ? -1 : 0}
             >
               <span className="today__date-chip-day">
                 {isToday ? 'Today' : format(parseISO(date), 'EEE')}
@@ -577,7 +520,7 @@ export default function Today() {
       </AnimatePresence>
 
       {goal && (
-        <div className="today__goal-banner">
+        <div className="today__goal-banner" aria-live="polite">
           <span className="today__goal-label">Goal</span>
           <span className="today__goal-text">{goal}</span>
         </div>
@@ -603,7 +546,7 @@ export default function Today() {
       {(() => {
         const pinned = viewHabits.filter((h) => h.isPinned);
         if (pinned.length === 0) return null;
-        const pinnedDone = pinned.filter((h) => isCompleted(h.id, selectedDate)).length;
+        const pinnedDone = pinned.filter((h) => completedSet.has(h.id)).length;
         return (
           <section
             className="today__section today__section--core"
@@ -637,8 +580,8 @@ export default function Today() {
                 <HabitCard
                   key={habit.id}
                   habit={habit}
-                  done={isCompleted(habit.id, selectedDate)}
-                  skipped={isSkipped(habit.id, selectedDate)}
+                  done={completedSet.has(habit.id)}
+                  skipped={skippedSet.has(habit.id)}
                   streak={getStreak(habit.id)}
                   onToggle={() => handleToggle(habit.id)}
                   index={i}
@@ -653,8 +596,9 @@ export default function Today() {
         const slotHabits = viewHabits.filter((h) => h.timeSlot === slot);
         if (slotHabits.length === 0) return null;
 
-        const slotDone = slotHabits.filter((h) => isCompleted(h.id, selectedDate)).length;
+        const slotDone = slotHabits.filter((h) => completedSet.has(h.id)).length;
         const slotComplete = slotDone === slotHabits.length;
+        const isCollapsed = slotComplete && !expandedSlots.has(slot);
 
         return (
           <section key={slot} className="today__section" data-slot={slot}>
@@ -662,51 +606,90 @@ export default function Today() {
               className={[
                 "today__section-header",
                 slotComplete ? "today__section-header--complete" : "",
-              ].join(" ")}
+                slotComplete ? "today__section-header--collapsible" : "",
+              ].filter(Boolean).join(" ")}
+              onClick={slotComplete ? () => toggleSlotExpand(slot) : undefined}
+              role={slotComplete ? "button" : undefined}
+              aria-expanded={slotComplete ? !isCollapsed : undefined}
             >
               <div className="today__section-left">
                 <span className="today__section-icon"><SlotIcon slot={slot} size={16} /></span>
                 <h3 className="today__section-title">{label}</h3>
-                <span className="today__section-time">{formatSlotTime(timings[slot])}</span>
+                {!isCollapsed && <span className="today__section-time">{formatSlotTime(timings[slot])}</span>}
               </div>
-              <span
-                className={[
-                  "today__section-count",
-                  slotComplete ? "today__section-count--complete" : "",
-                ].join(" ")}
-                aria-live="polite"
-              >
-                <span className="today__section-count-inner">
-                  <AnimatePresence mode="popLayout" initial={false}>
-                    <motion.span
-                      key={slotDone}
-                      className="today__section-count-num"
-                      initial={{ y: 9, opacity: 0 }}
-                      animate={{ y: 0, opacity: 1 }}
-                      exit={{ y: -9, opacity: 0 }}
-                      transition={{ duration: 0.18 }}
-                    >
-                      {slotDone}
-                    </motion.span>
-                  </AnimatePresence>
+              <div className="today__section-right">
+                <span
+                  className={[
+                    "today__section-count",
+                    slotComplete ? "today__section-count--complete" : "",
+                  ].join(" ")}
+                  aria-live="polite"
+                >
+                  <span className="today__section-count-inner">
+                    <AnimatePresence mode="popLayout" initial={false}>
+                      <motion.span
+                        key={slotDone}
+                        className="today__section-count-num"
+                        initial={{ y: 9, opacity: 0 }}
+                        animate={{ y: 0, opacity: 1 }}
+                        exit={{ y: -9, opacity: 0 }}
+                        transition={{ duration: 0.18 }}
+                      >
+                        {slotDone}
+                      </motion.span>
+                    </AnimatePresence>
+                  </span>
+                  /{slotHabits.length}
                 </span>
-                /{slotHabits.length}
-              </span>
+                {slotComplete && (
+                  <motion.svg
+                    className="today__section-expand"
+                    animate={{ rotate: isCollapsed ? 0 : 180 }}
+                    transition={{ duration: 0.2 }}
+                    width="12" height="12" viewBox="0 0 12 12" fill="none"
+                    aria-hidden="true"
+                  >
+                    <path d="M2 4l4 4 4-4" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" />
+                  </motion.svg>
+                )}
+              </div>
             </div>
 
-            <ul className="today__list">
-              {slotHabits.map((habit, i) => (
-                <HabitCard
-                  key={habit.id}
-                  habit={habit}
-                  done={isCompleted(habit.id, selectedDate)}
-                  skipped={isSkipped(habit.id, selectedDate)}
-                  streak={getStreak(habit.id)}
-                  onToggle={() => handleToggle(habit.id)}
-                  index={i}
-                />
-              ))}
-            </ul>
+            <AnimatePresence initial={false}>
+              {!isCollapsed && (
+                <motion.div
+                  key="slot-body"
+                  initial={{ height: 0, opacity: 0 }}
+                  animate={{ height: "auto", opacity: 1 }}
+                  exit={{ height: 0, opacity: 0 }}
+                  transition={{ duration: 0.24, ease: [0.4, 0, 0.2, 1] }}
+                  style={{ overflow: "hidden" }}
+                >
+                  <ul className="today__list">
+                    {slotHabits.map((habit, i) => (
+                      <HabitCard
+                        key={habit.id}
+                        habit={habit}
+                        done={completedSet.has(habit.id)}
+                        skipped={skippedSet.has(habit.id)}
+                        streak={getStreak(habit.id)}
+                        onToggle={() => handleToggle(habit.id)}
+                        index={i}
+                      />
+                    ))}
+                  </ul>
+                  {slotComplete && (
+                    <div className="today__slot-done" role="status">
+                      <svg width="13" height="13" viewBox="0 0 13 13" fill="none" aria-hidden="true">
+                        <circle cx="6.5" cy="6.5" r="6.5" fill="var(--color-success)" />
+                        <path d="M4 6.5l2 2 3-3" stroke="#fff" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" />
+                      </svg>
+                      All {label.toLowerCase()} habits done
+                    </div>
+                  )}
+                </motion.div>
+              )}
+            </AnimatePresence>
           </section>
         );
       })}
@@ -734,20 +717,6 @@ export default function Today() {
         )}
       </AnimatePresence>
 
-      <AnimatePresence>
-        {showToast && (
-          <motion.div
-            className="today__toast"
-            initial={{ opacity: 0, y: 8 }}
-            animate={{ opacity: 1, y: 0 }}
-            exit={{ opacity: 0, y: 8 }}
-            transition={{ duration: 0.18 }}
-            aria-live="polite"
-          >
-            Saved ✓
-          </motion.div>
-        )}
-      </AnimatePresence>
     </div>
   );
 }

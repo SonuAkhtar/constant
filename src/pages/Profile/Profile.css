@@ -1,9 +1,9 @@
 .profile {
-  padding: var(--space-5) var(--space-4);
+  padding: var(--page-padding-top) var(--page-padding-x);
   padding-bottom: calc(var(--nav-height) + var(--space-5));
   display: flex;
   flex-direction: column;
-  gap: var(--space-4);
+  gap: var(--section-gap);
 }
 
 .profile__card {
@@ -11,6 +11,7 @@
   border: 1px solid var(--color-border);
   border-radius: var(--radius-xl);
   box-shadow: var(--shadow-sm);
+  transition: box-shadow var(--ease-base), border-color var(--ease-base);
 }
 
 .profile__avatar-card {
@@ -209,7 +210,7 @@
   border: 1.5px solid rgba(76, 96, 86, 0.3);
   border-radius: var(--radius-full);
   padding: 5px 16px;
-  transition: all var(--ease-base);
+  transition: background var(--ease-base), border-color var(--ease-base), color var(--ease-base);
 }
 
 .profile__edit-btn:hover {
@@ -266,7 +267,7 @@
   border: 1px solid var(--color-border);
   border-radius: var(--radius-full);
   padding: 4px 12px;
-  transition: all var(--ease-base);
+  transition: background var(--ease-base), border-color var(--ease-base), color var(--ease-base);
 }
 
 .profile__focus-toggle--active {
@@ -288,7 +289,7 @@
   color: var(--color-text-muted);
   background: var(--color-surface-alt);
   border: 1px solid var(--color-border);
-  transition: all var(--ease-base);
+  transition: background var(--ease-base), border-color var(--ease-base), color var(--ease-base);
 }
 
 .profile__edit-save {
@@ -483,7 +484,7 @@
   border: 1px solid var(--color-border);
   border-radius: var(--radius-full);
   padding: 3px 12px;
-  transition: all var(--ease-base);
+  transition: background var(--ease-base), border-color var(--ease-base), color var(--ease-base);
 }
 
 .profile__goal-edit-btn:hover {
@@ -631,7 +632,7 @@
   background: var(--color-surface-alt);
   border: 1px solid var(--color-border);
   text-align: center;
-  transition: all var(--ease-base);
+  transition: background var(--ease-base), border-color var(--ease-base), color var(--ease-base);
 }
 
 .profile__data-btn:hover {
@@ -659,12 +660,53 @@
   color: var(--color-error, #ef4444);
   background: transparent;
   border: 1px solid var(--color-error, #ef4444);
-  transition: all var(--ease-base);
+  transition: background var(--ease-base), color var(--ease-base);
 }
 
 .profile__signout-btn:hover {
   background: var(--color-error, #ef4444);
   color: #fff;
+}
+
+.profile__signout-confirm {
+  margin-top: var(--space-4);
+  padding: var(--space-3) var(--space-4);
+  border-radius: var(--radius-md);
+  border: 1px solid var(--color-error, #ef4444);
+  background: transparent;
+}
+
+.profile__signout-confirm-text {
+  font-size: var(--font-sm);
+  color: var(--color-text-secondary);
+  margin-bottom: var(--space-3);
+}
+
+.profile__signout-confirm-actions {
+  display: flex;
+  gap: var(--space-2);
+}
+
+.profile__signout-cancel {
+  flex: 1;
+  padding: var(--space-2) var(--space-3);
+  border-radius: var(--radius-sm);
+  font-size: var(--font-sm);
+  font-weight: var(--weight-semibold);
+  color: var(--color-text-secondary);
+  background: var(--color-surface-alt);
+  border: none;
+}
+
+.profile__signout-confirm-btn {
+  flex: 1;
+  padding: var(--space-2) var(--space-3);
+  border-radius: var(--radius-sm);
+  font-size: var(--font-sm);
+  font-weight: var(--weight-semibold);
+  color: #fff;
+  background: var(--color-error, #ef4444);
+  border: none;
 }
 
 .profile__goal-card,

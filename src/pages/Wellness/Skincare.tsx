@@ -214,16 +214,18 @@ function SupplementCard({ supp }: { supp: Supplement }) {
   const [open, setOpen] = useState(false)
 
   return (
-    <button
+    <div
       className={[
         'skincare__supp',
         !supp.recommended ? 'skincare__supp--not-recommended' : '',
         open ? 'skincare__supp--open' : '',
       ].join(' ')}
-      onClick={() => setOpen((o) => !o)}
-      aria-expanded={open}
     >
-      <div className="skincare__supp-top">
+      <button
+        className="skincare__supp-header"
+        onClick={() => setOpen((o) => !o)}
+        aria-expanded={open}
+      >
         <span className="skincare__supp-name">{supp.name}</span>
         <span className="skincare__supp-top-right">
           <span className={['skincare__ev', STRENGTH_CLASS[supp.strength]].join(' ')}>
@@ -231,7 +233,7 @@ function SupplementCard({ supp }: { supp: Supplement }) {
           </span>
           <ChevronIcon open={open} />
         </span>
-      </div>
+      </button>
       <span className="skincare__supp-benefit">{supp.benefit}</span>
 
       <AnimatePresence initial={false}>
@@ -250,10 +252,20 @@ function SupplementCard({ supp }: { supp: Supplement }) {
               </div>
             )}
             <p className="skincare__supp-notes">{supp.notes}</p>
+            {supp.recommended && (
+              <HabitForm defaultSlot="morning" defaultTitle={`Take ${supp.name}`}>
+                <button className="skincare__add-btn" type="button">
+                  <svg width="12" height="12" viewBox="0 0 12 12" fill="none" aria-hidden="true">
+                    <path d="M6 2v8M2 6h8" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" />
+                  </svg>
+                  Add to Habits
+                </button>
+              </HabitForm>
+            )}
           </motion.div>
         )}
       </AnimatePresence>
-    </button>
+    </div>
   )
 }
 

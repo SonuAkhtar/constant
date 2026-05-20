@@ -1,5 +1,6 @@
 import { supabase } from './supabase'
 import type { Habit, HabitLog, Milestone } from '../types'
+import { format, subDays } from 'date-fns'
 
 export async function findOrCreateUser(phone: string): Promise<{ userId: string; error: string | null }> {
   const { data: existing, error: findErr } = await supabase
@@ -22,16 +23,17 @@ export async function findOrCreateUser(phone: string): Promise<{ userId: string;
 }
 
 export async function fetchHabits(userId: string): Promise<Habit[]> {
-  const { data } = await supabase
+  const { data, error } = await supabase
     .from('habits')
     .select('*')
     .eq('user_id', userId)
     .order('sort_order')
+  if (error) console.error('[db] fetchHabits:', error.message)
   return (data ?? []).map(rowToHabit)
 }
 
 export async function upsertHabit(userId: string, habit: Habit, sortOrder = 0): Promise<void> {
-  await supabase.from('habits').upsert({
+  const { error } = await supabase.from('habits').upsert({
     id:            habit.id,
     user_id:       userId,
     title:         habit.title,
@@ -47,17 +49,22 @@ export async function upsertHabit(userId: string, habit: Habit, sortOrder = 0): 
     is_custom:     habit.isCustom    ?? true,
     sort_order:    sortOrder,
   })
+  if (error) console.error('[db] upsertHabit:', error.message)
 }
 
 export async function deleteHabit(habitId: string): Promise<void> {
-  await supabase.from('habits').delete().eq('id', habitId)
+  const { error } = await supabase.from('habits').delete().eq('id', habitId)
+  if (error) console.error('[db] deleteHabit:', error.message)
 }
 
 export async function fetchLogs(userId: string): Promise<HabitLog[]> {
-  const { data } = await supabase
+  const since = format(subDays(new Date(), 365), 'yyyy-MM-dd')
+  const { data, error } = await supabase
     .from('habit_logs')
     .select('*')
     .eq('user_id', userId)
+    .gte('date', since)
+  if (error) console.error('[db] fetchLogs:', error.message)
   return (data ?? []).map(rowToLog)
 }
 

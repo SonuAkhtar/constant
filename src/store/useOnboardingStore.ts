@@ -57,7 +57,7 @@ export const useOnboardingStore = create<OnboardingState>()(
       },
 
       setGoal: (goal) => {
-        const goalSetDate = new Date().toISOString()
+        const goalSetDate = format(new Date(), 'yyyy-MM-dd')
         set({ goal: goal.trim(), goalSetDate })
         const userId = uid()
         if (userId) upsertProfile(userId, { ...get(), goal: goal.trim(), goalSetDate })
@@ -71,6 +71,6 @@ export const useOnboardingStore = create<OnboardingState>()(
 
       reset: () => set({ completed: false, userName: '', focuses: [], goal: '', goalSetDate: '' }),
     }),
-    { name: 'constant-onboarding' }
+    { name: 'constant-onboarding', version: 1, migrate: (s) => s as OnboardingState }
   )
 )

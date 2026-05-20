@@ -6,6 +6,15 @@ import './Auth.css'
 
 const INDIA = COUNTRY_CODES.find(c => c.code === 'IN')!
 
+function friendlyError(raw: string): string {
+  const msg = raw.toLowerCase()
+  if (msg.includes('network') || msg.includes('fetch')) return 'No connection. Check your internet and try again.'
+  if (msg.includes('rate') || msg.includes('too many')) return 'Too many attempts. Please wait a moment and try again.'
+  if (msg.includes('invalid') && msg.includes('phone')) return 'That phone number doesn\'t look right. Please check it.'
+  if (msg.includes('not found') || msg.includes('no rows')) return 'Something went wrong. Please try again.'
+  return 'Something went wrong. Please try again.'
+}
+
 export default function Auth() {
   const { signIn, loading } = useAuthStore()
 
@@ -48,7 +57,7 @@ export default function Auth() {
     setError('')
     const { error: err } = await signIn(fullPhone)
     if (err) {
-      setError(err)
+      setError(friendlyError(err))
     } else {
       window.history.replaceState({}, '', '/')
     }
@@ -117,8 +126,16 @@ export default function Auth() {
                           key={c.code}
                           role="option"
                           aria-selected={c.code === selectedCountry.code}
+                          tabIndex={0}
                           className={['auth__dropdown-item', c.code === selectedCountry.code ? 'auth__dropdown-item--selected' : ''].join(' ')}
                           onClick={() => { setSelectedCountry(c); setShowDropdown(false) }}
+                          onKeyDown={e => {
+                            if (e.key === 'Enter' || e.key === ' ') {
+                              e.preventDefault()
+                              setSelectedCountry(c)
+                              setShowDropdown(false)
+                            }
+                          }}
                         >
                           <span className="auth__item-flag">{c.flag}</span>
                           <span className="auth__item-name">{c.name}</span>

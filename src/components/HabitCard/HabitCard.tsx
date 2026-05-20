@@ -8,6 +8,7 @@ import {
   type PanInfo,
 } from "framer-motion";
 import type { Habit, Streak } from "../../types";
+import { haptic } from "../../utils/haptic";
 import { HabitIcon, FlameIcon } from "../Icons";
 import "./HabitCard.css";
 
@@ -32,7 +33,7 @@ export default function HabitCard({
 }: Props) {
   const [justCompleted, setJustCompleted] = useState(false);
   const x = useMotionValue(0);
-  const rightRevealOpacity = useTransform(x, [0, 80], [0, 1]);
+  const rightRevealOpacity = useTransform(x, [0, 120], [0, 1]);
 
   const cardDisabled = done || skipped;
 
@@ -40,16 +41,16 @@ export default function HabitCard({
     if (!cardDisabled) {
       setJustCompleted(true);
       setTimeout(() => setJustCompleted(false), 650);
-      navigator.vibrate?.(12);
+      haptic('success');
     } else if (done) {
-      navigator.vibrate?.([6, 10, 6]);
+      haptic('light');
     }
     onToggle();
   }
 
   function handleDragEnd(_: PointerEvent, info: PanInfo) {
-    const { offset } = info;
-    if (offset.x > 60 && !cardDisabled) {
+    const { offset, velocity } = info;
+    if (offset.x > 100 && velocity.x > 200 && !cardDisabled) {
       handleToggle();
     }
     animate(x, 0, SPRING);
@@ -108,6 +109,13 @@ export default function HabitCard({
             data-slot={habit.timeSlot}
             onClick={handleToggle}
             aria-pressed={done || skipped}
+            aria-label={
+              done
+                ? `Mark ${habit.title} as incomplete`
+                : skipped
+                ? `${habit.title} — skipped`
+                : `Mark ${habit.title} as complete`
+            }
             animate={
               justCompleted ? { scale: [1, 1.025, 0.99, 1] } : { scale: 1 }
             }
@@ -141,9 +149,10 @@ export default function HabitCard({
                     "habit-card__streak",
                     isHot ? "habit-card__streak--hot" : "",
                   ].join(" ")}
+                  aria-label={`${streak.current} day streak`}
                 >
-                  <span className="habit-card__streak-flame"><FlameIcon /></span>
-                  <span className="habit-card__streak-text">
+                  <span className="habit-card__streak-flame" aria-hidden="true"><FlameIcon /></span>
+                  <span className="habit-card__streak-text" aria-hidden="true">
                     <AnimatePresence mode="popLayout" initial={false}>
                       <motion.span
                         key={streak.current}

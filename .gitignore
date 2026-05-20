@@ -36,3 +36,4 @@ dist-ssr
 # AI / Claude artifacts
 .claude/
 .playwright-mcp/
+*.png

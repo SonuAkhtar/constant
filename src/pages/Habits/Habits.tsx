@@ -1,8 +1,11 @@
 import { useState, useMemo } from 'react'
 import { AnimatePresence, motion, Reorder, useDragControls } from 'framer-motion'
+import { haptic } from '../../utils/haptic'
 import { useHabitStore } from '../../store/useHabitStore'
 import { useSlotTimingStore, formatSlotTime } from '../../store/useSlotTimingStore'
+import { useToastStore } from '../../store/useToastStore'
 import HabitForm from '../../components/HabitForm/HabitForm'
+import { HabitDetailSheet } from '../../components/Habits/HabitDetailSheet'
 import { HabitIcon, FlameIcon } from '../../components/Icons'
 import type { Habit, TimeSlot, Streak } from '../../types'
 import './Habits.css'
@@ -72,11 +75,12 @@ interface HabitRowProps {
   onArchive: (id: string) => void
   onDragStart: (e: React.PointerEvent) => void
   onSelect: (id: string) => void
+  onShowDetail: (id: string) => void
 }
 
 function HabitRow({
   habit, streak, confirmArchive, shakingId, organizing, selected,
-  onStartArchive, onCancelArchive, onArchive, onDragStart, onSelect,
+  onStartArchive, onCancelArchive, onArchive, onDragStart, onSelect, onShowDetail,
 }: HabitRowProps) {
   const isConfirming = confirmArchive === habit.id
   const isShaking    = shakingId === habit.id
@@ -126,7 +130,12 @@ function HabitRow({
           <DragHandle onPointerDown={onDragStart} />
           <span className="habits-page__row-icon"><HabitIcon icon={habit.icon} size={18} /></span>
           <div className="habits-page__row-body">
-            <p className="habits-page__row-title">{habit.title}</p>
+            <button
+              className="habits-page__row-title habits-page__row-title--btn"
+              onClick={() => onShowDetail(habit.id)}
+            >
+              {habit.title}
+            </button>
             {habit.description && (
               <p className="habits-page__row-desc">{habit.description}</p>
             )}
@@ -157,7 +166,7 @@ function HabitRow({
   )
 }
 
-type RowSharedProps = Pick<HabitRowProps, 'confirmArchive' | 'shakingId' | 'organizing' | 'onStartArchive' | 'onCancelArchive' | 'onArchive' | 'onSelect'>
+type RowSharedProps = Pick<HabitRowProps, 'confirmArchive' | 'shakingId' | 'organizing' | 'onStartArchive' | 'onCancelArchive' | 'onArchive' | 'onSelect' | 'onShowDetail'>
 
 function ReorderableRow({ habit, streak, selected, ...shared }: { habit: Habit; streak: Streak; selected: boolean } & RowSharedProps) {
   const dragControls = useDragControls()
@@ -181,8 +190,9 @@ function ReorderableRow({ habit, streak, selected, ...shared }: { habit: Habit; 
 }
 
 export default function Habits() {
-  const { habits, archiveHabit, unarchiveHabit, reorderHabits, getStreak, editHabit } = useHabitStore()
+  const { habits, logs, archiveHabit, unarchiveHabit, removeHabit, reorderHabits, getStreak, editHabit } = useHabitStore()
   const { timings, setSlotTiming } = useSlotTimingStore()
+  const pushToast = useToastStore(s => s.push)
   const [confirmArchive, setConfirmArchive] = useState<string | null>(null)
   const [shakingId, setShakingId]           = useState<string | null>(null)
   const [search, setSearch]                 = useState('')
@@ -192,6 +202,9 @@ export default function Habits() {
   const [editingSlot, setEditingSlot]       = useState<TimeSlot | null>(null)
   const [editStart, setEditStart]           = useState('')
   const [editEnd, setEditEnd]               = useState('')
+  const [detailHabitId, setDetailHabitId]           = useState<string | null>(null)
+  const [editFromDetailId, setEditFromDetailId]     = useState<string | null>(null)
+  const [confirmDelete, setConfirmDelete]           = useState<string | null>(null)
 
   function handleStartEditTime(slot: TimeSlot) {
     setEditingSlot(slot)
@@ -205,19 +218,20 @@ export default function Habits() {
 
     setSlotTiming(editingSlot, editStart, editEnd)
 
-    // cascade: next slot's start = this slot's end
+    let cascaded = false
     if (idx < SLOT_ORDER.length - 1) {
       const next = SLOT_ORDER[idx + 1]
       setSlotTiming(next, editEnd, timings[next].end)
+      cascaded = true
     }
-
-    // cascade: previous slot's end = this slot's start
     if (idx > 0) {
       const prev = SLOT_ORDER[idx - 1]
       setSlotTiming(prev, timings[prev].start, editStart)
+      cascaded = true
     }
 
     setEditingSlot(null)
+    if (cascaded) pushToast('Adjacent slots adjusted')
   }
 
   const activeHabits   = habits.filter(h => !h.isArchived)
@@ -234,7 +248,7 @@ export default function Habits() {
 
   function handleStartArchive(id: string) {
     setShakingId(id)
-    navigator.vibrate?.([20, 50, 20])
+    haptic('error')
     setTimeout(() => {
       setShakingId(null)
       setConfirmArchive(id)
@@ -274,13 +288,23 @@ export default function Habits() {
     onCancelArchive: () => setConfirmArchive(null),
     onArchive: id => { archiveHabit(id); setConfirmArchive(null) },
     onSelect: handleToggleSelect,
+    onShowDetail: id => setDetailHabitId(id),
   }
+
+  const streakMap = useMemo(() => {
+    const m = new Map<string, { habitId: string; current: number; best: number }>()
+    activeHabits.forEach(h => m.set(h.id, getStreak(h.id)))
+    return m
+  }, [habits, logs]) // eslint-disable-line react-hooks/exhaustive-deps
+
+  const detailHabit = habits.find(h => h.id === detailHabitId) ?? null
+  const editFromDetailHabit = habits.find(h => h.id === editFromDetailId) ?? null
 
   return (
     <div className="habits-page">
       <div className="habits-page__header">
         <div>
-          <h2 className="habits-page__heading">Your Habits</h2>
+          <h1 className="habits-page__heading">Your Habits</h1>
           <p className="habits-page__meta">{activeHabits.length} active habits</p>
         </div>
         <button
@@ -383,7 +407,7 @@ export default function Habits() {
                   <ReorderableRow
                     key={habit.id}
                     habit={habit}
-                    streak={getStreak(habit.id)}
+                    streak={streakMap.get(habit.id) ?? { habitId: habit.id, current: 0, best: 0 }}
                     selected={selected.has(habit.id)}
                     {...sharedProps}
                   />
@@ -402,6 +426,34 @@ export default function Habits() {
         )
       })}
 
+      {!search.trim() && !organizing && activeHabits.length === 0 && (
+        <motion.div
+          className="habits-page__empty"
+          initial={{ opacity: 0, y: 16 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ duration: 0.35 }}
+          role="region"
+          aria-label="No habits yet"
+        >
+          <div className="habits-page__empty-icon" aria-hidden="true">
+            <svg width="40" height="40" viewBox="0 0 40 40" fill="none">
+              <rect x="6" y="9" width="28" height="26" rx="4" stroke="currentColor" strokeWidth="1.8" />
+              <rect x="6" y="9" width="28" height="7" rx="4" fill="currentColor" opacity="0.12" />
+              <path d="M13 20h14M13 27h8" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" />
+            </svg>
+          </div>
+          <h3 className="habits-page__empty-title">No habits yet</h3>
+          <p className="habits-page__empty-sub">
+            Build habits that stick. Start with one.
+          </p>
+          <HabitForm defaultSlot="morning">
+            <button className="habits-page__empty-cta">
+              Add your first habit →
+            </button>
+          </HabitForm>
+        </motion.div>
+      )}
+
       {!organizing && !search.trim() && archivedHabits.length > 0 && (
         <section className="habits-page__section habits-page__section--archived">
           <button
@@ -409,7 +461,12 @@ export default function Habits() {
             onClick={() => setShowArchived(v => !v)}
           >
             <span>Archived ({archivedHabits.length})</span>
-            <span className="habits-page__archived-chevron">{showArchived ? '▲' : '▼'}</span>
+            <svg
+              className={['habits-page__archived-chevron', showArchived ? 'habits-page__archived-chevron--open' : ''].join(' ')}
+              width="12" height="12" viewBox="0 0 12 12" fill="none" aria-hidden="true"
+            >
+              <path d="M2 4l4 4 4-4" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" />
+            </svg>
           </button>
           <AnimatePresence>
             {showArchived && (
@@ -422,16 +479,36 @@ export default function Habits() {
               >
                 {archivedHabits.map(habit => (
                   <div key={habit.id} className="habits-page__row habits-page__row--archived" data-slot={habit.timeSlot}>
-                    <span className="habits-page__row-icon" style={{ opacity: 0.5 }}><HabitIcon icon={habit.icon} size={18} /></span>
-                    <div className="habits-page__row-body">
-                      <p className="habits-page__row-title" style={{ opacity: 0.55 }}>{habit.title}</p>
-                    </div>
-                    <button
-                      className="habits-page__action habits-page__action--restore"
-                      onClick={() => unarchiveHabit(habit.id)}
-                    >
-                      Restore
-                    </button>
+                    {confirmDelete === habit.id ? (
+                      <>
+                        <p className="habits-page__confirm-text">Delete &ldquo;{habit.title}&rdquo; permanently?</p>
+                        <p className="habits-page__confirm-sub">This removes all history and cannot be undone.</p>
+                        <div className="habits-page__confirm-actions">
+                          <button className="habits-page__confirm-cancel" onClick={() => setConfirmDelete(null)}>Cancel</button>
+                          <button className="habits-page__confirm-delete" onClick={() => { removeHabit(habit.id); setConfirmDelete(null) }}>Delete</button>
+                        </div>
+                      </>
+                    ) : (
+                      <>
+                        <span className="habits-page__row-icon" style={{ opacity: 0.5 }}><HabitIcon icon={habit.icon} size={18} /></span>
+                        <div className="habits-page__row-body">
+                          <p className="habits-page__row-title" style={{ opacity: 0.55 }}>{habit.title}</p>
+                        </div>
+                        <button
+                          className="habits-page__action habits-page__action--restore"
+                          onClick={() => unarchiveHabit(habit.id)}
+                        >
+                          Restore
+                        </button>
+                        <button
+                          className="habits-page__action habits-page__action--delete"
+                          aria-label="Delete permanently"
+                          onClick={() => setConfirmDelete(habit.id)}
+                        >
+                          <TrashIcon />
+                        </button>
+                      </>
+                    )}
                   </div>
                 ))}
               </motion.div>
@@ -492,6 +569,27 @@ export default function Habits() {
           </motion.div>
         )}
       </AnimatePresence>
+
+      <HabitDetailSheet
+        habit={detailHabit}
+        open={!!detailHabitId}
+        onOpenChange={val => { if (!val) setDetailHabitId(null) }}
+        onEdit={() => {
+          const id = detailHabitId
+          setDetailHabitId(null)
+          setTimeout(() => setEditFromDetailId(id), 240)
+        }}
+        onArchive={() => { if (detailHabitId) handleStartArchive(detailHabitId) }}
+      />
+
+      {editFromDetailHabit && (
+        <HabitForm
+          defaultSlot={editFromDetailHabit.timeSlot}
+          habit={editFromDetailHabit}
+          open={true}
+          onOpenChange={val => { if (!val) setEditFromDetailId(null) }}
+        />
+      )}
     </div>
   )
 }

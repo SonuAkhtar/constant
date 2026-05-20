@@ -1,19 +1,47 @@
-import { useEffect, useState } from "react";
+import { Component, lazy, Suspense, useEffect, useState } from "react";
+import type { ReactNode } from "react";
 import { BrowserRouter, Routes, Route } from "react-router-dom";
 import { motion } from "framer-motion";
 import Layout from "./components/Layout/Layout";
 import Auth from "./components/Auth/Auth";
 import Today from "./pages/Today/Today";
-import Progress from "./pages/Progress/Progress";
-import Habits from "./pages/Habits/Habits";
-import Profile from "./pages/Profile/Profile";
-import Wellness from "./pages/Wellness/Wellness";
 import InstallPrompt from "./components/InstallPrompt/InstallPrompt";
+import ToastContainer from "./components/Toast/Toast";
+
+const Progress = lazy(() => import("./pages/Progress/Progress"));
+const Habits   = lazy(() => import("./pages/Habits/Habits"));
+const Wellness = lazy(() => import("./pages/Wellness/Wellness"));
+const Profile  = lazy(() => import("./pages/Profile/Profile"));
 import { useThemeStore } from "./store/useThemeStore";
 import { useOnboardingStore } from "./store/useOnboardingStore";
 import { useAuthStore } from "./store/useAuthStore";
 import { useHabitStore } from "./store/useHabitStore";
 import type { TimeSlot } from "./types";
+
+class ErrorBoundary extends Component<
+  { children: ReactNode },
+  { error: Error | null }
+> {
+  state = { error: null };
+  static getDerivedStateFromError(error: Error) { return { error }; }
+  render() {
+    if (this.state.error) {
+      return (
+        <div style={{ display: "flex", flexDirection: "column", alignItems: "center", justifyContent: "center", height: "100dvh", gap: "1rem", padding: "1.5rem", textAlign: "center" }}>
+          <p style={{ fontSize: "1.5rem" }}>⚠️</p>
+          <p style={{ fontWeight: 700 }}>Something went wrong</p>
+          <button
+            style={{ padding: "0.5rem 1.25rem", borderRadius: "9999px", background: "var(--color-primary)", color: "#fff", fontWeight: 600 }}
+            onClick={() => this.setState({ error: null })}
+          >
+            Try again
+          </button>
+        </div>
+      );
+    }
+    return this.props.children;
+  }
+}
 
 const DEFAULT_HABITS: { title: string; icon: string; timeSlot: TimeSlot }[] = [
   { title: "Morning Stretch",      icon: "stretch",  timeSlot: "morning"   },
@@ -33,6 +61,20 @@ const DEFAULT_HABITS: { title: string; icon: string; timeSlot: TimeSlot }[] = [
   { title: "Take Vitamins",        icon: "medicine", timeSlot: "night"     },
   { title: "Night Stretch",        icon: "stretch",  timeSlot: "night"     },
 ];
+
+function PageSkeleton() {
+  return <div className="layout__page" style={{ minHeight: '100%' }} />;
+}
+
+function RouteBoundary({ children }: { children: ReactNode }) {
+  return (
+    <ErrorBoundary>
+      <Suspense fallback={<PageSkeleton />}>
+        {children}
+      </Suspense>
+    </ErrorBoundary>
+  );
+}
 
 function AppSpinner() {
   return (
@@ -141,14 +183,15 @@ export default function App() {
     <BrowserRouter>
       <Routes>
         <Route element={<Layout />}>
-          <Route index element={<Today />} />
-          <Route path="progress" element={<Progress />} />
-          <Route path="habits" element={<Habits />} />
-          <Route path="wellness" element={<Wellness />} />
-          <Route path="profile" element={<Profile />} />
+          <Route index element={<ErrorBoundary><Today /></ErrorBoundary>} />
+          <Route path="progress"  element={<RouteBoundary><Progress /></RouteBoundary>} />
+          <Route path="habits"    element={<RouteBoundary><Habits /></RouteBoundary>} />
+          <Route path="wellness"  element={<RouteBoundary><Wellness /></RouteBoundary>} />
+          <Route path="profile"   element={<RouteBoundary><Profile /></RouteBoundary>} />
         </Route>
       </Routes>
       <InstallPrompt />
+      <ToastContainer />
     </BrowserRouter>
   );
 }

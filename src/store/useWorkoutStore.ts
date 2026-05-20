@@ -18,6 +18,6 @@ export const useWorkoutStore = create<WorkoutState>()(
         set((s) => ({ weights: { ...s.weights, [exerciseId]: kg } })),
       setLevel: (level) => set({ level }),
     }),
-    { name: 'workout-weights' }
+    { name: 'workout-weights', version: 1, migrate: (s) => s as WorkoutState }
   )
 )

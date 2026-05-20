@@ -1,11 +1,11 @@
 .progress-page {
-  padding: var(--space-4) var(--space-5) var(--space-8);
+  padding: var(--page-padding-top) var(--page-padding-x) var(--space-8);
 }
 
 .progress-page__heading {
   font-family: var(--font-display);
   font-size: var(--font-xl);
-  font-weight: var(--weight-bold);
+  font-weight: var(--weight-black);
   color: var(--color-text);
   letter-spacing: -0.4px;
   margin-bottom: var(--space-5);
@@ -142,7 +142,7 @@
   font-weight: var(--weight-semibold);
   color: var(--color-text-muted);
   border-radius: calc(var(--radius-md) - 3px);
-  transition: all var(--ease-base);
+  transition: background var(--ease-base), color var(--ease-base), box-shadow var(--ease-base);
 }
 
 .progress-page__tab--active {
@@ -213,8 +213,9 @@
   background: var(--color-surface);
   border: 1px solid var(--color-border);
   border-radius: var(--radius-md);
-  padding: var(--space-3) var(--space-4);
-  box-shadow: var(--shadow-md);
+  padding: var(--space-2) var(--space-3);
+  box-shadow: 0 4px 16px rgba(0, 0, 0, 0.08);
+  font-size: var(--font-sm);
 }
 
 .progress-page__tooltip-date {
@@ -351,37 +352,34 @@
   font-weight: var(--weight-bold);
   color: var(--color-text);
   letter-spacing: var(--tracking-tight);
+  max-width: 240px;
 }
 
 .progress-page__empty-sub {
   font-size: var(--font-sm);
   color: var(--color-text-muted);
   line-height: var(--leading-normal);
+  max-width: 240px;
 }
 
 .progress-page__empty-cta {
   margin-top: var(--space-2);
   padding: var(--space-3) var(--space-5);
-  background: var(--color-primary);
-  color: #fff;
-  border-radius: var(--radius-md);
+  background: transparent;
+  color: var(--color-primary-text);
+  border: 1.5px solid var(--color-primary);
+  border-radius: var(--radius-full);
   font-family: var(--font-display);
   font-size: var(--font-sm);
   font-weight: var(--weight-bold);
-  box-shadow: 0 4px 12px rgba(76, 96, 86, 0.18);
   transition:
-    opacity var(--ease-base),
-    transform var(--ease-fast),
-    box-shadow var(--ease-base);
+    background var(--ease-base),
+    opacity     var(--ease-base),
+    transform   var(--ease-fast);
 }
 
-.progress-page__empty-cta:hover {
-  box-shadow: var(--glow-primary);
-}
-.progress-page__empty-cta:active {
-  transform: scale(0.97);
-  opacity: 0.9;
-}
+.progress-page__empty-cta:hover  { background: var(--color-primary-dim); }
+.progress-page__empty-cta:active { transform: scale(0.97); opacity: 0.88; }
 
 /* =========================================================================
    PERSONAL BESTS
@@ -417,7 +415,7 @@
   font-size: var(--font-sm);
   font-weight: var(--weight-semibold);
   color: var(--color-text-muted);
-  transition: all var(--ease-base);
+  transition: background var(--ease-base), border-color var(--ease-base), color var(--ease-base);
 }
 
 .progress-page__share-btn:hover {
@@ -761,4 +759,45 @@
 
 .ph-mini-dots__dot--off {
   background: transparent;
+}
+
+/* ---- Month navigation ---- */
+
+.progress-page__month-nav {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: var(--space-2) var(--space-1);
+  margin-bottom: var(--space-2);
+}
+
+.progress-page__month-nav-btn {
+  width: 32px;
+  height: 32px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: var(--radius-md);
+  background: var(--color-surface-alt);
+  color: var(--color-text-muted);
+  border: none;
+  cursor: pointer;
+  transition: background var(--duration-fast) var(--ease-snap), opacity var(--duration-fast) var(--ease-snap);
+  -webkit-tap-highlight-color: transparent;
+}
+
+.progress-page__month-nav-btn:hover:not(:disabled) {
+  background: var(--color-border);
+  color: var(--color-text);
+}
+
+.progress-page__month-nav-btn:disabled {
+  opacity: 0.3;
+  cursor: default;
+}
+
+.progress-page__month-label {
+  font-size: var(--font-sm);
+  font-weight: var(--weight-semibold);
+  color: var(--color-text);
 }

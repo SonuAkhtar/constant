@@ -28,7 +28,7 @@ export const useSlotTimingStore = create<SlotTimingState>()(
       setSlotTiming: (slot, start, end) =>
         set(state => ({ timings: { ...state.timings, [slot]: { start, end } } })),
     }),
-    { name: 'constant-slot-timings' }
+    { name: 'constant-slot-timings', version: 1, migrate: (s) => s as SlotTimingState }
   )
 )
 

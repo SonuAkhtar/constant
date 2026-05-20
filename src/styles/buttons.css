@@ -1,0 +1,126 @@
+/* ============================================================
+   Shared button classes — use these on new buttons rather
+   than writing one-off component styles.
+   Component-level overrides (sizing, icon arrangement) are
+   still done in component CSS.
+   ============================================================ */
+
+/* ---- Primary ---- */
+
+.btn-primary {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: var(--space-2);
+  padding: var(--space-3) var(--space-5);
+  background: var(--color-primary);
+  color: #ffffff;
+  border: none;
+  border-radius: var(--radius-full);
+  font-family: var(--font-display);
+  font-size: var(--font-base);
+  font-weight: var(--weight-bold);
+  letter-spacing: 0.01em;
+  box-shadow: 0 4px 12px rgba(76, 96, 86, 0.22);
+  transition:
+    opacity      var(--duration-base) var(--ease-snap),
+    transform    var(--duration-fast) var(--ease-snap),
+    box-shadow   var(--duration-base) var(--ease-snap);
+}
+
+[data-theme="dark"] .btn-primary { color: var(--color-bg); }
+
+.btn-primary:hover  { box-shadow: var(--glow-primary); opacity: 0.92; }
+.btn-primary:active { transform: scale(0.96); opacity: 0.88; }
+
+/* ---- Secondary (outlined) ---- */
+
+.btn-secondary {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: var(--space-2);
+  padding: var(--space-3) var(--space-5);
+  background: transparent;
+  color: var(--color-primary-text);
+  border: 1.5px solid var(--color-primary);
+  border-radius: var(--radius-full);
+  font-family: var(--font-display);
+  font-size: var(--font-base);
+  font-weight: var(--weight-bold);
+  transition:
+    background    var(--duration-base) var(--ease-snap),
+    border-color  var(--duration-base) var(--ease-snap),
+    color         var(--duration-base) var(--ease-snap),
+    opacity       var(--duration-base) var(--ease-snap),
+    transform     var(--duration-fast) var(--ease-snap);
+}
+
+.btn-secondary:hover  { background: var(--color-primary-dim); }
+.btn-secondary:active { transform: scale(0.96); opacity: 0.88; }
+
+/* ---- Ghost ---- */
+
+.btn-ghost {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: var(--space-2);
+  padding: var(--space-2) var(--space-4);
+  background: transparent;
+  color: var(--color-text-muted);
+  border: none;
+  border-radius: var(--radius-full);
+  font-size: var(--font-sm);
+  font-weight: var(--weight-semibold);
+  transition:
+    color    var(--duration-base) var(--ease-snap),
+    opacity  var(--duration-base) var(--ease-snap);
+}
+
+.btn-ghost:hover  { color: var(--color-text); }
+.btn-ghost:active { opacity: 0.7; }
+
+/* ---- Danger ---- */
+
+.btn-danger {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: var(--space-2);
+  padding: var(--space-3) var(--space-5);
+  background: transparent;
+  color: var(--color-error);
+  border: 1px solid var(--color-error);
+  border-radius: var(--radius-md);
+  font-size: var(--font-sm);
+  font-weight: var(--weight-semibold);
+  transition:
+    background  var(--duration-base) var(--ease-snap),
+    color       var(--duration-base) var(--ease-snap),
+    opacity     var(--duration-base) var(--ease-snap);
+}
+
+.btn-danger:hover  { background: var(--color-error); color: #ffffff; }
+.btn-danger:active { opacity: 0.85; }
+
+/* ---- Icon button (circular, min 40×40 touch target) ---- */
+
+.btn-icon {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 40px;
+  height: 40px;
+  min-width: 40px;
+  border-radius: var(--radius-full);
+  background: var(--color-surface-alt);
+  color: var(--color-text-muted);
+  border: none;
+  transition:
+    background  var(--duration-base) var(--ease-snap),
+    color       var(--duration-base) var(--ease-snap);
+}
+
+.btn-icon:hover  { background: var(--color-primary-dim); color: var(--color-primary); }
+.btn-icon:active { opacity: 0.75; }

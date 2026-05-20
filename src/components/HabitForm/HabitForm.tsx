@@ -40,21 +40,23 @@ export default function HabitForm({ defaultSlot, defaultTitle, habit, children, 
 
   const [title,       setTitle]       = useState('')
   const [description, setDescription] = useState('')
-  const [timeSlot,    setTimeSlot]    = useState<TimeSlot>(defaultSlot)
-  const [frequency,   setFrequency]   = useState<HabitFrequency>('daily')
-  const [customDays,  setCustomDays]  = useState<number[]>([1, 2, 3, 4, 5])
-  const [icon,        setIcon]        = useState<string>('water')
-  const [shaking,     setShaking]     = useState(false)
+  const [timeSlot,     setTimeSlot]     = useState<TimeSlot>(defaultSlot)
+  const [frequency,    setFrequency]    = useState<HabitFrequency>('daily')
+  const [customDays,   setCustomDays]   = useState<number[]>([1, 2, 3, 4, 5])
+  const [icon,         setIcon]         = useState<string>('water')
+  const [shaking,      setShaking]      = useState(false)
+
+  function resetForm() {
+    setTitle(habit?.title ?? defaultTitle ?? '')
+    setDescription(habit?.description ?? '')
+    setTimeSlot(habit?.timeSlot ?? defaultSlot)
+    setFrequency(habit?.frequency ?? 'daily')
+    setCustomDays(habit?.customDays ?? [1, 2, 3, 4, 5])
+    setIcon(HABIT_ICON_OPTIONS.some(o => o.key === habit?.icon) ? habit!.icon : 'water')
+  }
 
   useEffect(() => {
-    if (open) {
-      setTitle(habit?.title ?? defaultTitle ?? '')
-      setDescription(habit?.description ?? '')
-      setTimeSlot(habit?.timeSlot ?? defaultSlot)
-      setFrequency(habit?.frequency ?? 'daily')
-      setCustomDays(habit?.customDays ?? [1, 2, 3, 4, 5])
-      setIcon(HABIT_ICON_OPTIONS.some(o => o.key === habit?.icon) ? habit!.icon : 'water')
-    }
+    if (open) resetForm()
   // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [open])
 
@@ -70,14 +72,7 @@ export default function HabitForm({ defaultSlot, defaultTitle, habit, children, 
     } else {
       setOpenInternal(next)
     }
-    if (next) {
-      setTitle(habit?.title ?? defaultTitle ?? '')
-      setDescription(habit?.description ?? '')
-      setTimeSlot(habit?.timeSlot ?? defaultSlot)
-      setFrequency(habit?.frequency ?? 'daily')
-      setCustomDays(habit?.customDays ?? [1, 2, 3, 4, 5])
-      setIcon(HABIT_ICON_OPTIONS.some(o => o.key === habit?.icon) ? habit!.icon : 'water')
-    }
+    if (next) resetForm()
   }
 
   function toggleDay(day: number) {
@@ -100,7 +95,7 @@ export default function HabitForm({ defaultSlot, defaultTitle, habit, children, 
       timeSlot,
       icon,
       frequency,
-      customDays:  frequency === 'custom' ? customDays : undefined,
+      customDays:   frequency === 'custom' ? customDays : undefined,
     }
     if (isEditMode && habit) {
       editHabit(habit.id, payload)

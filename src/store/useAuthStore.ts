@@ -30,6 +30,8 @@ export const useAuthStore = create<AuthState>()(
     }),
     {
       name: 'constant-auth',
+      version: 1,
+      migrate: (s) => s as AuthState,
       partialize: (state) => ({ userId: state.userId, phone: state.phone }),
     }
   )

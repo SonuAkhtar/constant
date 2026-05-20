@@ -391,14 +391,26 @@ function DayView({ workoutDay }: { workoutDay: (typeof workoutDays)[number] }) {
           <h3 className="workout__day-label">{workoutDay.label}</h3>
           <p className="workout__day-focus">{workoutDay.focus}</p>
         </div>
-        {workoutDay.isRest && <span className="workout__rest-badge">Rest Day</span>}
+        {workoutDay.isRest && <span className="workout__rest-badge">Rest day</span>}
       </div>
       <p className="workout__day-summary">{workoutDay.summary}</p>
-      <div className="workout__exercises">
-        {workoutDay.exercises.map((ex) => (
-          <ExerciseRow key={ex.id} exercise={ex} />
-        ))}
-      </div>
+      {workoutDay.isRest ? (
+        <div className="workout__rest-state" role="status">
+          <svg width="36" height="36" viewBox="0 0 36 36" fill="none" aria-hidden="true">
+            <circle cx="18" cy="18" r="16" stroke="currentColor" strokeWidth="1.6" opacity="0.25" />
+            <path d="M12 18c0-3.3 2.7-6 6-6s6 2.7 6 6-2.7 6-6 6-6-2.7-6-6z" stroke="currentColor" strokeWidth="1.6" />
+            <path d="M18 13v5l3 2" stroke="currentColor" strokeWidth="1.6" strokeLinecap="round" strokeLinejoin="round" />
+          </svg>
+          <p className="workout__rest-state-title">Rest day</p>
+          <p className="workout__rest-state-sub">Your body thanks you</p>
+        </div>
+      ) : (
+        <div className="workout__exercises">
+          {workoutDay.exercises.map((ex) => (
+            <ExerciseRow key={ex.id} exercise={ex} />
+          ))}
+        </div>
+      )}
     </div>
   )
 }

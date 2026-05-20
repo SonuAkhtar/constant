@@ -9,16 +9,15 @@
   display: flex;
   flex-direction: column;
   align-items: center;
-  justify-content: center;
-  gap: var(--space-5);
   background: var(--color-bg);
   padding: env(safe-area-inset-top) var(--space-6)
     calc(var(--space-6) + env(safe-area-inset-bottom));
+  padding-top: 7vh;
   overflow: hidden;
 }
 
 .auth__logo-float {
-  height: 40vh;
+  height: 35vh;
   object-fit: contain;
   flex-shrink: 0;
 }

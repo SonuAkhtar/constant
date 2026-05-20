@@ -29,8 +29,9 @@ function MoonIcon() {
 }
 
 export default function Header({ scrolled = false }: Props) {
-  const { habits } = useHabitStore()
-  const { theme, toggleTheme } = useThemeStore()
+  const habits      = useHabitStore(s => s.habits)
+  const theme       = useThemeStore(s => s.theme)
+  const toggleTheme = useThemeStore(s => s.toggleTheme)
   const isDark = theme === 'dark'
   const location = useLocation()
 

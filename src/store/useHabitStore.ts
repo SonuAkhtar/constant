@@ -6,7 +6,6 @@ import type {
   HabitLog,
   DailyProgress,
   Streak,
-  HabitFrequency,
   SkipReason,
   PersonalBests,
   HabitStats,
@@ -22,16 +21,9 @@ import {
   upsertMilestone,
 } from "../lib/db";
 import { useAuthStore } from "./useAuthStore";
+import { isScheduledOn } from "../utils/schedule";
 
 const uid = () => useAuthStore.getState().userId;
-
-function isScheduledOn(habit: Habit, dayOfWeek: number): boolean {
-  const freq: HabitFrequency = habit.frequency ?? "daily";
-  if (freq === "daily") return true;
-  if (freq === "weekdays") return dayOfWeek >= 1 && dayOfWeek <= 5;
-  if (freq === "custom") return (habit.customDays ?? []).includes(dayOfWeek);
-  return true;
-}
 
 function computeStreak(logs: HabitLog[], habitId: string): Streak {
   const today = new Date();
@@ -613,6 +605,6 @@ export const useHabitStore = create<HabitState>()(
 
       reset: () => set({ habits: [], logs: [], milestones: [] }),
     }),
-    { name: "constant-habits" },
+    { name: "constant-habits", version: 1, migrate: (s) => s as HabitState },
   ),
 );

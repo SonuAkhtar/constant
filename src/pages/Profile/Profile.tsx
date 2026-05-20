@@ -133,6 +133,8 @@ export default function Profile() {
   const { theme, toggleTheme } = useThemeStore();
   const { phone, signOut } = useAuthStore();
 
+  const [confirmSignOut, setConfirmSignOut] = useState(false);
+
   function handleSignOut() {
     resetHabits();
     resetOnboarding();
@@ -321,7 +323,9 @@ export default function Profile() {
             </div>
           </div>
         )}
+        <label htmlFor="profile-photo-input" className="sr-only">Upload profile photo</label>
         <input
+          id="profile-photo-input"
           ref={photoRef}
           type="file"
           accept="image/*"
@@ -519,9 +523,23 @@ export default function Profile() {
             onChange={handleImport}
           />
         </div>
-        <button className="profile__signout-btn" onClick={handleSignOut}>
-          Sign out
-        </button>
+        {confirmSignOut ? (
+          <div className="profile__signout-confirm">
+            <p className="profile__signout-confirm-text">Sign out and clear local data?</p>
+            <div className="profile__signout-confirm-actions">
+              <button className="profile__signout-cancel" onClick={() => setConfirmSignOut(false)}>
+                Cancel
+              </button>
+              <button className="profile__signout-confirm-btn" onClick={handleSignOut}>
+                Sign out
+              </button>
+            </div>
+          </div>
+        ) : (
+          <button className="profile__signout-btn" onClick={() => setConfirmSignOut(true)}>
+            Sign out
+          </button>
+        )}
       </div>
     </div>
   );
