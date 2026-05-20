@@ -1,5 +1,5 @@
 import { Component, lazy, Suspense, useEffect, useState } from "react";
-import type { ReactNode } from "react";
+import type { ComponentType, ReactNode } from "react";
 import { BrowserRouter, Routes, Route } from "react-router-dom";
 import { motion } from "framer-motion";
 import Layout from "./components/Layout/Layout";
@@ -8,10 +8,52 @@ import Today from "./pages/Today/Today";
 import InstallPrompt from "./components/InstallPrompt/InstallPrompt";
 import ToastContainer from "./components/Toast/Toast";
 
-const Progress = lazy(() => import("./pages/Progress/Progress"));
-const Habits   = lazy(() => import("./pages/Habits/Habits"));
-const Wellness = lazy(() => import("./pages/Wellness/Wellness"));
-const Profile  = lazy(() => import("./pages/Profile/Profile"));
+// ── Chunk-error-resilient lazy loader ───────────────────────────────────
+// When the PWA service worker swaps in a new build, old chunk filenames
+// (e.g. Progress-CYLh55rf.js) no longer exist on the server. The dynamic
+// import() rejects, Suspense never resolves, and the user sees a blank
+// page forever. This wrapper retries once, then triggers a single
+// controlled reload to pick up the new asset manifest.
+function lazyWithRetry<T extends ComponentType<unknown>>(
+  factory: () => Promise<{ default: T }>,
+  chunkName: string,
+) {
+  return lazy(async () => {
+    const RELOAD_KEY = `constant-chunk-reload:${chunkName}`;
+    try {
+      return await factory();
+    } catch (err) {
+      if (!sessionStorage.getItem(RELOAD_KEY)) {
+        sessionStorage.setItem(RELOAD_KEY, "1");
+        window.location.reload();
+        // never-resolves so React keeps the fallback while the page reloads
+        return new Promise<{ default: T }>(() => {});
+      }
+      sessionStorage.removeItem(RELOAD_KEY);
+      throw err;
+    }
+  });
+}
+
+// Factories so we can both lazy() and pre-warm() with the same import call.
+const loadProgress = () => import("./pages/Progress/Progress");
+const loadHabits   = () => import("./pages/Habits/Habits");
+const loadWellness = () => import("./pages/Wellness/Wellness");
+const loadProfile  = () => import("./pages/Profile/Profile");
+
+const Progress = lazyWithRetry(loadProgress, "progress");
+const Habits   = lazyWithRetry(loadHabits,   "habits");
+const Wellness = lazyWithRetry(loadWellness, "wellness");
+const Profile  = lazyWithRetry(loadProfile,  "profile");
+
+// Pre-warm every route chunk once the main thread is idle, so navigating
+// from Today → any other tab is instant (no chunk download, no blank gap).
+function preloadRoutes() {
+  loadProgress();
+  loadHabits();
+  loadWellness();
+  loadProfile();
+}
 import { useThemeStore } from "./store/useThemeStore";
 import { useOnboardingStore } from "./store/useOnboardingStore";
 import { useAuthStore } from "./store/useAuthStore";
@@ -63,7 +105,20 @@ const DEFAULT_HABITS: { title: string; icon: string; timeSlot: TimeSlot }[] = [
 ];
 
 function PageSkeleton() {
-  return <div className="layout__page" style={{ minHeight: '100%' }} />;
+  return (
+    <div className="layout__page layout__page-loading" aria-hidden="true">
+      <motion.img
+        src="/new-logo-full.png"
+        className="layout__page-loading-logo"
+        alt=""
+        initial={{ opacity: 0 }}
+        animate={{ opacity: [0, 0.5, 0.3, 0.5] }}
+        transition={{
+          opacity: { duration: 1.4, repeat: Infinity, ease: "easeInOut" },
+        }}
+      />
+    </div>
+  );
 }
 
 function RouteBoundary({ children }: { children: ReactNode }) {
@@ -167,6 +222,25 @@ export default function App() {
       setDbLoaded(true);
     });
   }, [userId, loadHabits, loadProfile]);
+
+  // Pre-warm route chunks once the app shell is interactive so the first
+  // bottom-nav tap doesn't trigger a blank-page chunk download on mobile.
+  useEffect(() => {
+    if (!dbLoaded || !completed) return;
+    type RIC = (cb: () => void, opts?: { timeout: number }) => number;
+    type CIC = (id: number) => void;
+    const w = window as Window & {
+      requestIdleCallback?: RIC;
+      cancelIdleCallback?: CIC;
+    };
+    const id = w.requestIdleCallback
+      ? w.requestIdleCallback(preloadRoutes, { timeout: 2000 })
+      : window.setTimeout(preloadRoutes, 800);
+    return () => {
+      if (w.cancelIdleCallback) w.cancelIdleCallback(id);
+      else window.clearTimeout(id);
+    };
+  }, [dbLoaded, completed]);
 
   function handleOnboardingDone(name: string) {
     if (useHabitStore.getState().habits.length === 0) {

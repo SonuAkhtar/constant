@@ -25,6 +25,23 @@
   min-height: 100%;
 }
 
+/* Calm loading state shown while a lazy route chunk is downloading.
+   Replaces the previous blank div so users see a heartbeat instead of
+   a flash-of-empty-screen during navigation on mobile networks. */
+.layout__page-loading {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  min-height: 60vh;
+}
+
+.layout__page-loading-logo {
+  width: min(140px, 36vw);
+  height: auto;
+  aspect-ratio: 3 / 2;
+  object-fit: contain;
+}
+
 @media (min-width: 768px) {
   .layout {
     max-width: 560px;
