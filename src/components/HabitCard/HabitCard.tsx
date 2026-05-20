@@ -41,9 +41,9 @@ export default function HabitCard({
     if (!cardDisabled) {
       setJustCompleted(true);
       setTimeout(() => setJustCompleted(false), 650);
-      haptic('success');
+      haptic("success");
     } else if (done) {
-      haptic('light');
+      haptic("light");
     }
     onToggle();
   }
@@ -113,8 +113,8 @@ export default function HabitCard({
               done
                 ? `Mark ${habit.title} as incomplete`
                 : skipped
-                ? `${habit.title} — skipped`
-                : `Mark ${habit.title} as complete`
+                  ? `${habit.title}- skipped`
+                  : `Mark ${habit.title} as complete`
             }
             animate={
               justCompleted ? { scale: [1, 1.025, 0.99, 1] } : { scale: 1 }
@@ -151,7 +151,9 @@ export default function HabitCard({
                   ].join(" ")}
                   aria-label={`${streak.current} day streak`}
                 >
-                  <span className="habit-card__streak-flame" aria-hidden="true"><FlameIcon /></span>
+                  <span className="habit-card__streak-flame" aria-hidden="true">
+                    <FlameIcon />
+                  </span>
                   <span className="habit-card__streak-text" aria-hidden="true">
                     <AnimatePresence mode="popLayout" initial={false}>
                       <motion.span

@@ -5,6 +5,7 @@ import { useOnboardingStore } from "../../store/useOnboardingStore";
 import { useThemeStore } from "../../store/useThemeStore";
 import { useAuthStore } from "../../store/useAuthStore";
 import { FocusIcon, TrophyIcon } from "../../components/Icons";
+import HabitForm from "../../components/HabitForm/HabitForm";
 import "./Profile.css";
 
 const DAILY_QUOTES = [
@@ -16,13 +17,6 @@ const DAILY_QUOTES = [
   "The secret is to start before you feel ready.",
   "Consistency beats intensity every time.",
 ];
-
-function getStreakLabel(n: number): string {
-  if (n >= 15) return "Unstoppable";
-  if (n >= 7) return "Consistent";
-  if (n >= 3) return "Building";
-  return "Day Streak";
-}
 
 const RING_R = 36;
 const RING_C = 2 * Math.PI * RING_R;
@@ -65,34 +59,6 @@ function AvatarRing({ pct }: { pct: number }) {
   );
 }
 
-const MINI_R = 7;
-const MINI_C = 2 * Math.PI * MINI_R;
-
-function MiniRing({ completed, total }: { completed: number; total: number }) {
-  const pct = total > 0 ? completed / total : 0;
-  const offset = MINI_C * (1 - pct);
-  return (
-    <svg
-      className="profile__mini-ring"
-      viewBox="0 0 20 20"
-      width="20"
-      height="20"
-      aria-hidden="true"
-    >
-      <circle cx="10" cy="10" r={MINI_R} className="profile__mini-track" />
-      <circle
-        cx="10"
-        cy="10"
-        r={MINI_R}
-        className="profile__mini-fill"
-        strokeDasharray={`${MINI_C}`}
-        strokeDashoffset={offset}
-        transform="rotate(-90 10 10)"
-      />
-    </svg>
-  );
-}
-
 const FOCUS_OPTIONS = [
   { id: "health",       label: "Health"       },
   { id: "mindfulness",  label: "Mindfulness"  },
@@ -113,19 +79,19 @@ export default function Profile() {
   const {
     userName,
     focuses,
-    goal,
-    goalSetDate,
+    goals,
     updateProfile,
-    setGoal,
-    clearGoal,
+    addGoal,
+    editGoal,
+    deleteGoal,
     reset: resetOnboarding,
   } = useOnboardingStore();
   const {
     habits,
     logs,
     milestones,
-    getAppStreak,
     getDayProgress,
+    removeHabit,
     exportData,
     importData,
     reset: resetHabits,
@@ -142,7 +108,6 @@ export default function Profile() {
   }
 
   const isDark = theme === "dark";
-  const appStreak = getAppStreak();
   const { completed, total } = getDayProgress();
   const initials = getInitials(userName);
   const todayPct = total > 0 ? Math.round((completed / total) * 100) : 0;
@@ -173,8 +138,61 @@ export default function Profile() {
   const [editName, setEditName] = useState(userName);
   const [editFocuses, setEditFocuses] = useState<string[]>(focuses);
 
-  const [editingGoal, setEditingGoal] = useState(false);
-  const [goalInput, setGoalInput] = useState(goal);
+  // Goal management state
+  const [editingGoalId, setEditingGoalId] = useState<string | null>(null);
+  const [editGoalInput, setEditGoalInput] = useState("");
+  const [confirmDeleteGoalId, setConfirmDeleteGoalId] = useState<string | null>(null);
+
+  // Add-goal flow: clicking the button opens HabitForm directly.
+  // A goal is only created if the user actually saves the habit
+  // (a new habit appears in the store). Cancelling = no goal, no habit.
+  const [pendingGoalCreation, setPendingGoalCreation] = useState(false);
+  const [habitFormOpen, setHabitFormOpen] = useState(false);
+  const habitCountBeforeFormRef = useRef(0);
+
+  function startAddingGoal() {
+    habitCountBeforeFormRef.current = habits.length;
+    setPendingGoalCreation(true);
+    setHabitFormOpen(true);
+  }
+
+  function handleEditGoalStart(id: string, text: string) {
+    setEditingGoalId(id);
+    setEditGoalInput(text);
+  }
+
+  function handleEditGoalSave() {
+    if (!editingGoalId) return;
+    const text = editGoalInput.trim();
+    if (text) editGoal(editingGoalId, text);
+    setEditingGoalId(null);
+    setEditGoalInput("");
+  }
+
+  function handleDeleteGoalConfirm() {
+    if (!confirmDeleteGoalId) return;
+    const goal = goals.find((g) => g.id === confirmDeleteGoalId);
+    if (goal?.habitId) {
+      // Also remove the linked habit so it disappears from Today + Habits.
+      // removeHabit hard-deletes and syncs to Supabase.
+      removeHabit(goal.habitId);
+    }
+    deleteGoal(confirmDeleteGoalId);
+    setConfirmDeleteGoalId(null);
+  }
+
+  function handleHabitFormOpenChange(next: boolean) {
+    setHabitFormOpen(next);
+    if (!next && pendingGoalCreation) {
+      // Modal closed. Only create the goal if the user actually saved a habit.
+      const after = useHabitStore.getState().habits;
+      if (after.length > habitCountBeforeFormRef.current) {
+        const newest = after[after.length - 1];
+        addGoal(newest.title, newest.id);
+      }
+      setPendingGoalCreation(false);
+    }
+  }
 
   const importRef = useRef<HTMLInputElement>(null);
   const photoRef = useRef<HTMLInputElement>(null);
@@ -197,15 +215,6 @@ export default function Profile() {
     setEditFocuses((prev) =>
       prev.includes(id) ? prev.filter((f) => f !== id) : [...prev, id],
     );
-  }
-
-  function handleGoalSave() {
-    if (goalInput.trim()) {
-      setGoal(goalInput.trim());
-    } else {
-      clearGoal();
-    }
-    setEditingGoal(false);
   }
 
   function handleExport() {
@@ -244,13 +253,10 @@ export default function Profile() {
     e.target.value = "";
   }
 
-  const goalDaysElapsed = goalSetDate
-    ? differenceInDays(new Date(), parseISO(goalSetDate))
-    : 0;
 
   return (
     <div className="profile">
-      <div className="profile__card profile__avatar-card">
+      <div className={["profile__card profile__avatar-card", editing ? "profile__avatar-card--editing" : ""].join(" ")}>
         <div className="profile__avatar-row">
           <button
             className="profile__avatar-wrap"
@@ -272,33 +278,36 @@ export default function Profile() {
               </svg>
             </span>
           </button>
-          {!editing && (
-            <div className="profile__avatar-info">
-              <h1 className="profile__name">{userName || "You"}</h1>
-              {focuses.length > 0 && (
-                <div className="profile__focuses">
-                  {focuses.map((focus) => (
-                    <span key={focus} className="profile__focus-pill">{focus}</span>
-                  ))}
-                </div>
-              )}
-              <button className="profile__edit-btn" onClick={handleEditOpen} aria-label="Edit profile">
-                Edit profile
-              </button>
-            </div>
-          )}
+          <div className="profile__avatar-info">
+            {editing ? (
+              <input
+                className="profile__edit-name-input"
+                type="text"
+                value={editName}
+                onChange={(e) => setEditName(e.target.value)}
+                placeholder="Your name"
+                maxLength={30}
+                autoFocus
+              />
+            ) : (
+              <>
+                <h1 className="profile__name">{userName || "You"}</h1>
+                {focuses.length > 0 && (
+                  <div className="profile__focuses">
+                    {focuses.map((focus) => (
+                      <span key={focus} className="profile__focus-pill">{focus}</span>
+                    ))}
+                  </div>
+                )}
+                <button className="profile__edit-btn" onClick={handleEditOpen} aria-label="Edit profile">
+                  Edit profile
+                </button>
+              </>
+            )}
+          </div>
         </div>
         {editing && (
-          <div className="profile__edit-block">
-            <input
-              className="profile__edit-name-input"
-              type="text"
-              value={editName}
-              onChange={(e) => setEditName(e.target.value)}
-              placeholder="Your name"
-              maxLength={30}
-              autoFocus
-            />
+          <div className="profile__edit-extras">
             <div className="profile__edit-focuses">
               {FOCUS_OPTIONS.map(({ id, label }) => (
                 <button
@@ -334,101 +343,184 @@ export default function Profile() {
         />
       </div>
 
-      <div className="profile__card profile__stats-card">
-        <div className="profile__stat">
-          <span className="profile__stat-value">
-            {habits.filter((h) => !h.isArchived).length}
-          </span>
-          <span className="profile__stat-label">Habits</span>
+      <div className="profile__card profile__identity-card">
+        <span className="profile__identity-eyebrow">You</span>
+        <p className="profile__identity-line">
+          {focuses.length > 0 ? (
+            <>
+              You're building habits in{" "}
+              <span className="profile__identity-focuses">
+                {focuses.join(" · ")}
+              </span>
+              .
+            </>
+          ) : (
+            <>You're just getting started. Pick what matters to you above.</>
+          )}
+        </p>
+        <div className="profile__identity-meter">
+          <div className="profile__identity-meter-item">
+            <span className="profile__identity-meter-value">{totalCompleted}</span>
+            <span className="profile__identity-meter-label">
+              habit{totalCompleted === 1 ? "" : "s"} done
+            </span>
+          </div>
+          <div className="profile__identity-meter-sep" aria-hidden="true" />
+          <div className="profile__identity-meter-item">
+            <span className="profile__identity-meter-value">{daysSinceStart}</span>
+            <span className="profile__identity-meter-label">
+              day{daysSinceStart === 1 ? "" : "s"} with Constant
+            </span>
+          </div>
         </div>
-        <div className="profile__stat-divider" />
-        <div className="profile__stat">
-          <span className="profile__stat-value profile__stat-value--ring">
-            <MiniRing completed={completed} total={total} />
-          </span>
-          <span className="profile__stat-label">
-            {completed}/{total} Today
-          </span>
-        </div>
-        <div className="profile__stat-divider" />
-        <div className="profile__stat">
-          <span className="profile__stat-value">{appStreak}</span>
-          <span className="profile__stat-label">
-            {getStreakLabel(appStreak)}
-          </span>
-        </div>
+        <p className="profile__identity-quote">"{dailyQuote}"</p>
       </div>
 
       <div className="profile__card profile__goal-card">
         <div className="profile__goal-header">
-          <h2 className="profile__section-heading">30-Day Goal</h2>
-          {goal && !editingGoal && (
+          <h2 className="profile__section-heading">30-Day Goals</h2>
+          {goals.length > 0 && (
             <button
               className="profile__goal-edit-btn"
-              onClick={() => {
-                setGoalInput(goal);
-                setEditingGoal(true);
-              }}
+              onClick={startAddingGoal}
+              aria-label="Add another goal"
             >
-              Edit
+              + Add
             </button>
           )}
         </div>
-        {editingGoal ? (
-          <div className="profile__goal-edit">
-            <input
-              className="profile__goal-input"
-              type="text"
-              value={goalInput}
-              onChange={(e) => setGoalInput(e.target.value)}
-              placeholder="e.g. Run 5k by June 1"
-              maxLength={60}
-              autoFocus
-            />
-            <div className="profile__edit-actions">
-              <button
-                className="profile__edit-cancel"
-                onClick={() => setEditingGoal(false)}
-              >
-                Cancel
-              </button>
-              <button className="profile__edit-save" onClick={handleGoalSave}>
-                Save
-              </button>
-            </div>
-          </div>
-        ) : goal ? (
-          <div className="profile__goal-display">
-            <p className="profile__goal-text">"{goal}"</p>
-            <p className="profile__goal-days">
-              Day {Math.min(goalDaysElapsed + 1, 30)} of 30
-            </p>
-            <div className="profile__goal-bar">
-              <div
-                className="profile__goal-bar-fill"
-                style={{
-                  width: `${Math.min((goalDaysElapsed / 30) * 100, 100)}%`,
-                }}
-              />
-            </div>
-            {goalDaysElapsed >= 30 && (
-              <p className="profile__goal-review">
-                30 days done. Did you achieve it?
-              </p>
-            )}
-          </div>
-        ) : (
-          <button
-            className="profile__goal-set-btn"
-            onClick={() => {
-              setGoalInput("");
-              setEditingGoal(true);
-            }}
-          >
+
+        {goals.length === 0 && (
+          <button className="profile__goal-set-btn" onClick={startAddingGoal}>
             Set a 30-day goal →
           </button>
         )}
+
+        {goals.length > 0 && (
+          <ul className="profile__goal-list">
+            {goals.map((g) => {
+              const elapsed = differenceInDays(new Date(), parseISO(g.setDate));
+              const dayNum = Math.min(elapsed + 1, 30);
+              const pct = Math.min((elapsed / 30) * 100, 100);
+              const isEditing = editingGoalId === g.id;
+              const linkedHabit = g.habitId ? habits.find((h) => h.id === g.habitId) : null;
+              return (
+                <li key={g.id} className="profile__goal-item">
+                  {isEditing ? (
+                    <div className="profile__goal-edit">
+                      <input
+                        className="profile__goal-input"
+                        type="text"
+                        value={editGoalInput}
+                        onChange={(e) => setEditGoalInput(e.target.value)}
+                        placeholder="e.g. Run 5k by June 1"
+                        maxLength={60}
+                        autoFocus
+                      />
+                      <div className="profile__edit-actions">
+                        <button
+                          className="profile__edit-cancel"
+                          onClick={() => {
+                            setEditingGoalId(null);
+                            setEditGoalInput("");
+                          }}
+                        >
+                          Cancel
+                        </button>
+                        <button
+                          className="profile__edit-save"
+                          onClick={handleEditGoalSave}
+                        >
+                          Save
+                        </button>
+                      </div>
+                    </div>
+                  ) : (
+                    <>
+                      <div className="profile__goal-item-row">
+                        <p className="profile__goal-text">"{g.text}"</p>
+                        <div className="profile__goal-item-actions">
+                          <button
+                            className="profile__goal-icon-btn"
+                            onClick={() => handleEditGoalStart(g.id, g.text)}
+                            aria-label="Edit goal"
+                          >
+                            <svg width="14" height="14" viewBox="0 0 14 14" fill="none" aria-hidden="true">
+                              <path d="M9.5 2L12 4.5 4.5 12H2v-2.5L9.5 2z" stroke="currentColor" strokeWidth="1.4" strokeLinejoin="round" />
+                            </svg>
+                          </button>
+                          <button
+                            className="profile__goal-icon-btn profile__goal-icon-btn--danger"
+                            onClick={() => setConfirmDeleteGoalId(g.id)}
+                            aria-label="Delete goal"
+                          >
+                            <svg width="14" height="14" viewBox="0 0 14 14" fill="none" aria-hidden="true">
+                              <path d="M2 3.5h10M5.5 3.5V2.5a.5.5 0 01.5-.5h2a.5.5 0 01.5.5v1" stroke="currentColor" strokeWidth="1.4" strokeLinecap="round" strokeLinejoin="round" />
+                              <path d="M5 3.5v7.5a.5.5 0 00.5.5h3a.5.5 0 00.5-.5V3.5" stroke="currentColor" strokeWidth="1.4" strokeLinecap="round" />
+                            </svg>
+                          </button>
+                        </div>
+                      </div>
+                      <p className="profile__goal-days">
+                        Day {dayNum} of 30
+                        {linkedHabit && (
+                          <>
+                            {" · "}
+                            <span className="profile__goal-habit-link">
+                              {linkedHabit.title}
+                            </span>
+                          </>
+                        )}
+                      </p>
+                      <div className="profile__goal-bar">
+                        <div
+                          className="profile__goal-bar-fill"
+                          style={{ width: `${pct}%` }}
+                        />
+                      </div>
+                      {elapsed >= 30 && (
+                        <p className="profile__goal-review">
+                          30 days done. Did you achieve it?
+                        </p>
+                      )}
+                      {confirmDeleteGoalId === g.id && (
+                        <div className="profile__goal-confirm">
+                          <span className="profile__goal-confirm-text">
+                            {g.habitId && habits.some((h) => h.id === g.habitId)
+                              ? "Delete this goal and its linked habit?"
+                              : "Delete this goal?"}
+                          </span>
+                          <div className="profile__edit-actions">
+                            <button
+                              className="profile__edit-cancel"
+                              onClick={() => setConfirmDeleteGoalId(null)}
+                            >
+                              Cancel
+                            </button>
+                            <button
+                              className="profile__goal-confirm-delete"
+                              onClick={handleDeleteGoalConfirm}
+                            >
+                              Delete
+                            </button>
+                          </div>
+                        </div>
+                      )}
+                    </>
+                  )}
+                </li>
+              );
+            })}
+          </ul>
+        )}
+
       </div>
+
+      <HabitForm
+        defaultSlot="morning"
+        open={habitFormOpen}
+        onOpenChange={handleHabitFormOpenChange}
+      />
 
       {milestones.length > 0 && (
         <div className="profile__card profile__moments-card">
@@ -448,27 +540,6 @@ export default function Profile() {
           </div>
         </div>
       )}
-
-      <div className="profile__card profile__journey-card">
-        <h2 className="profile__section-heading">Your Journey</h2>
-        <div className="profile__journey-stats">
-          <div className="profile__journey-stat">
-            <span className="profile__journey-value">{daysSinceStart}</span>
-            <span className="profile__journey-label">days active</span>
-          </div>
-          <div className="profile__journey-stat">
-            <span className="profile__journey-value">{totalCompleted}</span>
-            <span className="profile__journey-label">habits done</span>
-          </div>
-          <div className="profile__journey-stat">
-            <span className="profile__journey-value">
-              {habits.filter((h) => !h.isArchived).length}
-            </span>
-            <span className="profile__journey-label">active habits</span>
-          </div>
-        </div>
-        <p className="profile__journey-quote">"{dailyQuote}"</p>
-      </div>
 
       <div className="profile__card profile__settings-card">
         <div className="profile__setting-row">

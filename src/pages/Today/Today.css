@@ -113,25 +113,70 @@
   background-size: 180px 180px;
 }
 
-/* Hero inner - sits above ::before aurora, grain sits above this */
+/* Hero inner- horizontal: ring on left, content stack on right */
 .today__hero-inner {
   position: relative;
-  padding: var(--space-5) var(--space-4) var(--space-4);
+  padding: var(--space-3) var(--space-4);
+  padding-left: 0.25rem;
   display: flex;
-  flex-direction: column;
+  flex-direction: row;
+  align-items: center;
+  gap: var(--space-4);
 }
 
-/* Date row - distinct element per date part */
-.today__hero-dateline {
+.today__hero-content {
+  display: flex;
+  flex-direction: column;
+  gap: 3px;
+  flex: 1;
+  min-width: 0;
+}
+
+/* Greeting line- "Good morning, Sonu" */
+.today__hero-greeting {
+  font-family: var(--font-display);
+  font-size: var(--font-lg);
+  font-weight: var(--weight-bold);
+  color: var(--color-text);
+  line-height: 1.2;
+  letter-spacing: var(--tracking-tight);
+  word-break: break-word;
+}
+
+.today__hero-name {
+  color: var(--color-primary-text);
+}
+
+/* Meta row- streak + date pill */
+.today__hero-meta {
   display: flex;
   align-items: center;
-  gap: 6px;
-  flex-wrap: nowrap;
-  justify-content: flex-end;
+  gap: var(--space-2);
+  margin-top: 4px;
+  font-size: var(--font-caption);
+  flex-wrap: wrap;
+}
+
+.today__hero-meta-streak {
+  display: inline-flex;
+  align-items: center;
+  gap: 3px;
+  font-weight: var(--weight-semibold);
+  color: var(--color-streak);
+  letter-spacing: -0.1px;
+}
+
+.today__hero-meta-date {
+  display: inline-flex;
+  align-items: baseline;
+  gap: 4px;
+  color: var(--color-text-muted);
+  font-weight: var(--weight-semibold);
+  margin-left: auto;
 }
 
 .today__hero-date-day {
-  font-size: var(--font-role-caption);
+  font-size: var(--font-caption);
   font-weight: var(--weight-bold);
   text-transform: uppercase;
   letter-spacing: var(--tracking-caps);
@@ -140,8 +185,7 @@
   border: 1px solid rgba(76, 96, 86, 0.22);
   border-radius: var(--radius-full);
   padding: 1px 7px;
-  line-height: 1.6;
-  flex-shrink: 0;
+  line-height: 1.5;
 }
 
 [data-theme="dark"] .today__hero-date-day {
@@ -149,106 +193,28 @@
   border-color: rgba(182, 204, 190, 0.25);
 }
 
-.today__hero-date-sep {
-  color: var(--color-text-faint);
-  font-weight: var(--weight-regular);
-  font-size: var(--font-role-caption);
+.today__hero-date-num {
+  font-family: var(--font-display);
+  font-size: var(--font-base);
+  font-weight: var(--weight-bold);
+  color: var(--color-text);
+  letter-spacing: var(--tracking-tight);
 }
 
 .today__hero-date-month {
-  font-size: var(--font-role-date-part);
+  font-size: var(--font-caption);
   font-weight: var(--weight-semibold);
   color: var(--color-text-muted);
-}
-
-.today__hero-date-num {
-  font-family: var(--font-display);
-  font-size: var(--font-role-day-num);
-  font-weight: var(--weight-black);
-  color: var(--color-text);
-  letter-spacing: var(--tracking-tight);
-  line-height: 1;
-}
-
-/* Top row: greeting left, ring right */
-.today__hero-top {
-  display: flex;
-  align-items: flex-start;
-  justify-content: space-between;
-  gap: var(--space-3);
-}
-
-.today__hero-left {
-  display: flex;
-  flex-direction: column;
-  gap: 3px;
-  flex: 1;
-  min-width: 0;
-}
-
-/* Eyebrow - time of day */
-.today__hero-eyebrow {
-  font-size: var(--font-sm);
-  font-weight: var(--weight-bold);
-  letter-spacing: var(--tracking-caps);
   text-transform: uppercase;
-  color: var(--color-primary-text);
-  line-height: 1;
-}
-
-/* Greeting + date on one line */
-.today__hero-greeting-row {
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  gap: var(--space-3);
-}
-
-.today__hero-greeting {
-  font-family: var(--font-display);
-  font-size: var(--font-role-greeting);
-  font-weight: var(--weight-bold);
-  color: var(--color-text);
-  line-height: 1.2;
-  letter-spacing: var(--tracking-tight);
-  flex-shrink: 0;
-}
-
-.today__hero-streak-note {
-  font-size: var(--font-caption);
-  font-weight: var(--weight-medium);
-  color: var(--color-streak);
-  margin-top: 3px;
-  line-height: 1.3;
-}
-
-/* Name - ghost hero text */
-.today__hero-name-ring {
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-}
-
-.today__hero-name {
-  font-family: var(--font-display);
-  font-size: var(--font-hero);
-  font-weight: var(--weight-bold);
-  color: var(--color-text-faint);
-  letter-spacing: var(--tracking-tight);
-  line-height: 1.15;
-  word-break: break-word;
-}
-
-[data-theme="dark"] .today__hero-name {
-  color: rgba(241, 241, 245, 0.25);
+  letter-spacing: var(--tracking-caps);
 }
 
 /* ---- Progress ring ---- */
 
 .today__hero-ring {
   position: relative;
-  width: 4.25rem;
-  height: 4.25rem;
+  width: 5rem;
+  height: 5rem;
   flex-shrink: 0;
 }
 
@@ -263,16 +229,16 @@
 .today__hero-ring-track {
   fill: none;
   stroke: var(--color-surface-alt);
-  stroke-width: 3;
+  stroke-width: 3.5;
 }
 
 .today__hero-ring-fill {
   fill: none;
   stroke: var(--color-primary);
-  stroke-width: 3;
+  stroke-width: 3.5;
   stroke-linecap: round;
   transition: stroke-dasharray 0.8s cubic-bezier(0.4, 0, 0.2, 1);
-  filter: drop-shadow(0 0 5px rgba(76, 96, 86, 0.45));
+  filter: drop-shadow(0 0 6px rgba(76, 96, 86, 0.5));
 }
 
 [data-theme="dark"] .today__hero-ring-fill {
@@ -316,15 +282,15 @@
 
 .today__hero-ring-pct-wrap {
   overflow: hidden;
-  height: 26px;
+  height: 28px;
   display: flex;
-  align-items: center;
+  align-items: baseline;
   justify-content: center;
 }
 
 .today__hero-ring-pct {
   font-family: var(--font-display);
-  font-size: var(--font-role-ring-pct);
+  font-size: 24px;
   font-weight: var(--weight-black);
   color: var(--color-text);
   letter-spacing: -0.04em;
@@ -337,12 +303,13 @@
   font-weight: var(--weight-bold);
   color: var(--color-primary-text);
   letter-spacing: 0.04em;
+  margin-top: -4px;
 }
 
 /* ---- Motivational copy (animated crossfade) ---- */
 
 .today__hero-copy {
-  font-size: var(--font-base);
+  font-size: var(--font-sm);
   line-height: 1.4;
 }
 
@@ -475,12 +442,17 @@
   font-weight: var(--weight-bold);
   transition:
     background var(--ease-base),
-    opacity     var(--ease-base),
-    transform   var(--ease-fast);
+    opacity var(--ease-base),
+    transform var(--ease-fast);
 }
 
-.today__empty-cta:hover  { background: var(--color-primary-dim); }
-.today__empty-cta:active { transform: scale(0.97); opacity: 0.88; }
+.today__empty-cta:hover {
+  background: var(--color-primary-dim);
+}
+.today__empty-cta:active {
+  transform: scale(0.97);
+  opacity: 0.88;
+}
 
 /* Slot-complete confirmation line */
 
@@ -575,7 +547,10 @@
   background: var(--color-surface);
   flex-shrink: 0;
   width: 46px;
-  transition: background var(--ease-base), border-color var(--ease-base), color var(--ease-base);
+  transition:
+    background var(--ease-base),
+    border-color var(--ease-base),
+    color var(--ease-base);
 }
 
 .today__date-chip:active {
@@ -990,7 +965,10 @@
   font-weight: var(--weight-semibold);
   color: var(--color-text);
   text-align: left;
-  transition: background var(--ease-base), border-color var(--ease-base), color var(--ease-base);
+  transition:
+    background var(--ease-base),
+    border-color var(--ease-base),
+    color var(--ease-base);
 }
 
 .today__skip-reason:hover {
@@ -1066,40 +1044,284 @@
    GOAL BANNER
    ========================================================================= */
 
+/* Two-row banner with pastel peach treatment:
+     Row 1 — [GOAL pill] goal text  …  [switcher chip]
+     Row 2 — "Day X / 30 · Y done"  ─── progress bar ───
+*/
 .today__goal-banner {
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  padding: 12px 14px;
+  background:
+    linear-gradient(135deg, rgba(254, 215, 170, 0.45) 0%, rgba(254, 215, 170, 0.18) 100%),
+    var(--color-surface);
+  border: 1px solid rgba(251, 146, 60, 0.32);
+  border-radius: var(--radius-md);
+}
+
+.today__goal-banner-row {
   display: flex;
   align-items: center;
-  gap: var(--space-3);
-  padding: var(--space-3) var(--space-4);
-  background: var(--color-primary-dim);
-  border: 1px solid rgba(76, 96, 86, 0.22);
-  border-radius: var(--radius-full);
+  gap: 10px;
+  min-width: 0;
 }
 
 .today__goal-label {
-  font-size: var(--font-sm);
-  font-weight: var(--weight-bold);
-  color: var(--color-primary-text);
-  background: var(--color-primary-dim);
+  display: inline-flex;
+  align-items: center;
+  font-size: 10px;
+  font-weight: var(--weight-black);
+  text-transform: uppercase;
+  letter-spacing: 0.1em;
+  color: #9a3412;
+  background: rgba(254, 215, 170, 0.55);
+  border: 1px solid rgba(251, 146, 60, 0.5);
   border-radius: var(--radius-full);
   padding: 2px 8px;
+  line-height: 1.4;
   flex-shrink: 0;
-  text-transform: uppercase;
-  letter-spacing: 0.05em;
+}
+
+[data-theme="dark"] .today__goal-banner {
+  background:
+    linear-gradient(135deg, rgba(253, 186, 116, 0.18) 0%, rgba(253, 186, 116, 0.06) 100%),
+    var(--color-surface);
+  border-color: rgba(253, 186, 116, 0.4);
 }
 
 [data-theme="dark"] .today__goal-label {
-  color: var(--color-primary-text);
-  background: var(--color-primary-dim);
+  color: #fdba74;
+  background: rgba(253, 186, 116, 0.16);
+  border-color: rgba(253, 186, 116, 0.55);
 }
 
 .today__goal-text {
-  font-size: var(--font-sm);
-  font-weight: var(--weight-semibold);
+  flex: 1;
+  min-width: 0;
+  font-family: var(--font-display);
+  font-size: var(--font-base);
+  font-weight: var(--weight-bold);
   color: var(--color-text);
+  letter-spacing: -0.1px;
+  line-height: 1.3;
   white-space: nowrap;
   overflow: hidden;
   text-overflow: ellipsis;
+}
+
+[data-theme="dark"] .today__goal-text {
+  color: #f4e6d0; /* warmer near-white reads cleanly on the peach tint */
+}
+
+.today__goal-progress-row {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  min-width: 0;
+}
+
+.today__goal-meta-text {
+  font-size: 12px;
+  font-weight: var(--weight-bold);
+  color: #92400e;
+  font-variant-numeric: tabular-nums;
+  flex-shrink: 0;
+  line-height: 1.2;
+}
+
+[data-theme="dark"] .today__goal-meta-text {
+  color: #fdba74;
+}
+
+.today__goal-meta-text strong {
+  color: #7c2d12;
+  font-weight: var(--weight-black);
+}
+
+[data-theme="dark"] .today__goal-meta-text strong {
+  color: #fed7aa;
+}
+
+.today__goal-bar {
+  flex: 1;
+  height: 4px;
+  background: rgba(254, 215, 170, 0.32);
+  border-radius: var(--radius-full);
+  overflow: hidden;
+  min-width: 60px;
+}
+
+[data-theme="dark"] .today__goal-bar {
+  background: rgba(253, 186, 116, 0.16);
+}
+
+.today__goal-bar-fill {
+  height: 100%;
+  background: linear-gradient(90deg, #fb923c 0%, #f97316 100%);
+  border-radius: var(--radius-full);
+  transition: width 0.6s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+[data-theme="dark"] .today__goal-bar-fill {
+  background: linear-gradient(90deg, #fdba74 0%, #fb923c 100%);
+  box-shadow: 0 0 6px rgba(253, 186, 116, 0.5);
+}
+
+/* ---- Goal switcher (when >1 goal) ---- */
+
+.today__goal-switcher {
+  display: inline-flex;
+  align-items: center;
+  gap: 3px;
+  padding: 3px 6px 3px 9px;
+  background: rgba(254, 215, 170, 0.45);
+  border: 1px solid rgba(251, 146, 60, 0.4);
+  border-radius: var(--radius-full);
+  color: #9a3412;
+  font-family: var(--font-display);
+  font-size: 12px;
+  font-weight: var(--weight-bold);
+  line-height: 1.4;
+  cursor: pointer;
+  transition:
+    background var(--ease-base),
+    border-color var(--ease-base),
+    color var(--ease-base);
+  -webkit-tap-highlight-color: transparent;
+  flex-shrink: 0;
+}
+
+[data-theme="dark"] .today__goal-switcher {
+  background: rgba(253, 186, 116, 0.18);
+  border-color: rgba(253, 186, 116, 0.5);
+  color: #fdba74;
+}
+
+.today__goal-switcher:hover,
+.today__goal-switcher--open {
+  background: rgba(254, 215, 170, 0.65);
+  border-color: rgba(251, 146, 60, 0.65);
+}
+
+[data-theme="dark"] .today__goal-switcher:hover,
+[data-theme="dark"] .today__goal-switcher--open {
+  background: rgba(253, 186, 116, 0.28);
+  border-color: rgba(253, 186, 116, 0.7);
+}
+
+.today__goal-switcher-count {
+  font-variant-numeric: tabular-nums;
+  line-height: 1;
+}
+
+.today__goal-switcher svg {
+  transition: transform var(--ease-base);
+}
+
+.today__goal-switcher--open svg {
+  transform: rotate(180deg);
+}
+
+/* ---- Goal dropdown ---- */
+
+.today__goal-dropdown-backdrop {
+  position: fixed;
+  inset: 0;
+  z-index: 19;
+  background: transparent;
+}
+
+.today__goal-dropdown {
+  position: absolute;
+  top: calc(100% + 6px);
+  right: 0;
+  left: 0;
+  z-index: 20;
+  list-style: none;
+  padding: 4px;
+  margin: 0;
+  background: var(--color-surface);
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-md);
+  box-shadow: var(--shadow-lg);
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  max-height: 60vh;
+  overflow-y: auto;
+}
+
+.today__goal-dropdown-item {
+  width: 100%;
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: 3px;
+  padding: 10px 12px;
+  background: transparent;
+  border: 1px solid transparent;
+  border-radius: var(--radius-sm);
+  text-align: left;
+  cursor: pointer;
+  transition:
+    background var(--ease-base),
+    border-color var(--ease-base);
+  -webkit-tap-highlight-color: transparent;
+}
+
+.today__goal-dropdown-item:hover {
+  background: var(--color-surface-alt);
+}
+
+/* Peach-themed active row matches the banner styling.
+   Stronger contrast in dark mode for readability. */
+.today__goal-dropdown-item--active,
+.today__goal-dropdown-item--active:hover {
+  background: rgba(254, 215, 170, 0.4);
+  border-color: rgba(251, 146, 60, 0.45);
+}
+
+[data-theme="dark"] .today__goal-dropdown-item--active,
+[data-theme="dark"] .today__goal-dropdown-item--active:hover {
+  background: rgba(253, 186, 116, 0.2);
+  border-color: rgba(253, 186, 116, 0.55);
+}
+
+.today__goal-dropdown-text {
+  font-family: var(--font-display);
+  font-size: var(--font-sm);
+  font-weight: var(--weight-bold);
+  color: var(--color-text);
+  line-height: 1.3;
+}
+
+.today__goal-dropdown-item--active .today__goal-dropdown-text {
+  color: #9a3412;
+}
+
+[data-theme="dark"] .today__goal-dropdown-item--active .today__goal-dropdown-text {
+  color: #fed7aa;
+}
+
+.today__goal-dropdown-meta {
+  font-size: 11px;
+  font-weight: var(--weight-semibold);
+  color: var(--color-text-muted);
+  font-variant-numeric: tabular-nums;
+}
+
+[data-theme="dark"] .today__goal-dropdown-meta {
+  color: #b8bcb6; /* lighter than --color-text-muted (#9aa09a) for legibility */
+}
+
+.today__goal-dropdown-item--active .today__goal-dropdown-meta {
+  color: #c2410c;
+}
+
+[data-theme="dark"] .today__goal-dropdown-item--active .today__goal-dropdown-meta {
+  color: #fdba74;
 }
 
 /* =========================================================================

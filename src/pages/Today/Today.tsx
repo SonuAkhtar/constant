@@ -11,7 +11,7 @@ import HabitCard from "../../components/HabitCard/HabitCard";
 import { SlotIcon, SparkleIcon, StarIcon, WaveIcon } from "../../components/Icons";
 import { Confetti } from "../../components/Today/Confetti";
 import { MilestoneOverlay } from "../../components/Today/MilestoneOverlay";
-import type { Milestone, TimeSlot } from "../../types";
+import type { Goal, Milestone, TimeSlot } from "../../types";
 import "./Today.css";
 
 const SLOTS: { slot: TimeSlot; label: string }[] = [
@@ -158,8 +158,29 @@ export default function Today() {
     getAppStreak,
     getLastActiveDate,
   } = useHabitStore();
-  const { userName, goal, joinedAt } = useOnboardingStore();
+  const { userName, goals, joinedAt } = useOnboardingStore();
   const { timings } = useSlotTimingStore();
+
+  // Banner shows the most recent goal by default; user can switch via dropdown.
+  const [selectedGoalId, setSelectedGoalId] = useState<string | null>(null);
+  const [goalDropdownOpen, setGoalDropdownOpen] = useState(false);
+  const activeGoal: Goal | undefined =
+    goals.find((g) => g.id === selectedGoalId) ?? goals[goals.length - 1];
+
+  function computeGoalProgress(goal: Goal) {
+    const elapsed = differenceInCalendarDays(new Date(), parseISO(goal.setDate));
+    const dayNum = Math.min(Math.max(elapsed + 1, 1), 30);
+    let doneCount = 0;
+    if (goal.habitId) {
+      doneCount = logs.filter(
+        (l) =>
+          l.habitId === goal.habitId &&
+          l.completed &&
+          l.date >= goal.setDate,
+      ).length;
+    }
+    return { dayNum, doneCount, hasHabit: !!goal.habitId };
+  }
 
   const [selectedDate, setSelectedDate] = useState(() => format(new Date(), 'yyyy-MM-dd'));
   const isViewingToday = selectedDate === format(new Date(), 'yyyy-MM-dd');
@@ -312,109 +333,97 @@ export default function Today() {
         transition={{ duration: 0.38, ease: [0.4, 0, 0.2, 1] }}
       >
         <div className="today__hero-inner">
-          <div className="today__hero-top">
-            <div className="today__hero-left">
-              <div className="today__hero-greeting-row">
-                <div>
-                  <p className="today__hero-greeting">{getGreeting(currentHour)}</p>
-                  {appStreak >= 3 && (
-                    <p className="today__hero-streak-note">
-                      {appStreak >= 30
-                        ? `${appStreak} days straight. You've changed your habits.`
-                        : appStreak >= 14
-                        ? `${appStreak}-day streak. This is who you are now.`
-                        : appStreak >= 7
-                        ? `${appStreak} days in a row. Keep it going.`
-                        : `${appStreak} days in a row.`}
-                    </p>
-                  )}
-                </div>
-                <div className="today__hero-dateline">
-                  <span className="today__hero-date-day">{dayAbbr}</span>
-                  <span className="today__hero-date-sep">·</span>
-                  <span className="today__hero-date-month">{monthAbbr}</span>
-                  <span className="today__hero-date-num">{dayNum}</span>
-                </div>
-              </div>
-
-              {userName && (
-                <div className="today__hero-name-ring">
-                  <span className="today__hero-name">{userName}</span>
-
-                  <div
-                    className="today__hero-ring"
-                    role="meter"
-                    aria-valuenow={percentage}
-                    aria-valuemin={0}
-                    aria-valuemax={100}
-                    aria-label={`${percentage}% complete today`}
+          <div
+            className="today__hero-ring"
+            role="meter"
+            aria-valuenow={percentage}
+            aria-valuemin={0}
+            aria-valuemax={100}
+            aria-label={`${percentage}% complete today`}
+          >
+            <svg
+              viewBox="0 0 50 50"
+              className="today__hero-ring-svg"
+              aria-hidden="true"
+            >
+              <circle
+                cx="25"
+                cy="25"
+                r={RING_R}
+                className="today__hero-ring-track"
+              />
+              <circle
+                cx="25"
+                cy="25"
+                r={RING_R}
+                className={[
+                  "today__hero-ring-fill",
+                  percentage === 100
+                    ? "today__hero-ring-fill--complete"
+                    : appStreak >= 30
+                    ? "today__hero-ring-fill--blazing"
+                    : appStreak >= 14
+                    ? "today__hero-ring-fill--hot"
+                    : "",
+                ].filter(Boolean).join(" ")}
+                strokeDasharray={`${strokeDash} ${RING_CIRC}`}
+              />
+            </svg>
+            <div className="today__hero-ring-center">
+              <span className="today__hero-ring-pct-wrap">
+                <AnimatePresence mode="popLayout" initial={false}>
+                  <motion.span
+                    key={percentage}
+                    className="today__hero-ring-pct"
+                    initial={{ y: 6, opacity: 0 }}
+                    animate={{ y: 0, opacity: 1 }}
+                    exit={{ y: -6, opacity: 0 }}
+                    transition={{ duration: 0.22, ease: "easeOut" }}
+                    style={{ display: "block" }}
                   >
-                    <svg
-                      viewBox="0 0 50 50"
-                      className="today__hero-ring-svg"
-                      aria-hidden="true"
-                    >
-                      <circle
-                        cx="25"
-                        cy="25"
-                        r={RING_R}
-                        className="today__hero-ring-track"
-                      />
-                      <circle
-                        cx="25"
-                        cy="25"
-                        r={RING_R}
-                        className={[
-                          "today__hero-ring-fill",
-                          percentage === 100
-                            ? "today__hero-ring-fill--complete"
-                            : appStreak >= 30
-                            ? "today__hero-ring-fill--blazing"
-                            : appStreak >= 14
-                            ? "today__hero-ring-fill--hot"
-                            : "",
-                        ].filter(Boolean).join(" ")}
-                        strokeDasharray={`${strokeDash} ${RING_CIRC}`}
-                      />
-                    </svg>
-                    <div className="today__hero-ring-center">
-                      <span className="today__hero-ring-pct-wrap">
-                        <AnimatePresence mode="popLayout" initial={false}>
-                          <motion.span
-                            key={percentage}
-                            className="today__hero-ring-pct"
-                            initial={{ y: 6, opacity: 0 }}
-                            animate={{ y: 0, opacity: 1 }}
-                            exit={{ y: -6, opacity: 0 }}
-                            transition={{ duration: 0.22, ease: "easeOut" }}
-                            style={{ display: "block" }}
-                          >
-                            {percentage}
-                          </motion.span>
-                        </AnimatePresence>
-                      </span>
-                      <span className="today__hero-ring-sym">%</span>
-                    </div>
-                  </div>
-                </div>
-              )}
+                    {percentage}
+                  </motion.span>
+                </AnimatePresence>
+              </span>
+              <span className="today__hero-ring-sym">%</span>
             </div>
           </div>
 
-          <AnimatePresence mode="wait">
-            <motion.p
-              key={copyKey}
-              className="today__hero-copy"
-              initial={{ opacity: 0, y: 5 }}
-              animate={{ opacity: 1, y: 0 }}
-              exit={{ opacity: 0, y: -5 }}
-              transition={{ duration: 0.22 }}
-            >
-              <span className="today__hero-copy-title">{copy.title}</span>
-              <span className="today__hero-copy-sep"> · </span>
-              <span className="today__hero-copy-sub">{copy.sub}</span>
-            </motion.p>
-          </AnimatePresence>
+          <div className="today__hero-content">
+            <p className="today__hero-greeting">
+              {getGreeting(currentHour)}
+              {userName && <span className="today__hero-name">, {userName}</span>}
+            </p>
+
+            <AnimatePresence mode="wait">
+              <motion.p
+                key={copyKey}
+                className="today__hero-copy"
+                initial={{ opacity: 0, y: 4 }}
+                animate={{ opacity: 1, y: 0 }}
+                exit={{ opacity: 0, y: -4 }}
+                transition={{ duration: 0.22 }}
+              >
+                <span className="today__hero-copy-title">{copy.title}</span>
+                <span className="today__hero-copy-sep"> · </span>
+                <span className="today__hero-copy-sub">{copy.sub}</span>
+              </motion.p>
+            </AnimatePresence>
+
+            <div className="today__hero-meta">
+              {appStreak >= 3 && (
+                <span className="today__hero-meta-streak">
+                  <span aria-hidden="true">✦</span>
+                  {appStreak}-day streak
+                </span>
+              )}
+              <span className="today__hero-meta-date">
+                <span className="today__hero-date-day">{dayAbbr}</span>
+                <span className="today__hero-date-num">{dayNum}</span>
+                <span className="today__hero-date-month">{monthAbbr}</span>
+              </span>
+            </div>
+          </div>
         </div>
       </motion.div>
 
@@ -519,12 +528,109 @@ export default function Today() {
         )}
       </AnimatePresence>
 
-      {goal && (
-        <div className="today__goal-banner" aria-live="polite">
-          <span className="today__goal-label">Goal</span>
-          <span className="today__goal-text">{goal}</span>
-        </div>
-      )}
+      {activeGoal && (() => {
+        const { dayNum, doneCount, hasHabit } = computeGoalProgress(activeGoal);
+        const hasMulti = goals.length > 1;
+        return (
+          <div className="today__goal-banner" aria-live="polite">
+            <div className="today__goal-banner-row">
+              <span className="today__goal-label">Goal</span>
+              <span className="today__goal-text">{activeGoal.text}</span>
+              {hasMulti && (
+                <button
+                  className={[
+                    "today__goal-switcher",
+                    goalDropdownOpen ? "today__goal-switcher--open" : "",
+                  ].join(" ")}
+                  onClick={() => setGoalDropdownOpen((o) => !o)}
+                  aria-expanded={goalDropdownOpen}
+                  aria-label={`Switch goal · ${goals.length} total`}
+                >
+                  <span className="today__goal-switcher-count">{goals.length}</span>
+                  <svg width="10" height="10" viewBox="0 0 12 12" fill="none" aria-hidden="true">
+                    <path d="M2 4l4 4 4-4" stroke="currentColor" strokeWidth="1.6" strokeLinecap="round" strokeLinejoin="round" />
+                  </svg>
+                </button>
+              )}
+            </div>
+
+            <div className="today__goal-progress-row">
+              <span className="today__goal-meta-text">
+                Day <strong>{dayNum}</strong> / 30
+                {hasHabit && (
+                  <>
+                    {" · "}
+                    <strong>{doneCount}</strong> done
+                  </>
+                )}
+              </span>
+              <div
+                className="today__goal-bar"
+                role="progressbar"
+                aria-valuenow={dayNum}
+                aria-valuemin={0}
+                aria-valuemax={30}
+              >
+                <div
+                  className="today__goal-bar-fill"
+                  style={{ width: `${(dayNum / 30) * 100}%` }}
+                />
+              </div>
+            </div>
+
+            <AnimatePresence>
+              {hasMulti && goalDropdownOpen && (
+                <>
+                  <motion.div
+                    className="today__goal-dropdown-backdrop"
+                    initial={{ opacity: 0 }}
+                    animate={{ opacity: 1 }}
+                    exit={{ opacity: 0 }}
+                    transition={{ duration: 0.15 }}
+                    onClick={() => setGoalDropdownOpen(false)}
+                  />
+                  <motion.ul
+                    className="today__goal-dropdown"
+                    initial={{ opacity: 0, y: -6, scale: 0.98 }}
+                    animate={{ opacity: 1, y: 0, scale: 1 }}
+                    exit={{ opacity: 0, y: -6, scale: 0.98 }}
+                    transition={{ duration: 0.18, ease: [0.4, 0, 0.2, 1] }}
+                    role="listbox"
+                    aria-label="Your goals"
+                  >
+                    {goals.map((g) => {
+                      const prog = computeGoalProgress(g);
+                      const isActive = g.id === activeGoal.id;
+                      return (
+                        <li key={g.id}>
+                          <button
+                            role="option"
+                            aria-selected={isActive}
+                            className={[
+                              "today__goal-dropdown-item",
+                              isActive ? "today__goal-dropdown-item--active" : "",
+                            ].join(" ")}
+                            onClick={() => {
+                              setSelectedGoalId(g.id);
+                              setGoalDropdownOpen(false);
+                            }}
+                          >
+                            <span className="today__goal-dropdown-text">{g.text}</span>
+                            <span className="today__goal-dropdown-meta">
+                              Day {prog.dayNum} / 30
+                              {prog.hasHabit && ` · ${prog.doneCount} done`}
+                            </span>
+                          </button>
+                        </li>
+                      );
+                    })}
+                  </motion.ul>
+                </>
+              )}
+            </AnimatePresence>
+          </div>
+        );
+      })()}
 
       {viewHabits.length === 0 && isViewingToday && <EmptyTodayState userName={userName} />}
       {viewHabits.length === 0 && !isViewingToday && (

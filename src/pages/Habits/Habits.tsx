@@ -303,10 +303,7 @@ export default function Habits() {
   return (
     <div className="habits-page">
       <div className="habits-page__header">
-        <div>
-          <h1 className="habits-page__heading">Your Habits</h1>
-          <p className="habits-page__meta">{activeHabits.length} active habits</p>
-        </div>
+        <p className="habits-page__meta">{activeHabits.length} active habits</p>
         <button
           className={['habits-page__organize-btn', organizing ? 'habits-page__organize-btn--active' : ''].join(' ')}
           onClick={() => organizing ? exitOrganizing() : setOrganizing(true)}

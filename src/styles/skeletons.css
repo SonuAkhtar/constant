@@ -1,14 +1,20 @@
 /* ============================================================
-   Skeleton shimmer + spinner — shared across all pages
+   Skeleton shimmer + spinner- shared across all pages
    ============================================================ */
 
 @keyframes shimmer {
-  0%   { background-position: 200% center; }
-  100% { background-position: -200% center; }
+  0% {
+    background-position: 200% center;
+  }
+  100% {
+    background-position: -200% center;
+  }
 }
 
 @keyframes spin {
-  to { transform: rotate(360deg); }
+  to {
+    transform: rotate(360deg);
+  }
 }
 
 /* ---- Base shimmer skeleton ---- */
@@ -95,6 +101,10 @@
 /* ---- Reduced motion: disable shimmer ---- */
 
 @media (prefers-reduced-motion: reduce) {
-  .skeleton { animation: none; }
-  .spinner  { animation: none; }
+  .skeleton {
+    animation: none;
+  }
+  .spinner {
+    animation: none;
+  }
 }

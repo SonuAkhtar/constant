@@ -1,5 +1,5 @@
 /* ============================================================
-   Shared button classes — use these on new buttons rather
+   Shared button classes- use these on new buttons rather
    than writing one-off component styles.
    Component-level overrides (sizing, icon arrangement) are
    still done in component CSS.
@@ -23,15 +23,23 @@
   letter-spacing: 0.01em;
   box-shadow: 0 4px 12px rgba(76, 96, 86, 0.22);
   transition:
-    opacity      var(--duration-base) var(--ease-snap),
-    transform    var(--duration-fast) var(--ease-snap),
-    box-shadow   var(--duration-base) var(--ease-snap);
+    opacity var(--duration-base) var(--ease-snap),
+    transform var(--duration-fast) var(--ease-snap),
+    box-shadow var(--duration-base) var(--ease-snap);
 }
 
-[data-theme="dark"] .btn-primary { color: var(--color-bg); }
+[data-theme="dark"] .btn-primary {
+  color: var(--color-bg);
+}
 
-.btn-primary:hover  { box-shadow: var(--glow-primary); opacity: 0.92; }
-.btn-primary:active { transform: scale(0.96); opacity: 0.88; }
+.btn-primary:hover {
+  box-shadow: var(--glow-primary);
+  opacity: 0.92;
+}
+.btn-primary:active {
+  transform: scale(0.96);
+  opacity: 0.88;
+}
 
 /* ---- Secondary (outlined) ---- */
 
@@ -49,15 +57,20 @@
   font-size: var(--font-base);
   font-weight: var(--weight-bold);
   transition:
-    background    var(--duration-base) var(--ease-snap),
-    border-color  var(--duration-base) var(--ease-snap),
-    color         var(--duration-base) var(--ease-snap),
-    opacity       var(--duration-base) var(--ease-snap),
-    transform     var(--duration-fast) var(--ease-snap);
+    background var(--duration-base) var(--ease-snap),
+    border-color var(--duration-base) var(--ease-snap),
+    color var(--duration-base) var(--ease-snap),
+    opacity var(--duration-base) var(--ease-snap),
+    transform var(--duration-fast) var(--ease-snap);
 }
 
-.btn-secondary:hover  { background: var(--color-primary-dim); }
-.btn-secondary:active { transform: scale(0.96); opacity: 0.88; }
+.btn-secondary:hover {
+  background: var(--color-primary-dim);
+}
+.btn-secondary:active {
+  transform: scale(0.96);
+  opacity: 0.88;
+}
 
 /* ---- Ghost ---- */
 
@@ -74,12 +87,16 @@
   font-size: var(--font-sm);
   font-weight: var(--weight-semibold);
   transition:
-    color    var(--duration-base) var(--ease-snap),
-    opacity  var(--duration-base) var(--ease-snap);
+    color var(--duration-base) var(--ease-snap),
+    opacity var(--duration-base) var(--ease-snap);
 }
 
-.btn-ghost:hover  { color: var(--color-text); }
-.btn-ghost:active { opacity: 0.7; }
+.btn-ghost:hover {
+  color: var(--color-text);
+}
+.btn-ghost:active {
+  opacity: 0.7;
+}
 
 /* ---- Danger ---- */
 
@@ -96,13 +113,18 @@
   font-size: var(--font-sm);
   font-weight: var(--weight-semibold);
   transition:
-    background  var(--duration-base) var(--ease-snap),
-    color       var(--duration-base) var(--ease-snap),
-    opacity     var(--duration-base) var(--ease-snap);
+    background var(--duration-base) var(--ease-snap),
+    color var(--duration-base) var(--ease-snap),
+    opacity var(--duration-base) var(--ease-snap);
 }
 
-.btn-danger:hover  { background: var(--color-error); color: #ffffff; }
-.btn-danger:active { opacity: 0.85; }
+.btn-danger:hover {
+  background: var(--color-error);
+  color: #ffffff;
+}
+.btn-danger:active {
+  opacity: 0.85;
+}
 
 /* ---- Icon button (circular, min 40×40 touch target) ---- */
 
@@ -118,9 +140,14 @@
   color: var(--color-text-muted);
   border: none;
   transition:
-    background  var(--duration-base) var(--ease-snap),
-    color       var(--duration-base) var(--ease-snap);
+    background var(--duration-base) var(--ease-snap),
+    color var(--duration-base) var(--ease-snap);
 }
 
-.btn-icon:hover  { background: var(--color-primary-dim); color: var(--color-primary); }
-.btn-icon:active { opacity: 0.75; }
+.btn-icon:hover {
+  background: var(--color-primary-dim);
+  color: var(--color-primary);
+}
+.btn-icon:active {
+  opacity: 0.75;
+}

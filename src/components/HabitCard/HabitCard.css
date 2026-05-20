@@ -126,6 +126,23 @@
   opacity: 1;
 }
 
+/* Dark mode: done state lifts contrast so completed habits remain readable
+   instead of fading into the dim primary tint. */
+[data-theme="dark"] .habit-card--done {
+  background: rgba(182, 204, 190, 0.12);
+  border-color: rgba(182, 204, 190, 0.32);
+  border-left-color: var(--color-primary);
+  box-shadow:
+    0 0 0 1px rgba(182, 204, 190, 0.18),
+    0 0 12px rgba(182, 204, 190, 0.1);
+}
+
+[data-theme="dark"] .habit-card--done .habit-card__title {
+  color: #d1e8da; /* primary-light — clearly readable through the strike-through */
+  text-decoration-color: var(--color-primary);
+  text-decoration-thickness: 2px;
+}
+
 /* ---- Icon badge ---- */
 
 .habit-card__badge {
@@ -147,6 +164,13 @@
     box-shadow var(--ease-base);
 }
 
+[data-theme="dark"] .habit-card__badge {
+  border-color: rgba(182, 204, 190, 0.12);
+  box-shadow:
+    inset 0 1px 0 rgba(182, 204, 190, 0.08),
+    inset 0 -1px 0 rgba(0, 0, 0, 0.18);
+}
+
 .habit-card:not(.habit-card--done):hover .habit-card__badge {
   box-shadow: 0 0 14px 4px var(--slot-dim, var(--color-primary-dim));
 }
@@ -157,7 +181,7 @@
 }
 
 .habit-card__badge-icon {
-  font-size: 20px; /* between tokens — intentional icon size */
+  font-size: 20px; /* between tokens- intentional icon size */
   line-height: 1;
 }
 
@@ -256,6 +280,23 @@
 .habit-card--skipped .habit-card__badge {
   background: var(--color-surface-alt);
   opacity: 0.7;
+}
+
+/* Dark mode skipped: amber-tinted background + brighter text so it reads
+   as "deferred" instead of disappearing entirely. */
+[data-theme="dark"] .habit-card--skipped {
+  background: rgba(245, 158, 11, 0.06);
+  border-color: rgba(245, 158, 11, 0.22);
+  opacity: 0.9;
+}
+
+[data-theme="dark"] .habit-card--skipped .habit-card__title {
+  color: #d8dad6;
+}
+
+[data-theme="dark"] .habit-card--skipped .habit-card__badge {
+  background: var(--color-surface-alt);
+  opacity: 0.85;
 }
 
 .habit-card__skipped-badge {

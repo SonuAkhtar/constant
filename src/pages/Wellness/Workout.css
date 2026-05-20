@@ -4,52 +4,123 @@
   gap: var(--space-4);
 }
 
-/* ── Level selector ── */
+/* ── Plan selector- outlined "intensity card" trio
+   Visually distinct from the Wellness Skincare/Workout pill tabs:
+   - Individual outlined cards (not a connected segmented pill)
+   - Sharp-cornered cards (radius-md), not fully rounded
+   - Active = primary-tinted fill + bottom underline, not solid white-on-primary
+   - Intensity dots signal program difficulty
+   ── */
 
-.workout__level {
+.workout__plan {
   display: grid;
-  grid-template-columns: 1fr 1fr;
-  gap: var(--space-2);
+  grid-template-columns: repeat(3, 1fr);
+  gap: 6px;
 }
 
-.workout__level-chip {
+.workout__plan-chip {
+  position: relative;
   display: flex;
   flex-direction: column;
-  align-items: center;
+  align-items: flex-start;
   gap: 3px;
-  padding: var(--space-3) var(--space-2);
+  padding: 8px 10px 9px;
   background: var(--color-surface);
   border: 1px solid var(--color-border);
-  border-radius: var(--radius-lg);
-  transition: background var(--ease-base), border-color var(--ease-base);
+  border-radius: var(--radius-md);
+  transition:
+    background var(--ease-base),
+    border-color var(--ease-base),
+    transform var(--ease-fast);
   -webkit-tap-highlight-color: transparent;
+  min-width: 0;
+  overflow: hidden;
 }
 
-.workout__level-chip--active {
+.workout__plan-chip::after {
+  content: "";
+  position: absolute;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  height: 2px;
+  background: var(--color-primary);
+  transform: scaleX(0);
+  transform-origin: left;
+  transition: transform var(--ease-base);
+}
+
+.workout__plan-chip--active {
   background: var(--color-primary-dim);
   border-color: var(--color-primary);
 }
 
-.workout__level-label {
+.workout__plan-chip--active::after {
+  transform: scaleX(1);
+}
+
+.workout__plan-chip:active:not(.workout__plan-chip--active) {
+  transform: scale(0.97);
+}
+
+.workout__plan-dots {
+  display: inline-flex;
+  align-items: center;
+  gap: 2px;
+  margin-bottom: 1px;
+}
+
+.workout__plan-dot {
+  width: 5px;
+  height: 5px;
+  border-radius: 50%;
+  background: var(--color-border);
+  transition: background var(--ease-base);
+}
+
+.workout__plan-dot--filled {
+  background: var(--color-primary);
+}
+
+.workout__plan-chip--active .workout__plan-dot {
+  background: rgba(76, 96, 86, 0.25);
+}
+
+[data-theme="dark"] .workout__plan-chip--active .workout__plan-dot {
+  background: rgba(182, 204, 190, 0.3);
+}
+
+.workout__plan-chip--active .workout__plan-dot--filled {
+  background: var(--color-primary);
+}
+
+.workout__plan-label {
   font-family: var(--font-display);
-  font-size: var(--font-base);
+  font-size: var(--font-sm);
   font-weight: var(--weight-bold);
   color: var(--color-text);
   letter-spacing: var(--tracking-tight);
+  line-height: 1.15;
+  white-space: nowrap;
 }
 
-.workout__level-chip--active .workout__level-label {
+.workout__plan-chip--active .workout__plan-label {
   color: var(--color-primary-text);
 }
 
-.workout__level-sub {
-  font-size: var(--font-sm);
-  color: var(--color-text-muted);
+.workout__plan-sub {
+  font-size: 10px;
+  font-weight: var(--weight-semibold);
+  color: var(--color-text-faint);
+  line-height: 1.25;
+  white-space: nowrap;
+  text-transform: uppercase;
+  letter-spacing: var(--tracking-caps);
 }
 
-.workout__level-chip--active .workout__level-sub {
+.workout__plan-chip--active .workout__plan-sub {
   color: var(--color-primary-text);
-  opacity: 0.8;
+  opacity: 0.85;
 }
 
 /* ── Beginner note ── */
@@ -112,7 +183,9 @@
   inset: 0;
   border-radius: 50%;
   background: var(--color-primary);
-  box-shadow: 0 2px 12px rgba(76, 96, 86, 0.30), 0 1px 4px rgba(76, 96, 86, 0.16);
+  box-shadow:
+    0 2px 12px rgba(76, 96, 86, 0.3),
+    0 1px 4px rgba(76, 96, 86, 0.16);
   z-index: 0;
 }
 
@@ -137,7 +210,6 @@
   background: var(--color-primary);
   flex-shrink: 0;
 }
-
 
 /* ── Day card ── */
 
@@ -164,14 +236,14 @@
 
 .workout__day-label {
   font-family: var(--font-display);
-  font-size: var(--font-xl);
+  font-size: var(--font-lg);
   font-weight: var(--weight-bold);
   color: var(--color-text);
   letter-spacing: var(--tracking-tight);
 }
 
 .workout__day-focus {
-  font-size: var(--font-base);
+  font-size: var(--font-sm);
   color: var(--color-text-muted);
   margin-top: 3px;
 }
@@ -266,6 +338,29 @@
   font-weight: var(--weight-semibold);
   color: var(--color-text);
   line-height: 1.3;
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  flex-wrap: wrap;
+}
+
+.workout__exercise-badge {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  font-family: var(--font-display);
+  font-size: 10px;
+  font-weight: var(--weight-bold);
+  letter-spacing: 0.04em;
+  color: var(--color-primary-text, var(--color-primary));
+  background: var(--color-primary-dim);
+  border-radius: var(--radius-full);
+  padding: 1px 6px;
+  line-height: 1.4;
+}
+
+.workout__exercise--extra {
+  border-style: dashed;
 }
 
 .workout__exercise-meta {
@@ -552,7 +647,10 @@
   background: var(--color-surface);
   border: 1px solid var(--color-border);
   flex-shrink: 0;
-  transition: background var(--ease-base), border-color var(--ease-base), color var(--ease-base);
+  transition:
+    background var(--ease-base),
+    border-color var(--ease-base),
+    color var(--ease-base);
   -webkit-tap-highlight-color: transparent;
 }
 
@@ -619,7 +717,10 @@
   border-radius: var(--radius-full);
   font-size: var(--font-sm);
   font-weight: var(--weight-semibold);
-  transition: background var(--ease-base), border-color var(--ease-base), color var(--ease-base);
+  transition:
+    background var(--ease-base),
+    border-color var(--ease-base),
+    color var(--ease-base);
   -webkit-tap-highlight-color: transparent;
 }
 

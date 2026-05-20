@@ -23,6 +23,13 @@ export interface Milestone {
   message: string
 }
 
+export interface Goal {
+  id: string
+  text: string
+  setDate: string
+  habitId?: string
+}
+
 export interface HabitLog {
   habitId: string
   date: string
@@ -118,6 +125,7 @@ export interface SkinTypeGuide {
 // ── Workout ──────────────────────────────────────────────────────────────────
 
 export type ExperienceLevel = 'beginner' | 'intermediate'
+export type WorkoutVolume = 6 | 8
 
 export interface Exercise {
   id: string
@@ -135,5 +143,6 @@ export interface WorkoutDay {
   focus: string
   summary: string
   exercises: Exercise[]
+  extraExercises?: Exercise[]
   isRest?: boolean
 }

@@ -161,13 +161,23 @@
 }
 
 .habit-form__slot--active .habit-form__slot-icon {
-  color: var(--color-primary);
+  color: #166534;
+}
+
+[data-theme="dark"] .habit-form__slot--active .habit-form__slot-icon {
+  color: #86efac;
 }
 
 .habit-form__slot--active {
-  background: var(--color-primary-dim);
-  border-color: var(--color-primary);
-  color: var(--color-primary);
+  background: rgba(134, 239, 172, 0.18);
+  border-color: rgba(34, 197, 94, 0.55);
+  color: #166534;
+}
+
+[data-theme="dark"] .habit-form__slot--active {
+  background: rgba(134, 239, 172, 0.16);
+  border-color: rgba(134, 239, 172, 0.5);
+  color: #86efac;
 }
 
 /* ---- Frequency pills ---- */
@@ -191,9 +201,15 @@
 }
 
 .habit-form__freq-pill--active {
-  background: var(--color-primary-dim);
-  border-color: var(--color-primary);
-  color: var(--color-primary);
+  background: rgba(134, 239, 172, 0.18);
+  border-color: rgba(34, 197, 94, 0.55);
+  color: #166534;
+}
+
+[data-theme="dark"] .habit-form__freq-pill--active {
+  background: rgba(134, 239, 172, 0.16);
+  border-color: rgba(134, 239, 172, 0.5);
+  color: #86efac;
 }
 
 /* ---- Custom day toggles ---- */
@@ -220,9 +236,15 @@
 }
 
 .habit-form__day--active {
-  background: var(--color-primary-dim);
-  border-color: var(--color-primary);
-  color: var(--color-primary);
+  background: rgba(134, 239, 172, 0.2);
+  border-color: rgba(34, 197, 94, 0.55);
+  color: #166534;
+}
+
+[data-theme="dark"] .habit-form__day--active {
+  background: rgba(134, 239, 172, 0.18);
+  border-color: rgba(134, 239, 172, 0.55);
+  color: #86efac;
 }
 
 /* ---- Reminder time input ---- */
@@ -273,9 +295,15 @@
 }
 
 .habit-form__icon-btn--active {
-  border-color: var(--color-primary);
-  background: var(--color-primary-dim);
-  color: var(--color-primary-text);
+  border-color: rgba(34, 197, 94, 0.55);
+  background: rgba(134, 239, 172, 0.18);
+  color: #166534;
+}
+
+[data-theme="dark"] .habit-form__icon-btn--active {
+  border-color: rgba(134, 239, 172, 0.5);
+  background: rgba(134, 239, 172, 0.14);
+  color: #86efac;
 }
 
 .habit-form__icon-label {

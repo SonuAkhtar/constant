@@ -2,126 +2,392 @@
   padding: var(--page-padding-top) var(--page-padding-x) var(--space-8);
 }
 
-.progress-page__heading {
-  font-family: var(--font-display);
-  font-size: var(--font-xl);
-  font-weight: var(--weight-black);
-  color: var(--color-text);
-  letter-spacing: -0.4px;
-  margin-bottom: var(--space-5);
-}
+/* ---- Weekly summary hero ----------------------------------------------
+   Layout (non-duplicate with the day-by-day chart below):
+     ┌─────────────────────────────────────────────┐
+     │ THIS WEEK  ·  Strong week, you're showing…   │  head row
+     │                                              │
+     │ ┌────┐    ↑ +15%                            │  body: ring + delta
+     │ │87% │    vs last week · 72%                 │
+     │ └────┘                                      │
+     │                                              │
+     │ ┌───────────────┐ ┌───────────────────────┐ │  footer cells:
+     │ │ 🏆 Strongest  │ │ 🔥 Streak             │ │  top habit + streak
+     │ │ Morning Str.  │ │ 5 days                │ │  ladder w/ progress
+     │ │ 92% this week │ │ 2 to 7-day mark       │ │
+     │ └───────────────┘ └───────────────────────┘ │
+     └─────────────────────────────────────────────┘
+*/
 
-/* ---- Stat cards - bento grid ---- */
-
-.progress-page__stats {
-  display: grid;
-  grid-template-columns: repeat(2, 1fr);
-  gap: var(--space-3);
-  margin-bottom: var(--space-6);
-}
-
-.progress-page__stat {
+.progress-page__summary {
+  position: relative;
   display: flex;
   flex-direction: column;
-  align-items: center;
-  text-align: center;
-  padding: var(--space-4) var(--space-2);
-  background: rgba(255, 255, 255, 0.68);
-  backdrop-filter: blur(16px) saturate(160%);
-  -webkit-backdrop-filter: blur(16px) saturate(160%);
-  border: 1px solid rgba(255, 255, 255, 0.55);
-  border-radius: var(--radius-lg);
-  box-shadow:
-    0 4px 24px rgba(0, 0, 0, 0.06),
-    inset 0 1px 0 rgba(255, 255, 255, 0.7);
-  gap: 2px;
+  gap: var(--space-3);
+  padding: var(--space-4);
+  margin-bottom: var(--space-3);
+  background:
+    radial-gradient(
+      140% 100% at 100% 0%,
+      var(--color-primary-dim) 0%,
+      transparent 55%
+    ),
+    var(--color-surface);
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-xl);
+  box-shadow: var(--shadow-sm);
+  overflow: hidden;
 }
 
-[data-theme="dark"] .progress-page__stat {
-  background: rgba(24, 24, 24, 0.72);
-  border: 1px solid rgba(255, 255, 255, 0.06);
-  box-shadow:
-    0 4px 24px rgba(0, 0, 0, 0.28),
-    inset 0 1px 0 rgba(255, 255, 255, 0.04);
+.progress-page__summary::before {
+  content: "";
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  height: 3px;
+  background: linear-gradient(
+    90deg,
+    transparent 0%,
+    var(--color-primary) 40%,
+    var(--color-primary) 60%,
+    transparent 100%
+  );
+  opacity: 0.55;
 }
 
-.progress-page__stat--today {
-  padding: var(--space-4) var(--space-3);
-}
+/* ---- Head row: eyebrow + headline sentence (side-by-side) ---- */
 
-.progress-page__stat--streak {
-  padding: var(--space-4) var(--space-3);
-  gap: var(--space-1);
-}
-
-/* ---- StatRing ---- */
-
-.progress-page__stat-ring {
-  flex-shrink: 0;
-  margin-bottom: 2px;
-}
-
-.progress-page__stat-ring-track {
-  fill: none;
-  stroke: var(--color-surface-alt);
-  stroke-width: 4;
-}
-
-.progress-page__stat-ring-fill {
-  fill: none;
-  stroke: var(--color-primary);
-  stroke-width: 4;
-  stroke-linecap: round;
-}
-
-.progress-page__sparkline {
-  flex-shrink: 0;
-  opacity: 0.85;
-}
-
-.progress-page__stat-value {
-  font-family: var(--font-display);
-  font-size: var(--font-role-stat-value);
-  font-weight: 800;
-  color: var(--color-primary-text);
-  letter-spacing: -0.5px;
-  line-height: var(--leading-tight);
-  font-variant-numeric: tabular-nums;
+.progress-page__summary-head {
   display: flex;
   align-items: center;
-  gap: var(--space-1);
+  flex-wrap: wrap;
+  gap: var(--space-2);
 }
 
-.progress-page__trend {
-  font-size: var(--font-base);
-  font-weight: var(--weight-bold);
+/* "This week" reads as a tinted pill with a primary dot prefix-
+   distinct from generic plain-text eyebrows used elsewhere. */
+.progress-page__summary-eyebrow {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  font-size: 10px;
+  font-weight: var(--weight-black);
+  text-transform: uppercase;
+  letter-spacing: 0.1em;
+  color: var(--color-primary-text);
+  background: var(--color-surface);
+  border: 1px solid var(--color-primary);
+  border-radius: var(--radius-full);
+  padding: 4px 10px 4px 8px;
+  line-height: 1;
+  flex-shrink: 0;
+  box-shadow: 0 1px 2px rgba(76, 96, 86, 0.08);
+}
+
+.progress-page__summary-eyebrow-dot {
+  width: 6px;
+  height: 6px;
+  border-radius: 50%;
+  background: var(--color-primary);
+  box-shadow: 0 0 0 3px var(--color-primary-dim);
+  flex-shrink: 0;
+}
+
+.progress-page__summary-headline {
+  flex: 1;
+  min-width: 0;
+  font-family: var(--font-display);
+  font-size: var(--font-sm);
+  font-weight: var(--weight-semibold);
+  color: var(--color-text);
+  letter-spacing: -0.1px;
+  line-height: 1.35;
+}
+
+/* ---- Body row: ring + delta ---- */
+
+.progress-page__summary-body {
+  display: flex;
+  align-items: center;
+  gap: var(--space-4);
+}
+
+.progress-page__summary-ring-wrap {
+  position: relative;
+  width: 76px;
+  height: 76px;
+  flex-shrink: 0;
+}
+
+.progress-page__summary-ring {
+  display: block;
+}
+
+.progress-page__summary-ring-track {
+  fill: none;
+  stroke: var(--color-surface-alt);
+  stroke-width: 6;
+}
+
+.progress-page__summary-ring-fill {
+  fill: none;
+  stroke: var(--color-primary);
+  stroke-width: 6;
+  stroke-linecap: round;
+  transition: stroke-dasharray 0.8s cubic-bezier(0.34, 1.56, 0.64, 1);
+  filter: drop-shadow(0 0 6px rgba(76, 96, 86, 0.45));
+}
+
+[data-theme="dark"] .progress-page__summary-ring-fill {
+  filter: drop-shadow(0 0 7px rgba(182, 204, 190, 0.5));
+}
+
+/* Centering fix: parent flex centers a single inline-flex child
+   that holds both the number and the % on the same baseline. */
+.progress-page__summary-ring-center {
+  position: absolute;
+  inset: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.progress-page__summary-ring-val {
+  display: inline-flex;
+  align-items: baseline;
+  gap: 1px;
+  font-family: var(--font-display);
+  font-size: 24px;
+  font-weight: var(--weight-black);
+  color: var(--color-text);
+  letter-spacing: -0.03em;
+  font-variant-numeric: tabular-nums;
   line-height: 1;
 }
 
-.progress-page__trend--up {
-  color: var(--color-success);
-}
-.progress-page__trend--down {
-  color: var(--color-error);
-}
-.progress-page__trend--flat {
-  color: var(--color-text-faint);
+.progress-page__summary-ring-sym {
+  font-size: 12px;
+  font-weight: var(--weight-bold);
+  color: var(--color-primary-text);
+  letter-spacing: 0.04em;
 }
 
-.progress-page__stat-label {
-  display: inline-flex;
+/* ---- Delta (week-over-week) ---- */
+
+.progress-page__summary-delta {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  min-width: 0;
+}
+
+.progress-page__summary-delta-val {
+  font-family: var(--font-display);
+  font-size: var(--font-xl);
+  font-weight: var(--weight-black);
+  letter-spacing: -0.02em;
+  line-height: 1;
+  font-variant-numeric: tabular-nums;
+}
+
+.progress-page__summary-delta-val--up {
+  color: var(--color-success);
+}
+.progress-page__summary-delta-val--down {
+  color: var(--color-error);
+}
+.progress-page__summary-delta-val--flat {
+  color: var(--color-text-muted);
+}
+
+.progress-page__summary-delta-sub {
+  font-size: var(--font-sm);
+  font-weight: var(--weight-semibold);
+  color: var(--color-text-muted);
+}
+
+/* ---- Footer cells: top habit + streak ladder ---- */
+
+.progress-page__summary-cells {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: var(--space-2);
+  padding-top: var(--space-3);
+  border-top: 1px dashed var(--color-border);
+}
+
+.progress-page__summary-cell {
+  position: relative;
+  display: flex;
+  gap: var(--space-2);
+  padding: 10px 12px 11px;
+  background: var(--color-surface-alt);
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-md);
+  overflow: hidden;
+}
+
+.progress-page__summary-cell--top {
+  --cell-accent: var(--color-success);
+}
+
+.progress-page__summary-cell--streak {
+  --cell-accent: var(--color-streak);
+}
+
+.progress-page__summary-cell-icon {
+  flex-shrink: 0;
+  width: 26px;
+  height: 26px;
+  display: flex;
   align-items: center;
-  gap: 4px;
-  font-size: var(--font-role-body);
+  justify-content: center;
+  border-radius: 8px;
+  color: var(--cell-accent, var(--color-primary));
+  background: color-mix(
+    in srgb,
+    var(--cell-accent, var(--color-primary)) 14%,
+    transparent
+  );
+}
+
+.progress-page__summary-cell-body {
+  flex: 1;
+  min-width: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 1px;
+}
+
+.progress-page__summary-cell-eyebrow {
+  font-size: 10px;
+  font-weight: var(--weight-bold);
+  text-transform: uppercase;
+  letter-spacing: var(--tracking-caps);
+  color: var(--color-text-faint);
+  line-height: 1;
+}
+
+.progress-page__summary-cell-title {
+  font-family: var(--font-display);
+  font-size: var(--font-sm);
   font-weight: var(--weight-bold);
   color: var(--color-text);
+  letter-spacing: -0.1px;
+  line-height: 1.2;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
   margin-top: 2px;
 }
 
-.progress-page__stat-sub {
-  font-size: var(--font-role-label);
+.progress-page__summary-cell-sub {
+  font-size: 11px;
   font-weight: var(--weight-semibold);
   color: var(--color-text-muted);
+  line-height: 1.3;
+}
+
+.progress-page__summary-cell-bar {
+  position: absolute;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  height: 3px;
+  background: color-mix(in srgb, var(--cell-accent) 12%, transparent);
+}
+
+.progress-page__summary-cell-bar-fill {
+  height: 100%;
+  background: var(--cell-accent);
+  border-radius: 0 var(--radius-full) var(--radius-full) 0;
+}
+
+/* ---- Habit health buckets --------------------------------------------- */
+
+.progress-page__health {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: var(--space-2);
+  margin-bottom: var(--space-4);
+}
+
+.progress-page__health-card {
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: 1px;
+  padding: 10px 12px 11px;
+  background: var(--color-surface);
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-md);
+  overflow: hidden;
+}
+
+.progress-page__health-card::after {
+  content: "";
+  position: absolute;
+  left: 0;
+  top: 0;
+  bottom: 0;
+  width: 3px;
+  background: var(--health-color, var(--color-border));
+}
+
+.progress-page__health-card--strong {
+  --health-color: var(--color-success);
+  background: var(--color-success-dim);
+  border-color: color-mix(in srgb, var(--color-success) 28%, transparent);
+}
+
+.progress-page__health-card--mid {
+  --health-color: var(--color-streak);
+  background: rgba(176, 125, 32, 0.07);
+  border-color: rgba(176, 125, 32, 0.25);
+}
+
+.progress-page__health-card--weak {
+  --health-color: var(--color-error);
+  background: var(--color-error-dim);
+  border-color: color-mix(in srgb, var(--color-error) 24%, transparent);
+}
+
+.progress-page__health-pip {
+  width: 6px;
+  height: 6px;
+  border-radius: 50%;
+  background: var(--health-color);
+  box-shadow: 0 0 0 3px color-mix(in srgb, var(--health-color) 18%, transparent);
+  margin-bottom: 3px;
+}
+
+.progress-page__health-count {
+  font-family: var(--font-display);
+  font-size: var(--font-2xl);
+  font-weight: var(--weight-black);
+  color: var(--color-text);
+  letter-spacing: -0.03em;
+  line-height: 1;
+  font-variant-numeric: tabular-nums;
+}
+
+.progress-page__health-label {
+  font-size: var(--font-sm);
+  font-weight: var(--weight-semibold);
+  color: var(--color-text);
+  line-height: 1.2;
+  margin-top: 3px;
+}
+
+.progress-page__health-sub {
+  font-size: 10px;
+  font-weight: var(--weight-semibold);
+  color: var(--color-text-faint);
+  letter-spacing: 0.02em;
+  margin-top: 1px;
 }
 
 /* ---- Tab bar ---- */
@@ -142,7 +408,10 @@
   font-weight: var(--weight-semibold);
   color: var(--color-text-muted);
   border-radius: calc(var(--radius-md) - 3px);
-  transition: background var(--ease-base), color var(--ease-base), box-shadow var(--ease-base);
+  transition:
+    background var(--ease-base),
+    color var(--ease-base),
+    box-shadow var(--ease-base);
 }
 
 .progress-page__tab--active {
@@ -374,12 +643,17 @@
   font-weight: var(--weight-bold);
   transition:
     background var(--ease-base),
-    opacity     var(--ease-base),
-    transform   var(--ease-fast);
+    opacity var(--ease-base),
+    transform var(--ease-fast);
 }
 
-.progress-page__empty-cta:hover  { background: var(--color-primary-dim); }
-.progress-page__empty-cta:active { transform: scale(0.97); opacity: 0.88; }
+.progress-page__empty-cta:hover {
+  background: var(--color-primary-dim);
+}
+.progress-page__empty-cta:active {
+  transform: scale(0.97);
+  opacity: 0.88;
+}
 
 /* =========================================================================
    PERSONAL BESTS
@@ -415,7 +689,10 @@
   font-size: var(--font-sm);
   font-weight: var(--weight-semibold);
   color: var(--color-text-muted);
-  transition: background var(--ease-base), border-color var(--ease-base), color var(--ease-base);
+  transition:
+    background var(--ease-base),
+    border-color var(--ease-base),
+    color var(--ease-base);
 }
 
 .progress-page__share-btn:hover {
@@ -782,7 +1059,9 @@
   color: var(--color-text-muted);
   border: none;
   cursor: pointer;
-  transition: background var(--duration-fast) var(--ease-snap), opacity var(--duration-fast) var(--ease-snap);
+  transition:
+    background var(--duration-fast) var(--ease-snap),
+    opacity var(--duration-fast) var(--ease-snap);
   -webkit-tap-highlight-color: transparent;
 }
 

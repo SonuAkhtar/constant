@@ -37,8 +37,6 @@ export default function Wellness() {
 
   return (
     <div className="wellness-page">
-      <h1 className="wellness-page__heading">Wellness</h1>
-
       <div className="wellness-page__tab-bar" role="tablist" aria-label="Wellness sections">
         {TABS.map(({ id, label, Icon }) => (
           <button

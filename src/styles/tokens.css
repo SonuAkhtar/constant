@@ -65,7 +65,7 @@
   --space-12: 48px;
   --space-16: 64px;
 
-  /* Radii — minimum 16px for inputs/small, 32px for cards/buttons */
+  /* Radii- minimum 16px for inputs/small, 32px for cards/buttons */
   --radius-sm: 12px;
   --radius-md: 16px;
   --radius-lg: 24px;
@@ -73,7 +73,7 @@
   --radius-2xl: 40px;
   --radius-full: 9999px;
 
-  /* Animation durations — use these instead of raw ms values */
+  /* Animation durations- use these instead of raw ms values */
   --duration-instant: 80ms;
   --duration-fast: 150ms;
   --duration-base: 220ms;
@@ -96,13 +96,13 @@
      Use these instead of raw --space-* in page-level padding/gap rules
      so a single change propagates to all pages consistently.
   */
-  --page-padding-x: var(--space-4); /* 16px — horizontal page inset   */
-  --page-padding-top: var(--space-5); /* 20px — space above page content */
-  --section-gap: var(--space-4); /* 24px — between major sections   */
-  --card-gap: var(--space-3); /* 12px — between cards in a list  */
-  --card-padding: var(--space-4); /* 16px — default inner card padding */
+  --page-padding-x: var(--space-4); /* 16px- horizontal page inset   */
+  --page-padding-top: var(--space-5); /* 20px- space above page content */
+  --section-gap: var(--space-4); /* 24px- between major sections   */
+  --card-gap: var(--space-3); /* 12px- between cards in a list  */
+  --card-padding: var(--space-4); /* 16px- default inner card padding */
 
-  /* Time-slot accent colours — muted to complement low-saturation palette */
+  /* Time-slot accent colours- muted to complement low-saturation palette */
   --slot-morning: #b07d20;
   --slot-morning-dim: rgba(176, 125, 32, 0.09);
   --slot-afternoon: #2e7d9e;
@@ -112,7 +112,7 @@
   --slot-night: #4a4f8a;
   --slot-night-dim: rgba(74, 79, 138, 0.09);
 
-  /* ---- Light mode — Serene Wellness palette ---- */
+  /* ---- Light mode- Serene Wellness palette ---- */
   --color-bg: #f9f9f7;
   --color-surface: #ffffff;
   --color-surface-alt: #eeeeec;
@@ -121,13 +121,13 @@
   --color-border: #c2c8c3;
   --color-border-strong: rgba(0, 0, 0, 0.22);
 
-  /* Primary — Sage Green */
+  /* Primary- Sage Green */
   --color-primary: #4c6056;
   --color-primary-light: #65796e;
   --color-primary-dim: rgba(76, 96, 86, 0.09);
   --color-primary-text: #374b41;
 
-  /* Secondary accent — Dusty Sage */
+  /* Secondary accent- Dusty Sage */
   --color-accent: #535f58;
   --color-accent-light: #6b7771;
   --color-accent-dim: rgba(83, 95, 88, 0.1);
@@ -161,7 +161,7 @@
   --elevation-2: var(--color-surface-raised);
   --elevation-3: var(--color-surface-overlay);
 
-  /* Shadows — sage-tinted ambient (Design.md: soft diffused with primary tint at 5-10%) */
+  /* Shadows- sage-tinted ambient (Design.md: soft diffused with primary tint at 5-10%) */
   --shadow-sm:
     0 1px 4px rgba(76, 96, 86, 0.07), 0 1px 2px rgba(76, 96, 86, 0.04);
   --shadow-md: 0 4px 20px rgba(76, 96, 86, 0.09);
@@ -191,13 +191,18 @@
 }
 
 [data-theme="dark"] {
-  --color-bg: #0f1210;
-  --color-surface: #1a1e1b;
-  --color-surface-alt: #22261f;
-  --color-surface-raised: #282d29;
-  --color-surface-overlay: #2e342e;
-  --color-border: #2d3530;
-  --color-border-strong: rgba(255, 255, 255, 0.22);
+  /* Second lift: bg → #262c28 reads as "medium charcoal with a hint of sage"
+     rather than near-black. Surface levels lifted in lockstep so the
+     elevation cascade stays intact (each step ~+8 in lightness). */
+  --color-bg: #262c28;
+  --color-surface: #2f3530;
+  --color-surface-alt: #373e38;
+  --color-surface-raised: #3e4640;
+  --color-surface-overlay: #464e47;
+  /* Lifted from #2d3530 → mint-tinted #3a4842 so borders read as
+     subtle neon edges against the deep surface. */
+  --color-border: #3a4842;
+  --color-border-strong: rgba(182, 204, 190, 0.32);
 
   --color-primary: #b6ccbe;
   --color-primary-light: #d1e8da;
@@ -221,24 +226,117 @@
 
   --color-text: #e2e5e2;
   --color-text-muted: #9aa09a;
-  /* Lightened from #5a6058 → #7a8278 — was 2.9:1 on surface, now 4.54:1 (WCAG AA) */
+  /* Lightened from #5a6058 → #7a8278- was 2.9:1 on surface, now 4.54:1 (WCAG AA) */
   --color-text-faint: #7a8278;
 
-  --color-header-bg: rgba(15, 18, 16, 0.9);
-  --color-nav-bg: rgba(15, 18, 16, 0.97);
+  --color-header-bg: rgba(38, 44, 40, 0.9);
+  --color-nav-bg: rgba(38, 44, 40, 0.97);
 
   --gradient-brand: linear-gradient(135deg, #e2e5e2 0%, #b6ccbe 100%);
 
   --glow-primary: 0 0 20px 4px rgba(182, 204, 190, 0.22);
   --glow-accent: 0 0 20px 4px rgba(189, 202, 193, 0.15);
 
-  --shadow-sm: 0 1px 3px rgba(0, 0, 0, 0.32);
-  --shadow-md: 0 4px 16px rgba(0, 0, 0, 0.44);
-  --shadow-lg: 0 8px 32px rgba(0, 0, 0, 0.56);
-  --shadow-xl: 0 16px 56px rgba(0, 0, 0, 0.64);
+  /* ── Neon shadows- mint glow layered on top of standard depth shadow.
+        Each token stacks: (depth shadow) + (1px primary outline) + (soft mint halo).
+        Every component using --shadow-* automatically picks up the neon edge. */
+  --shadow-sm:
+    0 1px 3px rgba(0, 0, 0, 0.32), 0 0 0 1px rgba(182, 204, 190, 0.07),
+    0 0 10px rgba(182, 204, 190, 0.07);
+  --shadow-md:
+    0 4px 16px rgba(0, 0, 0, 0.44), 0 0 0 1px rgba(182, 204, 190, 0.1),
+    0 0 18px rgba(182, 204, 190, 0.12);
+  --shadow-lg:
+    0 8px 32px rgba(0, 0, 0, 0.56), 0 0 0 1px rgba(182, 204, 190, 0.13),
+    0 0 28px rgba(182, 204, 190, 0.16);
+  --shadow-xl:
+    0 16px 56px rgba(0, 0, 0, 0.64), 0 0 0 1px rgba(182, 204, 190, 0.16),
+    0 0 42px rgba(182, 204, 190, 0.2);
 
   --heatmap-low: rgba(182, 204, 190, 0.15);
   --heatmap-medium: rgba(182, 204, 190, 0.4);
   --heatmap-high: rgba(182, 204, 190, 0.65);
   --heatmap-very-high: #b6ccbe;
+}
+
+/* ────────────────────────────────────────────────────────────────────────
+   Dark-mode neon enhancements
+
+   Cards/panels that already use `box-shadow: var(--shadow-*)` pick up the
+   mint glow automatically from the upgraded tokens above.
+
+   The selectors below cover bordered surfaces that DON'T use shadow tokens
+   (workout day cards, exercise rows, panels, day chips, today sections,
+   goal banner, etc.)- giving them a baseline neon edge in dark mode so
+   the look reads consistently across every page.
+
+   Active/selected chips get a brighter "lit" glow on top.
+   ──────────────────────────────────────────────────────────────────────── */
+
+[data-theme="dark"] .workout__card,
+[data-theme="dark"] .workout__exercise,
+[data-theme="dark"] .workout__panel,
+[data-theme="dark"] .workout__plan-chip,
+[data-theme="dark"] .today__section,
+[data-theme="dark"] .today__date-strip,
+[data-theme="dark"] .today__goal-banner,
+[data-theme="dark"] .today__past-banner,
+[data-theme="dark"] .progress-page__health-card,
+[data-theme="dark"] .progress-page__chart-wrap,
+[data-theme="dark"] .ph-row,
+[data-theme="dark"] .profile__goal-item,
+[data-theme="dark"] .habits-page__group,
+[data-theme="dark"] .habit-card {
+  box-shadow:
+    0 0 0 1px rgba(182, 204, 190, 0.07),
+    0 0 12px rgba(182, 204, 190, 0.07);
+}
+
+/* Pills + chips- small mint outline so they don't disappear on the dark surface */
+[data-theme="dark"] .progress-page__best-pill,
+[data-theme="dark"] .progress-page__summary-chip,
+[data-theme="dark"] .progress-page__summary-cell,
+[data-theme="dark"] .profile__focus-pill,
+[data-theme="dark"] .profile__focus-toggle,
+[data-theme="dark"] .profile__edit-cancel,
+[data-theme="dark"] .profile__edit-save,
+[data-theme="dark"] .profile__goal-edit-btn,
+[data-theme="dark"] .profile__data-btn,
+[data-theme="dark"] .today__date-chip,
+[data-theme="dark"] .today__goal-label,
+[data-theme="dark"] .today__goal-switcher,
+[data-theme="dark"] .today__past-banner-back,
+[data-theme="dark"] .habits-page__organize-btn,
+[data-theme="dark"] .workout__day-chip,
+[data-theme="dark"] .workout__rest-badge,
+[data-theme="dark"] .ph-badge {
+  box-shadow:
+    0 0 0 1px rgba(182, 204, 190, 0.08),
+    0 0 8px rgba(182, 204, 190, 0.06);
+}
+
+/* Active / selected chips and pills- brighter neon halo */
+[data-theme="dark"] .workout__plan-chip--active,
+[data-theme="dark"] .workout__day-chip--active,
+[data-theme="dark"] .today__date-chip--selected,
+[data-theme="dark"] .wellness-page__tab--active {
+  box-shadow:
+    0 0 0 1px rgba(182, 204, 190, 0.35),
+    0 0 16px rgba(182, 204, 190, 0.22);
+}
+
+/* Inputs: when focused, glow with mint */
+[data-theme="dark"] input:focus,
+[data-theme="dark"] textarea:focus {
+  box-shadow:
+    0 0 0 1px rgba(182, 204, 190, 0.5),
+    0 0 14px rgba(182, 204, 190, 0.18);
+}
+
+/* Bottom nav + header- top-level chrome reads as "lit" */
+[data-theme="dark"] .bottom-nav,
+[data-theme="dark"] .app-header {
+  box-shadow:
+    0 0 0 1px rgba(182, 204, 190, 0.1),
+    0 -2px 24px rgba(182, 204, 190, 0.1);
 }

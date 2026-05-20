@@ -146,14 +146,29 @@
 
 [data-theme="dark"] .bottom-nav {
   background: var(--color-nav-bg);
-  border: 1px solid rgba(255, 255, 255, 0.07);
+  border: 1px solid rgba(182, 204, 190, 0.18);
   box-shadow:
     0 4px 24px rgba(0, 0, 0, 0.36),
-    0 1px 6px rgba(0, 0, 0, 0.28);
+    0 -2px 24px rgba(182, 204, 190, 0.12),
+    0 0 0 1px rgba(182, 204, 190, 0.1);
 }
 
+/* Dark mode: active item glows mint instead of showing solid white on primary.
+   Pill becomes translucent mint with strong neon outline + halo;
+   icon + label switch from white → bright mint. */
 [data-theme="dark"] .bottom-nav__pill {
+  background: rgba(182, 204, 190, 0.16);
   box-shadow:
-    0 6px 18px rgba(76, 96, 86, 0.5),
-    0 2px 6px rgba(0, 0, 0, 0.3);
+    0 0 0 1px rgba(182, 204, 190, 0.6),
+    0 0 20px rgba(182, 204, 190, 0.4),
+    0 0 36px rgba(182, 204, 190, 0.18);
+}
+
+[data-theme="dark"] .bottom-nav__item--active .bottom-nav__inner {
+  color: var(--color-primary);
+  filter: drop-shadow(0 0 6px rgba(182, 204, 190, 0.5));
+}
+
+[data-theme="dark"] .bottom-nav__item--active .bottom-nav__label {
+  color: var(--color-primary);
 }

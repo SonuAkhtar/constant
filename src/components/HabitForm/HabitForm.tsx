@@ -113,7 +113,7 @@ export default function HabitForm({ defaultSlot, defaultTitle, habit, children, 
 
   return (
     <Dialog.Root open={open} onOpenChange={handleOpenChange}>
-      <Dialog.Trigger asChild>{children}</Dialog.Trigger>
+      {children && <Dialog.Trigger asChild>{children}</Dialog.Trigger>}
 
       <AnimatePresence>
         {open && (
