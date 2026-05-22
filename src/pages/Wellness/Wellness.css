@@ -59,3 +59,47 @@
 .wellness-page__panel {
   position: relative;
 }
+
+/* SubAppErrorBoundary fallback — never blank; offers a manual reload */
+.wellness-page__error {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: var(--space-3);
+  padding: var(--space-5) var(--space-4);
+  background: var(--color-surface);
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-md);
+  margin-top: var(--space-4);
+}
+
+.wellness-page__error-title {
+  font-family: var(--font-display);
+  font-size: var(--font-md);
+  font-weight: var(--weight-bold);
+  color: var(--color-text);
+  margin: 0;
+}
+
+.wellness-page__error-sub {
+  font-size: var(--font-sm);
+  color: var(--color-text-muted);
+  margin: 0;
+}
+
+.wellness-page__error-btn {
+  padding: 10px 16px;
+  border-radius: var(--radius-md);
+  border: 1px solid var(--color-primary);
+  background: var(--color-primary-dim);
+  color: var(--color-primary-text);
+  font-size: var(--font-sm);
+  font-weight: var(--weight-semibold);
+  cursor: pointer;
+  transition: background var(--ease-base);
+}
+
+.wellness-page__error-btn:hover {
+  background: var(--color-primary);
+  color: #fff;
+}

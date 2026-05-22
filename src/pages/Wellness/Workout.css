@@ -236,10 +236,12 @@
 
 .workout__day-label {
   font-family: var(--font-display);
-  font-size: var(--font-lg);
+  /* Was --font-lg (18px). Reduced to match section-title scale used on Today. */
+  font-size: var(--font-md);
   font-weight: var(--weight-bold);
   color: var(--color-text);
   letter-spacing: var(--tracking-tight);
+  line-height: 1.25;
 }
 
 .workout__day-focus {
@@ -283,7 +285,7 @@
 
 .workout__rest-state-title {
   font-family: var(--font-display);
-  font-size: var(--font-lg);
+  font-size: var(--font-md);
   font-weight: var(--weight-bold);
   color: var(--color-text);
   letter-spacing: var(--tracking-tight);
@@ -334,7 +336,8 @@
 }
 
 .workout__exercise-name {
-  font-size: var(--font-md);
+  /* List-row title scale — matches Today's habit card title style */
+  font-size: var(--font-base);
   font-weight: var(--weight-semibold);
   color: var(--color-text);
   line-height: 1.3;
@@ -464,7 +467,7 @@
 }
 
 .workout__panel-title {
-  font-size: var(--font-md);
+  font-size: var(--font-base);
   font-weight: var(--weight-semibold);
   color: var(--color-text);
 }
@@ -679,7 +682,7 @@
 
 .workout__timer-display {
   font-family: var(--font-display);
-  font-size: var(--font-lg);
+  font-size: var(--font-md);
   font-weight: var(--weight-bold);
   color: var(--color-text-muted);
   font-variant-numeric: tabular-nums;

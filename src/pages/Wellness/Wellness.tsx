@@ -1,10 +1,53 @@
-import React, { useState } from 'react'
-import { motion, AnimatePresence } from 'framer-motion'
+import React, { Component, useState } from 'react'
+import type { ReactNode } from 'react'
+import { motion } from 'framer-motion'
 import Skincare from './Skincare'
 import Workout from './Workout'
 import './Wellness.css'
 
 type WellnessTab = 'skincare' | 'workout'
+
+/**
+ * Local error boundary so a thrown render inside Skincare/Workout (most
+ * likely from `react-body-highlighter` on malformed data, or AnimatePresence
+ * mid-flight reconciliation) doesn't leave the Wellness route blank.
+ *
+ * The outer `RouteBoundary` in App.tsx catches lazy-import failures; this
+ * catches render-time failures inside the sub-apps so the user always sees
+ * an actionable fallback instead of a blank screen.
+ */
+class SubAppErrorBoundary extends Component<
+  { children: ReactNode; onRetry: () => void },
+  { error: Error | null }
+> {
+  state = { error: null as Error | null }
+  static getDerivedStateFromError(error: Error) { return { error } }
+  componentDidCatch(error: Error) {
+    // eslint-disable-next-line no-console
+    console.error('[Wellness sub-app] render error', error)
+  }
+  render() {
+    if (this.state.error) {
+      return (
+        <div className="wellness-page__error" role="alert">
+          <p className="wellness-page__error-title">Something hiccupped.</p>
+          <p className="wellness-page__error-sub">Try switching tabs again.</p>
+          <button
+            type="button"
+            className="wellness-page__error-btn"
+            onClick={() => {
+              this.setState({ error: null })
+              this.props.onRetry()
+            }}
+          >
+            Reload this section
+          </button>
+        </div>
+      )
+    }
+    return this.props.children
+  }
+}
 
 function SkincareIcon() {
   return (
@@ -30,6 +73,8 @@ const TABS: { id: WellnessTab; label: string; Icon: () => React.JSX.Element }[] 
 
 export default function Wellness() {
   const [tab, setTab] = useState<WellnessTab>('skincare')
+  // Bumped by "Reload this section" to force-remount the failed sub-app
+  const [reloadKey, setReloadKey] = useState(0)
 
   function handleTab(next: WellnessTab) {
     if (next !== tab) setTab(next)
@@ -61,23 +106,32 @@ export default function Wellness() {
         ))}
       </div>
 
+      {/*
+        Why this isn't `AnimatePresence mode="wait"` anymore:
+        The route-level wrapper in Layout.tsx already runs `mode="wait"` between
+        pages. Nesting a second wait-mode here on top of react-body-highlighter's
+        heavy first paint (many SVG <Model/> instances per exercise day) produced
+        a reconciliation race where the new sub-app would occasionally stay
+        locked in its exit state — the user saw a blank Wellness page until they
+        navigated away. A plain keyed cross-fade has the same look without the
+        race. SubAppErrorBoundary handles any deeper render failure.
+      */}
       <div
         role="tabpanel"
         id={`wellness-panel-${tab}`}
         aria-labelledby={`wellness-tab-${tab}`}
         className="wellness-page__panel"
       >
-        <AnimatePresence mode="wait" initial={false}>
-          <motion.div
-            key={tab}
-            initial={{ opacity: 0, y: 8 }}
-            animate={{ opacity: 1, y: 0 }}
-            exit={{ opacity: 0, y: -6 }}
-            transition={{ duration: 0.18, ease: [0.4, 0, 0.2, 1] }}
-          >
+        <motion.div
+          key={`${tab}-${reloadKey}`}
+          initial={{ opacity: 0 }}
+          animate={{ opacity: 1 }}
+          transition={{ duration: 0.18, ease: [0.4, 0, 0.2, 1] }}
+        >
+          <SubAppErrorBoundary onRetry={() => setReloadKey((k) => k + 1)}>
             {tab === 'skincare' ? <Skincare /> : <Workout />}
-          </motion.div>
-        </AnimatePresence>
+          </SubAppErrorBoundary>
+        </motion.div>
       </div>
     </div>
   )
