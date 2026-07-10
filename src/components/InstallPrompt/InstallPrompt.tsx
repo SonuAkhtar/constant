@@ -2,8 +2,8 @@ import { useState, useEffect } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import "./InstallPrompt.css";
 
-const OPEN_COUNT_KEY = "constant-open-count";
-const DISMISSED_KEY = "constant-install-dismissed";
+const OPEN_COUNT_KEY = "progress-open-count";
+const DISMISSED_KEY = "progress-install-dismissed";
 
 export default function InstallPrompt() {
   const [show, setShow] = useState(false);

@@ -600,11 +600,13 @@ export const useHabitStore = create<HabitState>()(
               milestones.forEach(m => upsertMilestone(userId, m));
             }
           }
-        } catch { /* */ }
+        } catch {
+          return;
+        }
       },
 
       reset: () => set({ habits: [], logs: [], milestones: [] }),
     }),
-    { name: "constant-habits", version: 1, migrate: (s) => s as HabitState },
+    { name: "progress-habits", version: 1, migrate: (s) => s as HabitState },
   ),
 );

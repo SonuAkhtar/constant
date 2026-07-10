@@ -161,7 +161,6 @@ export default function Today() {
   const { userName, goals, joinedAt } = useOnboardingStore();
   const { timings } = useSlotTimingStore();
 
-  // Banner shows the most recent goal by default; user can switch via dropdown.
   const [selectedGoalId, setSelectedGoalId] = useState<string | null>(null);
   const [goalDropdownOpen, setGoalDropdownOpen] = useState(false);
   const activeGoal: Goal | undefined =

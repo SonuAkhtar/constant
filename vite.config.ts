@@ -9,8 +9,8 @@ export default defineConfig({
       registerType: 'autoUpdate',
       includeAssets: ['new-logo-full.png'],
       manifest: {
-        name: 'Constant',
-        short_name: 'Constant',
+        name: 'Progress',
+        short_name: 'Progress',
         description: 'wellness, routine, progress',
         theme_color: '#4c6056',
         background_color: '#ffffff',

@@ -35,8 +35,6 @@
   cursor: grab;
 }
 
-/* ── Header ── */
-
 .hds__header {
   display: flex;
   align-items: flex-start;
@@ -98,8 +96,6 @@
 
 .hds__close:hover { background: var(--color-border); }
 
-/* ── Stats row ── */
-
 .hds__stats {
   display: flex;
   align-items: center;
@@ -142,8 +138,6 @@
   background: var(--color-border);
   flex-shrink: 0;
 }
-
-/* ── 30-day calendar ── */
 
 .hds__calendar-section {
   margin-bottom: var(--space-5);
@@ -194,8 +188,6 @@
   color: var(--color-text-faint);
   margin-right: var(--space-2);
 }
-
-/* ── Action buttons ── */
 
 .hds__actions {
   display: grid;

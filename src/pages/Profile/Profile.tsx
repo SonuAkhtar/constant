@@ -97,7 +97,7 @@ export default function Profile() {
     reset: resetHabits,
   } = useHabitStore();
   const { theme, toggleTheme } = useThemeStore();
-  const { phone, signOut } = useAuthStore();
+  const { email, signOut } = useAuthStore();
 
   const [confirmSignOut, setConfirmSignOut] = useState(false);
 
@@ -138,14 +138,10 @@ export default function Profile() {
   const [editName, setEditName] = useState(userName);
   const [editFocuses, setEditFocuses] = useState<string[]>(focuses);
 
-  // Goal management state
   const [editingGoalId, setEditingGoalId] = useState<string | null>(null);
   const [editGoalInput, setEditGoalInput] = useState("");
   const [confirmDeleteGoalId, setConfirmDeleteGoalId] = useState<string | null>(null);
 
-  // Add-goal flow: clicking the button opens HabitForm directly.
-  // A goal is only created if the user actually saves the habit
-  // (a new habit appears in the store). Cancelling = no goal, no habit.
   const [pendingGoalCreation, setPendingGoalCreation] = useState(false);
   const [habitFormOpen, setHabitFormOpen] = useState(false);
   const habitCountBeforeFormRef = useRef(0);
@@ -173,8 +169,7 @@ export default function Profile() {
     if (!confirmDeleteGoalId) return;
     const goal = goals.find((g) => g.id === confirmDeleteGoalId);
     if (goal?.habitId) {
-      // Also remove the linked habit so it disappears from Today + Habits.
-      // removeHabit hard-deletes and syncs to Supabase.
+
       removeHabit(goal.habitId);
     }
     deleteGoal(confirmDeleteGoalId);
@@ -184,7 +179,7 @@ export default function Profile() {
   function handleHabitFormOpenChange(next: boolean) {
     setHabitFormOpen(next);
     if (!next && pendingGoalCreation) {
-      // Modal closed. Only create the goal if the user actually saved a habit.
+
       const after = useHabitStore.getState().habits;
       if (after.length > habitCountBeforeFormRef.current) {
         const newest = after[after.length - 1];
@@ -197,7 +192,7 @@ export default function Profile() {
   const importRef = useRef<HTMLInputElement>(null);
   const photoRef = useRef<HTMLInputElement>(null);
   const [photoUrl, setPhotoUrl] = useState<string>(() =>
-    localStorage.getItem("constant-avatar-photo") ?? "",
+    localStorage.getItem("progress-avatar-photo") ?? "",
   );
 
   function handleEditOpen() {
@@ -223,7 +218,7 @@ export default function Profile() {
     const url = URL.createObjectURL(blob);
     const a = document.createElement("a");
     a.href = url;
-    a.download = `constant-backup-${format(new Date(), "yyyy-MM-dd")}.json`;
+    a.download = `progress-backup-${format(new Date(), "yyyy-MM-dd")}.json`;
     a.click();
     URL.revokeObjectURL(url);
   }
@@ -235,7 +230,7 @@ export default function Profile() {
     reader.onload = (evt) => {
       const url = evt.target?.result as string;
       setPhotoUrl(url);
-      localStorage.setItem("constant-avatar-photo", url);
+      localStorage.setItem("progress-avatar-photo", url);
     };
     reader.readAsDataURL(file);
     e.target.value = "";
@@ -252,7 +247,6 @@ export default function Profile() {
     reader.readAsText(file);
     e.target.value = "";
   }
-
 
   return (
     <div className="profile">
@@ -369,7 +363,7 @@ export default function Profile() {
           <div className="profile__identity-meter-item">
             <span className="profile__identity-meter-value">{daysSinceStart}</span>
             <span className="profile__identity-meter-label">
-              day{daysSinceStart === 1 ? "" : "s"} with Constant
+              day{daysSinceStart === 1 ? "" : "s"} with Progress
             </span>
           </div>
         </div>
@@ -573,9 +567,9 @@ export default function Profile() {
             <rect x="2" y="6" width="8" height="6" rx="1.5" stroke="currentColor" strokeWidth="1.4" />
             <path d="M4 6V4a2 2 0 014 0v2" stroke="currentColor" strokeWidth="1.4" strokeLinecap="round" />
           </svg>
-          Synced to your account via phone number. Export a backup anytime.
+          Synced to your account. Export a backup anytime.
         </p>
-        {phone && <p className="profile__data-phone">Signed in as {phone}</p>}
+        {email && <p className="profile__data-phone">Signed in as {email}</p>}
         <div className="profile__data-actions">
           <button className="profile__data-btn" onClick={handleExport}>
             Export backup

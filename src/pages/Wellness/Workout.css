@@ -4,14 +4,6 @@
   gap: var(--space-4);
 }
 
-/* ── Plan selector- outlined "intensity card" trio
-   Visually distinct from the Wellness Skincare/Workout pill tabs:
-   - Individual outlined cards (not a connected segmented pill)
-   - Sharp-cornered cards (radius-md), not fully rounded
-   - Active = primary-tinted fill + bottom underline, not solid white-on-primary
-   - Intensity dots signal program difficulty
-   ── */
-
 .workout__plan {
   display: grid;
   grid-template-columns: repeat(3, 1fr);
@@ -123,8 +115,6 @@
   opacity: 0.85;
 }
 
-/* ── Beginner note ── */
-
 .workout__beginner-note {
   font-size: var(--font-sm);
   color: var(--color-text-muted);
@@ -134,8 +124,6 @@
   border-radius: var(--radius-md);
   border-left: 3px solid var(--color-primary-dim);
 }
-
-/* ── Day strip ── */
 
 .workout__strip {
   display: flex;
@@ -211,8 +199,6 @@
   flex-shrink: 0;
 }
 
-/* ── Day card ── */
-
 .workout__card {
   background: var(--color-surface);
   border: 1px solid var(--color-border);
@@ -236,7 +222,7 @@
 
 .workout__day-label {
   font-family: var(--font-display);
-  /* Was --font-lg (18px). Reduced to match section-title scale used on Today. */
+
   font-size: var(--font-md);
   font-weight: var(--weight-bold);
   color: var(--color-text);
@@ -271,8 +257,6 @@
   border-left: 2px solid var(--color-primary-dim);
 }
 
-/* ── Rest day state ── */
-
 .workout__rest-state {
   display: flex;
   flex-direction: column;
@@ -295,8 +279,6 @@
   font-size: var(--font-sm);
   color: var(--color-text-muted);
 }
-
-/* ── Exercises ── */
 
 .workout__exercises {
   display: flex;
@@ -336,7 +318,7 @@
 }
 
 .workout__exercise-name {
-  /* List-row title scale — matches Today's habit card title style */
+
   font-size: var(--font-base);
   font-weight: var(--weight-semibold);
   color: var(--color-text);
@@ -419,8 +401,6 @@
   border-left: 2px solid var(--color-primary-dim);
 }
 
-/* ── Muscle models ── */
-
 .workout__muscle-models {
   display: flex;
   gap: var(--space-4);
@@ -445,8 +425,6 @@
   letter-spacing: 0.04em;
   text-transform: uppercase;
 }
-
-/* ── Panels ── */
 
 .workout__panel {
   background: var(--color-surface);
@@ -476,8 +454,6 @@
   overflow: hidden;
 }
 
-/* ── Principles ── */
-
 .workout__principles {
   display: flex;
   flex-direction: column;
@@ -503,8 +479,6 @@
   color: var(--color-text-muted);
   line-height: 1.65;
 }
-
-/* ── Nutrition ── */
 
 .workout__nutrition {
   display: flex;
@@ -562,8 +536,6 @@
   line-height: 1.65;
 }
 
-/* ── Done state ── */
-
 .workout__exercise--done .workout__exercise-name {
   color: var(--color-text-muted);
   text-decoration: line-through;
@@ -577,8 +549,6 @@
   color: var(--color-success);
   flex-shrink: 0;
 }
-
-/* ── Tracker (weight + done toggle) ── */
 
 .workout__tracker {
   display: flex;
@@ -663,8 +633,6 @@
   color: var(--color-primary-text);
 }
 
-/* ── Rest timer ── */
-
 .workout__timer {
   display: flex;
   flex-direction: column;
@@ -747,8 +715,6 @@
 .workout__timer-btn--stop:hover {
   background: rgba(220, 38, 38, 0.14);
 }
-
-/* ── Dark mode overrides ── */
 
 [data-theme="dark"] .workout__day-pill {
   box-shadow: 0 2px 12px rgba(0, 0, 0, 0.44);

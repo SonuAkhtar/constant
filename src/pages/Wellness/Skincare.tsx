@@ -11,8 +11,6 @@ import type { SkincareStep, Supplement, SkinType } from "../../types";
 import HabitForm from "../../components/HabitForm/HabitForm";
 import "./Skincare.css";
 
-// ── Section icons ────────────────────────────────────────────────────────────
-
 function SunriseIcon() {
   return (
     <svg
@@ -125,8 +123,6 @@ function CapsuleIcon() {
   );
 }
 
-// ── Daytime habit icons (replace emojis) ──────────────────────────────────────
-
 function DaytimeIcon({ id }: { id: string }) {
   if (id === "spf-reapply")
     return (
@@ -231,8 +227,6 @@ function DaytimeIcon({ id }: { id: string }) {
     );
   return null;
 }
-
-// ── Skin type chip icons ──────────────────────────────────────────────────────
 
 function SkinTypeIcon({ type }: { type: string }) {
   if (type === "oily")
@@ -345,8 +339,6 @@ function SkinTypeIcon({ type }: { type: string }) {
   return null;
 }
 
-// ── Shared chevron ────────────────────────────────────────────────────────────
-
 function ChevronIcon({ open }: { open: boolean }) {
   return (
     <svg
@@ -371,8 +363,6 @@ function ChevronIcon({ open }: { open: boolean }) {
   );
 }
 
-// ── Evidence badge config ─────────────────────────────────────────────────────
-
 const STRENGTH_LABEL: Record<string, string> = {
   strongest: "Strongest evidence",
   strong: "Strong evidence",
@@ -388,8 +378,6 @@ const STRENGTH_CLASS: Record<string, string> = {
   emerging: "skincare__ev--emerging",
   insufficient: "skincare__ev--insufficient",
 };
-
-// ── Step card ─────────────────────────────────────────────────────────────────
 
 function StepCard({ step, index }: { step: SkincareStep; index: number }) {
   const [open, setOpen] = useState(false);
@@ -460,8 +448,6 @@ function StepCard({ step, index }: { step: SkincareStep; index: number }) {
     </div>
   );
 }
-
-// ── Supplement card ───────────────────────────────────────────────────────────
 
 function SupplementCard({ supp }: { supp: Supplement }) {
   const [open, setOpen] = useState(false);
@@ -540,15 +526,13 @@ function SupplementCard({ supp }: { supp: Supplement }) {
   );
 }
 
-// ── Main component ────────────────────────────────────────────────────────────
-
 export default function Skincare() {
   const [skinType, setSkinType] = useState<SkinType | null>(null);
   const activeGuide = skinTypeGuides.find((g) => g.type === skinType);
 
   return (
     <div className="skincare">
-      {/* Skin type selector */}
+
       <section
         className="skincare__section"
         aria-labelledby="sc-skintype-heading"
@@ -614,7 +598,6 @@ export default function Skincare() {
         </AnimatePresence>
       </section>
 
-      {/* Morning routine */}
       <section
         className="skincare__section"
         aria-labelledby="sc-morning-heading"
@@ -642,7 +625,6 @@ export default function Skincare() {
         </div>
       </section>
 
-      {/* Night routine */}
       <section className="skincare__section" aria-labelledby="sc-night-heading">
         <div className="skincare__section-header">
           <span className="skincare__section-icon">
@@ -662,7 +644,6 @@ export default function Skincare() {
         </div>
       </section>
 
-      {/* Daytime habits */}
       <section
         className="skincare__section"
         aria-labelledby="sc-daytime-heading"
@@ -692,7 +673,6 @@ export default function Skincare() {
         </ul>
       </section>
 
-      {/* Supplements */}
       <section className="skincare__section" aria-labelledby="sc-supps-heading">
         <div className="skincare__section-header">
           <span className="skincare__section-icon">

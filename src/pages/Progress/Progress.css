@@ -2,23 +2,6 @@
   padding: var(--page-padding-top) var(--page-padding-x) var(--space-8);
 }
 
-/* ---- Weekly summary hero ----------------------------------------------
-   Layout (non-duplicate with the day-by-day chart below):
-     ┌─────────────────────────────────────────────┐
-     │ THIS WEEK  ·  Strong week, you're showing…   │  head row
-     │                                              │
-     │ ┌────┐    ↑ +15%                            │  body: ring + delta
-     │ │87% │    vs last week · 72%                 │
-     │ └────┘                                      │
-     │                                              │
-     │ ┌───────────────┐ ┌───────────────────────┐ │  footer cells:
-     │ │ 🏆 Strongest  │ │ 🔥 Streak             │ │  top habit + streak
-     │ │ Morning Str.  │ │ 5 days                │ │  ladder w/ progress
-     │ │ 92% this week │ │ 2 to 7-day mark       │ │
-     │ └───────────────┘ └───────────────────────┘ │
-     └─────────────────────────────────────────────┘
-*/
-
 .progress-page__summary {
   position: relative;
   display: flex;
@@ -56,8 +39,6 @@
   opacity: 0.55;
 }
 
-/* ---- Head row: eyebrow + headline sentence (side-by-side) ---- */
-
 .progress-page__summary-head {
   display: flex;
   align-items: center;
@@ -65,8 +46,6 @@
   gap: var(--space-2);
 }
 
-/* "This week" reads as a tinted pill with a primary dot prefix-
-   distinct from generic plain-text eyebrows used elsewhere. */
 .progress-page__summary-eyebrow {
   display: inline-flex;
   align-items: center;
@@ -105,8 +84,6 @@
   line-height: 1.35;
 }
 
-/* ---- Body row: ring + delta ---- */
-
 .progress-page__summary-body {
   display: flex;
   align-items: center;
@@ -143,8 +120,6 @@
   filter: drop-shadow(0 0 7px rgba(182, 204, 190, 0.5));
 }
 
-/* Centering fix: parent flex centers a single inline-flex child
-   that holds both the number and the % on the same baseline. */
 .progress-page__summary-ring-center {
   position: absolute;
   inset: 0;
@@ -172,8 +147,6 @@
   color: var(--color-primary-text);
   letter-spacing: 0.04em;
 }
-
-/* ---- Delta (week-over-week) ---- */
 
 .progress-page__summary-delta {
   flex: 1;
@@ -207,8 +180,6 @@
   font-weight: var(--weight-semibold);
   color: var(--color-text-muted);
 }
-
-/* ---- Footer cells: top habit + streak ladder ---- */
 
 .progress-page__summary-cells {
   display: grid;
@@ -305,8 +276,6 @@
   border-radius: 0 var(--radius-full) var(--radius-full) 0;
 }
 
-/* ---- Habit health buckets --------------------------------------------- */
-
 .progress-page__health {
   display: grid;
   grid-template-columns: repeat(3, 1fr);
@@ -390,8 +359,6 @@
   margin-top: 1px;
 }
 
-/* ---- Tab bar ---- */
-
 .progress-page__tab-bar {
   display: flex;
   background: var(--color-surface-alt);
@@ -420,15 +387,11 @@
   box-shadow: var(--shadow-sm);
 }
 
-/* ---- Chart label ---- */
-
 .progress-page__chart-title {
   font-size: var(--font-sm);
   color: var(--color-text-muted);
   margin-bottom: var(--space-3);
 }
-
-/* ---- Weekly bar chart ---- */
 
 .progress-page__chart-wrap {
   background: var(--color-surface);
@@ -463,8 +426,6 @@
   color: var(--color-text-muted);
 }
 
-/* ---- Insight callout ---- */
-
 .progress-page__insight {
   font-size: var(--font-sm);
   color: var(--color-text-muted);
@@ -475,8 +436,6 @@
   border-radius: var(--radius-md);
   border-left: 3px solid var(--color-primary-dim);
 }
-
-/* ---- Tooltip ---- */
 
 .progress-page__tooltip {
   background: var(--color-surface);
@@ -505,8 +464,6 @@
   font-size: var(--font-sm);
   color: var(--color-text-muted);
 }
-
-/* ---- Monthly heatmap ---- */
 
 .progress-page__heatmap-meta {
   display: flex;
@@ -598,8 +555,6 @@
   outline-offset: 2px;
 }
 
-/* ---- Empty state ---- */
-
 .progress-page__empty {
   display: flex;
   flex-direction: column;
@@ -655,10 +610,6 @@
   opacity: 0.88;
 }
 
-/* =========================================================================
-   PERSONAL BESTS
-   ========================================================================= */
-
 .progress-page__bests {
   display: flex;
   flex-direction: column;
@@ -701,8 +652,6 @@
   background: var(--color-primary-dim);
 }
 
-/* ---- Personal Bests pill row ---- */
-
 .progress-page__bests-pills {
   display: flex;
   gap: var(--space-2);
@@ -737,10 +686,6 @@
   font-weight: var(--weight-semibold);
   color: var(--color-text-muted);
 }
-
-/* =========================================================================
-   HABIT PERFORMANCE BREAKDOWN
-   ========================================================================= */
 
 .ph-section {
   margin-top: var(--space-5);
@@ -815,8 +760,6 @@
   flex-direction: column;
   gap: var(--space-2);
 }
-
-/* ---- Habit row ---- */
 
 .ph-row {
   background: var(--color-surface);
@@ -908,8 +851,6 @@
   transform: rotate(180deg);
 }
 
-/* ---- Expanded detail ---- */
-
 .ph-row__detail {
   overflow: hidden;
 }
@@ -961,8 +902,6 @@
   color: var(--color-error);
 }
 
-/* ---- Mini calendar (week: labeled dots) ---- */
-
 .ph-mini-cal {
   display: flex;
   gap: 4px;
@@ -1009,8 +948,6 @@
   border: 1px dashed var(--color-border);
 }
 
-/* ---- Mini dot grid (month) ---- */
-
 .ph-mini-dots {
   display: grid;
   grid-template-columns: repeat(7, 1fr);
@@ -1037,8 +974,6 @@
 .ph-mini-dots__dot--off {
   background: transparent;
 }
-
-/* ---- Month navigation ---- */
 
 .progress-page__month-nav {
   display: flex;

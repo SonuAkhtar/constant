@@ -8,25 +8,19 @@ import Today from "./pages/Today/Today";
 import InstallPrompt from "./components/InstallPrompt/InstallPrompt";
 import ToastContainer from "./components/Toast/Toast";
 
-// ── Chunk-error-resilient lazy loader ───────────────────────────────────
-// When the PWA service worker swaps in a new build, old chunk filenames
-// (e.g. Progress-CYLh55rf.js) no longer exist on the server. The dynamic
-// import() rejects, Suspense never resolves, and the user sees a blank
-// page forever. This wrapper retries once, then triggers a single
-// controlled reload to pick up the new asset manifest.
 function lazyWithRetry<T extends ComponentType<unknown>>(
   factory: () => Promise<{ default: T }>,
   chunkName: string,
 ) {
   return lazy(async () => {
-    const RELOAD_KEY = `constant-chunk-reload:${chunkName}`;
+    const RELOAD_KEY = `progress-chunk-reload:${chunkName}`;
     try {
       return await factory();
     } catch (err) {
       if (!sessionStorage.getItem(RELOAD_KEY)) {
         sessionStorage.setItem(RELOAD_KEY, "1");
         window.location.reload();
-        // never-resolves so React keeps the fallback while the page reloads
+
         return new Promise<{ default: T }>(() => {});
       }
       sessionStorage.removeItem(RELOAD_KEY);
@@ -35,7 +29,6 @@ function lazyWithRetry<T extends ComponentType<unknown>>(
   });
 }
 
-// Factories so we can both lazy() and pre-warm() with the same import call.
 const loadProgress = () => import("./pages/Progress/Progress");
 const loadHabits   = () => import("./pages/Habits/Habits");
 const loadWellness = () => import("./pages/Wellness/Wellness");
@@ -46,8 +39,6 @@ const Habits   = lazyWithRetry(loadHabits,   "habits");
 const Wellness = lazyWithRetry(loadWellness, "wellness");
 const Profile  = lazyWithRetry(loadProfile,  "profile");
 
-// Pre-warm every route chunk once the main thread is idle, so navigating
-// from Today → any other tab is instant (no chunk download, no blank gap).
 function preloadRoutes() {
   loadProgress();
   loadHabits();
@@ -58,7 +49,6 @@ import { useThemeStore } from "./store/useThemeStore";
 import { useOnboardingStore } from "./store/useOnboardingStore";
 import { useAuthStore } from "./store/useAuthStore";
 import { useHabitStore } from "./store/useHabitStore";
-import type { TimeSlot } from "./types";
 
 class ErrorBoundary extends Component<
   { children: ReactNode },
@@ -84,25 +74,6 @@ class ErrorBoundary extends Component<
     return this.props.children;
   }
 }
-
-const DEFAULT_HABITS: { title: string; icon: string; timeSlot: TimeSlot }[] = [
-  { title: "Morning Stretch",      icon: "stretch",  timeSlot: "morning"   },
-  { title: "Drink Water",          icon: "water",    timeSlot: "morning"   },
-  { title: "Meditate 5 Min",       icon: "meditate", timeSlot: "morning"   },
-  { title: "Morning Journal",      icon: "journal",  timeSlot: "morning"   },
-  { title: "Stay Hydrated",        icon: "water",    timeSlot: "afternoon" },
-  { title: "Take a Walk",          icon: "run",      timeSlot: "afternoon" },
-  { title: "Eat Well",             icon: "meal",     timeSlot: "afternoon" },
-  { title: "Focus Block",          icon: "focus",    timeSlot: "afternoon" },
-  { title: "Read for 20 Min",      icon: "book",     timeSlot: "evening"   },
-  { title: "Evening Workout",      icon: "gym",      timeSlot: "evening"   },
-  { title: "Connect with Someone", icon: "heart",    timeSlot: "evening"   },
-  { title: "Evening Bike Ride",    icon: "bike",     timeSlot: "evening"   },
-  { title: "Sleep by 10:30pm",     icon: "sleep",    timeSlot: "night"     },
-  { title: "Night Journal",        icon: "journal",  timeSlot: "night"     },
-  { title: "Take Vitamins",        icon: "medicine", timeSlot: "night"     },
-  { title: "Night Stretch",        icon: "stretch",  timeSlot: "night"     },
-];
 
 function PageSkeleton() {
   return (
@@ -137,7 +108,7 @@ function AppSpinner() {
       <motion.img
         src="/new-logo-full.png"
         className="app-loading__logo"
-        alt="Constant"
+        alt="Progress"
         animate={{ scale: [1, 1.1, 1] }}
         transition={{ duration: 1.6, repeat: Infinity, ease: [0.4, 0, 0.2, 1] }}
       />
@@ -145,69 +116,21 @@ function AppSpinner() {
   );
 }
 
-function Onboarding({ onDone, onBack }: { onDone: (name: string) => void; onBack: () => void }) {
-  const [name, setName] = useState("");
-
-  function handleSubmit(e: React.FormEvent) {
-    e.preventDefault();
-    const trimmed = name.trim();
-    if (!trimmed) return;
-    onDone(trimmed);
-  }
-
-  return (
-    <div className="app-onboarding">
-      <div className="app-onboarding__bg" aria-hidden="true" />
-      <img src="/new-logo-full.png" className="app-onboarding__logo-float" alt="Constant" />
-      <motion.div
-        className="app-onboarding__card"
-        initial={{ opacity: 0, y: 20 }}
-        animate={{ opacity: 1, y: 0 }}
-        transition={{ duration: 0.32, ease: [0.4, 0, 0.2, 1] }}
-      >
-        <h1 className="app-onboarding__title">What's your name?</h1>
-        <p className="app-onboarding__sub">
-          We'll use it to personalize your experience.
-        </p>
-
-        <form className="app-onboarding__form" onSubmit={handleSubmit}>
-          <input
-            className="app-onboarding__input"
-            type="text"
-            placeholder="Your first name"
-            value={name}
-            onChange={(e) => setName(e.target.value)}
-            autoFocus
-            maxLength={30}
-            autoComplete="given-name"
-          />
-          <button
-            className="app-onboarding__btn"
-            type="submit"
-            disabled={!name.trim()}
-          >
-            Let's start →
-          </button>
-        </form>
-        <button className="app-onboarding__back" type="button" onClick={onBack}>
-          ← Change number
-        </button>
-      </motion.div>
-    </div>
-  );
-}
-
 export default function App() {
   const { applyTheme } = useThemeStore();
-  const { completed, loadFromDb: loadProfile, complete } = useOnboardingStore();
-  const { userId, signOut } = useAuthStore();
-  const { loadFromDb: loadHabits, addHabit } = useHabitStore();
+  const { loadFromDb: loadProfile } = useOnboardingStore();
+  const { userId, initializing, init, recovery } = useAuthStore();
+  const { loadFromDb: loadHabits } = useHabitStore();
   const [syncing, setSyncing] = useState(false);
   const [dbLoaded, setDbLoaded] = useState(false);
 
   useEffect(() => {
     applyTheme();
   }, [applyTheme]);
+
+  useEffect(() => {
+    init();
+  }, [init]);
 
   useEffect(() => {
     if (!userId) {
@@ -223,10 +146,8 @@ export default function App() {
     });
   }, [userId, loadHabits, loadProfile]);
 
-  // Pre-warm route chunks once the app shell is interactive so the first
-  // bottom-nav tap doesn't trigger a blank-page chunk download on mobile.
   useEffect(() => {
-    if (!dbLoaded || !completed) return;
+    if (!dbLoaded) return;
     type RIC = (cb: () => void, opts?: { timeout: number }) => number;
     type CIC = (id: number) => void;
     const w = window as Window & {
@@ -240,18 +161,13 @@ export default function App() {
       if (w.cancelIdleCallback) w.cancelIdleCallback(id);
       else window.clearTimeout(id);
     };
-  }, [dbLoaded, completed]);
+  }, [dbLoaded]);
 
-  function handleOnboardingDone(name: string) {
-    if (useHabitStore.getState().habits.length === 0) {
-      DEFAULT_HABITS.forEach((h) => addHabit(h));
-    }
-    complete(name, []);
-  }
+  if (initializing) return <AppSpinner />;
 
+  if (recovery) return <Auth />;
   if (!userId) return <Auth />;
   if (syncing || !dbLoaded) return <AppSpinner />;
-  if (!completed) return <Onboarding onDone={handleOnboardingDone} onBack={signOut} />;
 
   return (
     <BrowserRouter>

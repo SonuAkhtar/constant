@@ -2,8 +2,6 @@
   padding: var(--page-padding-top) var(--page-padding-x) var(--space-8);
 }
 
-/* ---- Empty state ---- */
-
 .habits-page__empty {
   display: flex;
   flex-direction: column;
@@ -113,7 +111,6 @@
   gap: var(--space-2);
 }
 
-/* Section title takes slot accent color */
 .habits-page__section[data-slot="morning"]   .habits-page__section-title { color: var(--slot-morning);   }
 .habits-page__section[data-slot="afternoon"] .habits-page__section-title { color: var(--slot-afternoon); }
 .habits-page__section[data-slot="evening"]   .habits-page__section-title { color: var(--slot-evening);   }
@@ -215,7 +212,6 @@
   transition: background var(--ease-base);
 }
 
-/* Rows within the reorder group lose their individual borders/radius */
 .habits-page__reorder-item:last-child .habits-page__row {
   border-bottom: none;
 }
@@ -232,7 +228,6 @@
   padding: var(--space-4);
 }
 
-/* When a confirming row is also the last item */
 .habits-page__reorder-item:last-child .habits-page__row--confirming {
   border-bottom: 1px solid rgba(186, 26, 26, 0.22) !important;
 }
@@ -261,13 +256,11 @@
   justify-content: center;
 }
 
-/* Slot accent on the group container (left border) */
 .habits-page__section[data-slot="morning"]   .habits-page__reorder-group { border-left: 3px solid var(--slot-morning);   }
 .habits-page__section[data-slot="afternoon"] .habits-page__reorder-group { border-left: 3px solid var(--slot-afternoon); }
 .habits-page__section[data-slot="evening"]   .habits-page__reorder-group { border-left: 3px solid var(--slot-evening);   }
 .habits-page__section[data-slot="night"]     .habits-page__reorder-group { border-left: 3px solid var(--slot-night);     }
 
-/* Slot-tinted icon badge backgrounds + colors */
 .habits-page__row[data-slot="morning"]   .habits-page__row-icon { background: var(--slot-morning-dim);   color: var(--slot-morning); }
 .habits-page__row[data-slot="afternoon"] .habits-page__row-icon { background: var(--slot-afternoon-dim); color: var(--slot-afternoon); }
 .habits-page__row[data-slot="evening"]   .habits-page__row-icon { background: var(--slot-evening-dim);   color: var(--slot-evening); }
@@ -328,7 +321,6 @@
   flex-shrink: 0;
 }
 
-/* Built-in habit row */
 .habits-page__row--builtin {
   background: color-mix(in srgb, var(--color-surface-alt) 60%, var(--color-surface) 40%);
 }
@@ -574,10 +566,6 @@
     inset 0 1px 0 rgba(182, 204, 190, 0.22);
 }
 
-/* =========================================================================
-   ORGANIZE BUTTON + SEARCH
-   ========================================================================= */
-
 .habits-page__organize-btn {
   padding: var(--space-2) var(--space-4);
   border-radius: var(--radius-full);
@@ -668,10 +656,6 @@
   font-style: italic;
 }
 
-/* =========================================================================
-   CHECKBOX (organize mode)
-   ========================================================================= */
-
 .habits-page__checkbox {
   width: 22px;
   height: 22px;
@@ -693,10 +677,6 @@
 .habits-page__row--selected {
   background: var(--color-primary-dim);
 }
-
-/* =========================================================================
-   ARCHIVED SECTION
-   ========================================================================= */
 
 .habits-page__section--archived {
   border-top: 1px solid var(--color-border);
@@ -754,17 +734,13 @@
   border-radius: var(--radius-full);
 }
 
-/* =========================================================================
-   ORGANIZE ACTION BAR
-   ========================================================================= */
-
 .habits-page__organize-bar {
   position: fixed;
   bottom: calc(max(20px, 14px + env(safe-area-inset-bottom)) + 68px + 12px);
   left: 50%;
   width: calc(100% - 32px);
   max-width: calc(var(--max-width) - 32px);
-  /* never taller than available space between nav and top of screen */
+
   max-height: calc(100dvh - 68px - max(20px, 14px + env(safe-area-inset-bottom)) - 32px);
   overflow-y: auto;
   background: var(--color-surface);

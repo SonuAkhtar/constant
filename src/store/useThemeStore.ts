@@ -24,6 +24,6 @@ export const useThemeStore = create<ThemeState>()(
         document.documentElement.setAttribute('data-theme', get().theme)
       },
     }),
-    { name: 'constant-theme', version: 1, migrate: (s) => s as ThemeState }
+    { name: 'progress-theme', version: 1, migrate: (s) => s as ThemeState }
   )
 )

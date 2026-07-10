@@ -19,7 +19,6 @@ interface OnboardingState {
   goals: Goal[];
   joinedAt: string;
   loadFromDb: (userId: string) => Promise<void>;
-  complete: (name: string, focuses: string[]) => void;
   updateProfile: (name: string, focuses: string[]) => void;
   addGoal: (text: string, habitId?: string) => Goal;
   editGoal: (id: string, text: string) => void;
@@ -28,25 +27,25 @@ interface OnboardingState {
   reset: () => void;
 }
 
-// Serialize goals as JSON for the existing `goal` TEXT column on the
-// profile row. Old (pre-multi-goal) rows store plain text in `goal`-
-// `parseGoalsField` handles both shapes.
 function serializeGoals(goals: Goal[]): string {
   return goals.length === 0 ? "" : JSON.stringify(goals);
 }
 
 function parseGoalsField(field: string, fallbackDate: string): Goal[] {
   if (!field) return [];
-  // Try JSON first (new shape)
+
   if (field.startsWith("[") || field.startsWith("{")) {
     try {
       const parsed = JSON.parse(field) as Goal[];
       if (Array.isArray(parsed)) return parsed;
     } catch {
-      /* fall through to plain-text path */
+      return plainTextGoal(field, fallbackDate);
     }
   }
-  // Old shape: single plain-text goal
+  return plainTextGoal(field, fallbackDate);
+}
+
+function plainTextGoal(field: string, fallbackDate: string): Goal[] {
   return [
     {
       id: newId(),
@@ -78,22 +77,6 @@ export const useOnboardingStore = create<OnboardingState>()(
           focuses: profile.focuses ?? [],
           goals,
         });
-      },
-
-      complete: (name, focuses) => {
-        const joinedAt = format(new Date(), "yyyy-MM-dd");
-        set({ completed: true, userName: name.trim(), focuses, joinedAt });
-        const userId = uid();
-        if (userId) {
-          const state = get();
-          upsertProfile(userId, {
-            userName: name.trim(),
-            focuses,
-            goal: serializeGoals(state.goals),
-            goalSetDate: state.goals[0]?.setDate ?? "",
-            completed: true,
-          });
-        }
       },
 
       updateProfile: (name, focuses) => {
@@ -190,9 +173,9 @@ export const useOnboardingStore = create<OnboardingState>()(
         set({ completed: false, userName: "", focuses: [], goals: [] }),
     }),
     {
-      name: "constant-onboarding",
+      name: "progress-onboarding",
       version: 2,
-      // v1 → v2: collapse `goal`+`goalSetDate` (single string) into `goals: Goal[]`
+
       migrate: (raw, version) => {
         const s = raw as Partial<
           OnboardingState & { goal?: string; goalSetDate?: string }

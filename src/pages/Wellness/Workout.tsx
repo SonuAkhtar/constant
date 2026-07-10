@@ -51,10 +51,8 @@ const PLANS: {
   },
 ];
 
-// ── Helpers ───────────────────────────────────────────────────────────────────
-
 function parseRestSeconds(rest: string): number {
-  if (rest === "—") return 0;
+  if (rest === "-") return 0;
   const minMatch = rest.match(/(\d+)(?:[–-]\d+)?\s*min/);
   if (minMatch) return parseInt(minMatch[1]) * 60;
   const secMatch = rest.match(/(\d+)(?:[–-]\d+)?\s*sec/);
@@ -67,8 +65,6 @@ function formatTime(s: number) {
   const sec = s % 60;
   return `${m}:${sec.toString().padStart(2, "0")}`;
 }
-
-// ── Muscle highlighter ────────────────────────────────────────────────────────
 
 const MUSCLE_MAP: Record<string, Muscle> = {
   chest: "chest",
@@ -170,8 +166,6 @@ function getOverloadIncrement(name: string): number {
   if (isCompound) return 1.25;
   return 0;
 }
-
-// ── Icons ─────────────────────────────────────────────────────────────────────
 
 function NutritionIcon({ id }: { id: string }) {
   if (id === "protein")
@@ -362,8 +356,6 @@ function TimerIcon() {
   );
 }
 
-// ── Exercise row ──────────────────────────────────────────────────────────────
-
 function ExerciseRow({
   exercise,
   isExtra,
@@ -511,7 +503,7 @@ function ExerciseRow({
                 </div>
               )}
 
-              {exercise.rest !== "—" && (
+              {exercise.rest !== "-" && (
                 <div className="workout__tracker">
                   <div className="workout__tracker-weight">
                     <span
@@ -631,8 +623,6 @@ function ExerciseRow({
   );
 }
 
-// ── Day view ──────────────────────────────────────────────────────────────────
-
 function DayView({
   workoutDay,
   volume,
@@ -706,8 +696,6 @@ function DayView({
   );
 }
 
-// ── Main component ────────────────────────────────────────────────────────────
-
 export default function Workout() {
   const { level, setLevel, volume, setVolume } = useWorkoutStore();
   const todayIndex = (new Date().getDay() + 6) % 7;
@@ -736,7 +724,6 @@ export default function Workout() {
 
   return (
     <div className="workout">
-      {/* Plan selector- level + volume combined */}
       <div className="workout__plan" role="group" aria-label="Training plan">
         {PLANS.map(({ key, label, sub }, idx) => {
           const active = currentPlanKey === key;
@@ -777,7 +764,6 @@ export default function Workout() {
         </div>
       )}
 
-      {/* Day schedule strip */}
       <div
         className="workout__strip"
         role="group"
@@ -818,7 +804,6 @@ export default function Workout() {
         })}
       </div>
 
-      {/* Day card with transition */}
       <div className="workout__card">
         <AnimatePresence mode="wait" initial={false}>
           <motion.div
@@ -836,7 +821,6 @@ export default function Workout() {
         </AnimatePresence>
       </div>
 
-      {/* Training principles panel */}
       <div className="workout__panel">
         <button
           className="workout__panel-header"
@@ -870,7 +854,6 @@ export default function Workout() {
         </AnimatePresence>
       </div>
 
-      {/* Nutrition & recovery panel */}
       <div className="workout__panel">
         <button
           className="workout__panel-header"

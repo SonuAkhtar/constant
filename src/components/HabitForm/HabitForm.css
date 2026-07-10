@@ -27,8 +27,6 @@
   transition: background var(--ease-slow);
 }
 
-/* ---- Drag handle ---- */
-
 .habit-form__handle {
   width: 36px;
   height: 4px;
@@ -36,8 +34,6 @@
   background: var(--color-border);
   margin: var(--space-3) auto var(--space-1);
 }
-
-/* ---- Header ---- */
 
 .habit-form__header {
   display: flex;
@@ -70,8 +66,6 @@
   background: var(--color-primary-dim);
   color: var(--color-primary);
 }
-
-/* ---- Body ---- */
 
 .habit-form__body {
   display: flex;
@@ -130,8 +124,6 @@
   background: var(--color-surface);
 }
 
-/* ---- Time slots ---- */
-
 .habit-form__slots {
   display: grid;
   grid-template-columns: repeat(4, 1fr);
@@ -180,8 +172,6 @@
   color: #86efac;
 }
 
-/* ---- Frequency pills ---- */
-
 .habit-form__freq-pills {
   display: flex;
   gap: var(--space-2);
@@ -211,8 +201,6 @@
   border-color: rgba(134, 239, 172, 0.5);
   color: #86efac;
 }
-
-/* ---- Custom day toggles ---- */
 
 .habit-form__days {
   display: flex;
@@ -247,8 +235,6 @@
   color: #86efac;
 }
 
-/* ---- Reminder time input ---- */
-
 .habit-form__time-input {
   max-width: 160px;
   color-scheme: normal;
@@ -266,8 +252,6 @@
 }
 
 .habit-form__time-clear:hover { color: var(--color-text); }
-
-/* ---- Icon grid ---- */
 
 .habit-form__icon-grid {
   display: grid;
@@ -313,16 +297,12 @@
   letter-spacing: 0.01em;
 }
 
-/* ---- Duplicate name warning ---- */
-
 .habit-form__duplicate-warning {
   font-size: var(--font-sm);
   color: var(--color-warning);
   margin-top: var(--space-1);
   padding-left: var(--space-1);
 }
-
-/* ---- Sticky footer + submit ---- */
 
 .habit-form__footer {
   position: sticky;

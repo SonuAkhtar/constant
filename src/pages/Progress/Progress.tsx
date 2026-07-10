@@ -246,7 +246,6 @@ export default function Progress() {
     weekly.reduce((s, d) => s + d.percentage, 0) / (weekly.length || 1),
   );
 
-  // Last week = days 8-14 from today (the 7 days before the current week)
   const lastWeekSlice = monthly.slice(-14, -7);
   const lastWeekAvg = lastWeekSlice.length
     ? Math.round(
@@ -321,14 +320,14 @@ export default function Progress() {
 
   async function handleShare() {
     const text = [
-      `My Constant week${userName ? ` (${userName})` : ""}:`,
+      `My Progress week${userName ? ` (${userName})` : ""}:`,
       `• ${weekAvg}% weekly average`,
       `• ${appStreak} day streak`,
       `• Best day: ${bestDay}% on ${bestDayDate}`,
       `• Longest streak ever: ${bests.longestStreakEver} days`,
     ].join("\n");
     if (navigator.share) {
-      await navigator.share({ title: "My Constant progress", text });
+      await navigator.share({ title: "My Progress", text });
     } else {
       await navigator.clipboard.writeText(text);
     }

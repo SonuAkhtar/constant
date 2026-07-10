@@ -60,7 +60,6 @@
   position: relative;
 }
 
-/* SubAppErrorBoundary fallback — never blank; offers a manual reload */
 .wellness-page__error {
   display: flex;
   flex-direction: column;

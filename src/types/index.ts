@@ -72,8 +72,6 @@ export interface HabitStats {
   streak: Streak
 }
 
-// ── Skincare ────────────────────────────────────────────────────────────────
-
 export type SkinType =
   | 'oily'
   | 'dry'
@@ -121,8 +119,6 @@ export interface SkinTypeGuide {
   prioritise: string[]
   avoid: string[]
 }
-
-// ── Workout ──────────────────────────────────────────────────────────────────
 
 export type ExperienceLevel = 'beginner' | 'intermediate'
 export type WorkoutVolume = 6 | 8

@@ -192,7 +192,7 @@ export const supplements: Supplement[] = [
     name: "Oral Hyaluronic Acid",
     strength: "insufficient",
     benefit: "Claimed hydration",
-    dose: "—",
+    dose: "-",
     notes:
       "2025 Frontiers meta-analysis: no statistically significant benefit (p=0.21). Not recommended- use topical HA instead.",
     recommended: false,
@@ -202,7 +202,7 @@ export const supplements: Supplement[] = [
     name: "Biotin",
     strength: "insufficient",
     benefit: "Claimed hair and skin improvement",
-    dose: "—",
+    dose: "-",
     notes:
       "No RCT evidence for skin or hair. Only anecdotal case reports. Not recommended unless confirmed deficiency.",
     recommended: false,

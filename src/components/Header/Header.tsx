@@ -46,8 +46,8 @@ export default function Header({ scrolled = false }: Props) {
   return (
     <header className={['header', scrolled ? 'header--scrolled' : ''].join(' ')}>
       <div className="header__brand">
-        <img src="/c-logo.png" className="header__logo" alt="Constant" />
-        <span className="header__app-name">Constant</span>
+        <img src="/c-logo.png" className="header__logo" alt="Progress" />
+        <span className="header__app-name">Progress</span>
       </div>
 
       <div className="header__actions">

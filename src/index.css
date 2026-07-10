@@ -29,7 +29,6 @@ body,
   width: 100%;
 }
 
-/* iOS Safari: use -webkit-fill-available as fallback for correct height */
 @supports not (height: 100dvh) {
   body {
     min-height: -webkit-fill-available;
@@ -71,9 +70,6 @@ textarea {
   font-size: max(16px, 1em);
 }
 
-/* Input focus standard- border shift + subtle glow ring.
-   Components that already set border-color on :focus keep their override.
-   The box-shadow is additive- it applies wherever a component hasn't explicitly cleared it. */
 input:focus,
 select:focus,
 textarea:focus {
@@ -100,7 +96,7 @@ a {
 
 :focus-visible {
   outline: none;
-  /* double-ring: bg-colored gap + primary ring. Inherits element's own border-radius. */
+
   box-shadow:
     0 0 0 2px var(--color-bg),
     0 0 0 4px var(--color-primary);
@@ -116,8 +112,6 @@ a {
     scroll-behavior: auto !important;
   }
 }
-
-/* ---- App loading spinner (used before auth resolves) ---- */
 
 .app-loading {
   position: fixed;
@@ -138,8 +132,6 @@ a {
     0 12px 40px rgba(76, 96, 86, 0.2),
     0 2px 8px rgba(0, 0, 0, 0.07);
 }
-
-/* ---- Onboarding name-prompt screen ---- */
 
 .app-onboarding {
   position: fixed;

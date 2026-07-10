@@ -101,16 +101,6 @@ function ex(partial: Omit<Exercise, "id">): Exercise {
   };
 }
 
-// ── Intermediate 6-day Push / Pull / Legs ─────────────────────────────────────
-// Schedule: Push A · Pull A · Legs A · Push B · Pull B · Legs B · Rest
-// Each day: 6 base exercises (heavy compound → moderate compound → isolation)
-//           +2 extra (volume option for "8 per day")- added for advanced
-//           intermediates seeking 15–20 weekly sets per muscle group.
-// Based on: 2026 ACSM Position Stand on resistance training,
-//           Schoenfeld et al. 2025 hypertrophy review,
-//           Maeo et al. 2024 stretched-position studies,
-//           Contreras hip thrust EMG and biomechanics data.
-
 export const workoutDays: WorkoutDay[] = [
   {
     day: 1,
@@ -575,7 +565,7 @@ export const workoutDays: WorkoutDay[] = [
         muscles: "Full body (low intensity)",
         sets: 1,
         reps: "20–30 min",
-        rest: "—",
+        rest: "-",
         cue: "Walking, cycling, or swimming at conversational pace. Improves lactate clearance and blood flow.",
       }),
       ex({
@@ -583,7 +573,7 @@ export const workoutDays: WorkoutDay[] = [
         muscles: "All major muscle groups",
         sets: 1,
         reps: "20–30 sec per stretch",
-        rest: "—",
+        rest: "-",
         cue: "Hold each stretch calmly. Improves long-term range of motion over weeks.",
       }),
       ex({
@@ -591,20 +581,12 @@ export const workoutDays: WorkoutDay[] = [
         muscles: "Major trained muscles",
         sets: 1,
         reps: "60 sec per group",
-        rest: "—",
+        rest: "-",
         cue: "2015 Cheatham et al. meta-analysis confirmed reduction in perceived muscle soreness.",
       }),
     ],
   },
 ];
-
-// ── Beginner 3-day full-body programme ───────────────────────────────────────
-// Designed for trainees with < 3–6 months of consistent training.
-// Schedule: Full Body A (Mon) · Rest (Tue) · Full Body B (Wed) · Rest (Thu)
-//           Full Body C (Fri) · Rest (Sat) · Active Recovery (Sun)
-// Evidence base: 2026 ACSM Position Stand; 2024 Schoenfeld meta-analysis
-// on training frequency; whole-body 3x/week achieves 2x+ frequency per
-// muscle group, which is the strongest finding in the literature for novices.
 
 function bex(partial: Omit<Exercise, "id">): Exercise {
   return {
@@ -676,7 +658,7 @@ export const beginnerDays: WorkoutDay[] = [
         muscles: "Full body (low intensity)",
         sets: 1,
         reps: "20–30 min",
-        rest: "—",
+        rest: "-",
         cue: "Conversational pace only. Optional but beneficial.",
       }),
     ],
@@ -743,7 +725,7 @@ export const beginnerDays: WorkoutDay[] = [
         muscles: "All major muscle groups",
         sets: 1,
         reps: "20–30 sec per stretch",
-        rest: "—",
+        rest: "-",
         cue: "Focus on areas that feel tight. Improves long-term range of motion over weeks.",
       }),
     ],
@@ -810,7 +792,7 @@ export const beginnerDays: WorkoutDay[] = [
         muscles: "Major trained muscles",
         sets: 1,
         reps: "60 sec per group",
-        rest: "—",
+        rest: "-",
         cue: "Spend 60 seconds on each major muscle group you trained this week.",
       }),
     ],
@@ -828,7 +810,7 @@ export const beginnerDays: WorkoutDay[] = [
         muscles: "Full body (low intensity)",
         sets: 1,
         reps: "20–30 min",
-        rest: "—",
+        rest: "-",
         cue: "Walking, cycling, or swimming at conversational pace.",
       }),
       bex({
@@ -836,7 +818,7 @@ export const beginnerDays: WorkoutDay[] = [
         muscles: "All major muscle groups",
         sets: 1,
         reps: "20–30 sec per stretch",
-        rest: "—",
+        rest: "-",
         cue: "Hold each stretch calmly.",
       }),
     ],

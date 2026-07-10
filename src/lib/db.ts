@@ -1,25 +1,64 @@
 import { supabase } from './supabase'
 import type { Habit, HabitLog, Milestone } from '../types'
 import { format, subDays } from 'date-fns'
+import { DEFAULT_HABITS } from '../data/defaultHabits'
 
-export async function findOrCreateUser(phone: string): Promise<{ userId: string; error: string | null }> {
-  const { data: existing, error: findErr } = await supabase
-    .from('users')
-    .select('id')
-    .eq('phone', phone)
-    .maybeSingle()
+export async function usernameExists(username: string): Promise<boolean> {
+  const { data, error } = await supabase.rpc('username_exists', { uname: username })
+  if (error) {
+    console.error('[db] usernameExists:', error.message)
+    return false
+  }
+  return data === true
+}
 
-  if (findErr) return { userId: '', error: findErr.message }
-  if (existing) return { userId: existing.id, error: null }
+export async function createProfile(
+  userId: string,
+  { name, username, email }: { name: string; username: string; email: string },
+): Promise<{ error: string | null }> {
+  const { error } = await supabase.from('profiles').insert({
+    user_id:              userId,
+    user_name:            name,
+    username,
+    email,
+    focuses:              [],
+    goal:                 '',
+    goal_set_date:        '',
+    onboarding_completed: true,
+    updated_at:           new Date().toISOString(),
+  })
+  if (error) {
+    console.error('[db] createProfile:', error.message)
+    return { error: error.message }
+  }
+  return { error: null }
+}
 
-  const { data: created, error: createErr } = await supabase
-    .from('users')
-    .insert({ phone })
-    .select('id')
-    .single()
-
-  if (createErr) return { userId: '', error: createErr.message }
-  return { userId: created.id, error: null }
+export async function seedDefaultHabits(userId: string): Promise<{ error: string | null }> {
+  const perSlot: Record<string, number> = {}
+  const rows = DEFAULT_HABITS.map((h) => {
+    const sortOrder = perSlot[h.timeSlot] ?? 0
+    perSlot[h.timeSlot] = sortOrder + 1
+    return {
+      id:          crypto.randomUUID(),
+      user_id:     userId,
+      title:       h.title,
+      icon:        h.icon,
+      time_slot:   h.timeSlot,
+      frequency:   'daily',
+      custom_days: [] as number[],
+      is_archived: false,
+      is_pinned:   false,
+      is_custom:   false,
+      sort_order:  sortOrder,
+    }
+  })
+  const { error } = await supabase.from('habits').insert(rows)
+  if (error) {
+    console.error('[db] seedDefaultHabits:', error.message)
+    return { error: error.message }
+  }
+  return { error: null }
 }
 
 export async function fetchHabits(userId: string): Promise<Habit[]> {

@@ -4,8 +4,6 @@
   gap: var(--space-6);
 }
 
-/* ── Section ── */
-
 .skincare__section {
   display: flex;
   flex-direction: column;
@@ -33,8 +31,7 @@
 
 .skincare__section-title {
   font-family: var(--font-display);
-  /* Was --font-lg (18px). Reduced to match Today's section-title rhythm
-     so Wellness reads at the same scale as the rest of the app. */
+
   font-size: var(--font-md);
   font-weight: var(--weight-bold);
   color: var(--color-text);
@@ -48,8 +45,6 @@
   margin-top: 2px;
   line-height: 1.5;
 }
-
-/* ── Skin type chips ── */
 
 .skincare__skin-chips {
   display: flex;
@@ -82,8 +77,6 @@
 [data-theme="dark"] .skincare__skin-chip--active {
   color: var(--color-bg);
 }
-
-/* ── Skin type guide ── */
 
 .skincare__skin-guide {
   overflow: hidden;
@@ -154,8 +147,6 @@
   color: var(--color-error);
 }
 
-/* ── Step cards ── */
-
 .skincare__steps {
   display: flex;
   flex-direction: column;
@@ -208,7 +199,7 @@
 
 .skincare__step-name {
   font-family: var(--font-display);
-  /* Card-title scale — matches Today's habit-card title (15px) */
+
   font-size: var(--font-base);
   font-weight: var(--weight-bold);
   color: var(--color-text);
@@ -306,8 +297,6 @@
   transform: scale(0.96);
 }
 
-/* ── Dark mode overrides ── */
-
 [data-theme="dark"] .skincare__step {
   background: var(--color-surface);
 }
@@ -328,8 +317,6 @@
   background: transparent;
 }
 
-/* ── Principle note ── */
-
 .skincare__principle-note {
   font-size: var(--font-sm);
   color: var(--color-text-muted);
@@ -340,8 +327,6 @@
   border-left: 3px solid var(--color-primary-dim);
   font-style: italic;
 }
-
-/* ── Daytime habits ── */
 
 .skincare__daytime {
   display: flex;
@@ -380,8 +365,6 @@
   color: var(--color-text);
   line-height: 1.65;
 }
-
-/* ── Supplements ── */
 
 .skincare__supp-disclaimer {
   font-size: var(--font-sm);
@@ -458,8 +441,6 @@
   line-height: 1.5;
 }
 
-/* ── Evidence badge ── */
-
 .skincare__ev {
   font-size: var(--font-sm);
   font-weight: var(--weight-semibold);
@@ -506,8 +487,6 @@
   color: var(--color-text-faint);
   border: 1px solid var(--color-border);
 }
-
-/* ── Supplement detail ── */
 
 .skincare__supp-detail {
   overflow: hidden;

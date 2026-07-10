@@ -16,14 +16,8 @@
   overflow: hidden;
 }
 
-/* ---- Per-section subtle accents -----------------------------------------
-   Each card sets --section-accent + --section-tint and the gradient picks
-   them up. Section heading gets a matching colored dot via ::before.
-   Keeps a calm, consistent rhythm while making each section feel distinct.
-   ----------------------------------------------------------------------- */
-
 .profile__goal-card {
-  --section-accent: #b07d20;             /* slot-morning · amber */
+  --section-accent: #b07d20;
   --section-tint:   rgba(176, 125, 32, 0.08);
   background:
     linear-gradient(135deg, var(--section-tint) 0%, transparent 55%),
@@ -31,7 +25,7 @@
 }
 
 .profile__moments-card {
-  --section-accent: #7c5cbf;             /* slot-evening · violet */
+  --section-accent: #7c5cbf;
   --section-tint:   rgba(124, 92, 191, 0.08);
   background:
     linear-gradient(135deg, var(--section-tint) 0%, transparent 55%),
@@ -39,7 +33,7 @@
 }
 
 .profile__settings-card {
-  --section-accent: #2e7d9e;             /* slot-afternoon · info-blue */
+  --section-accent: #2e7d9e;
   --section-tint:   rgba(46, 125, 158, 0.07);
   background:
     linear-gradient(135deg, var(--section-tint) 0%, transparent 55%),
@@ -47,7 +41,7 @@
 }
 
 .profile__data-card {
-  --section-accent: #4a4f8a;             /* slot-night · indigo */
+  --section-accent: #4a4f8a;
   --section-tint:   rgba(74, 79, 138, 0.07);
   background:
     linear-gradient(135deg, var(--section-tint) 0%, transparent 55%),
@@ -58,7 +52,7 @@
 [data-theme="dark"] .profile__moments-card,
 [data-theme="dark"] .profile__settings-card,
 [data-theme="dark"] .profile__data-card {
-  /* lift the tint a touch on dark surfaces */
+
   background:
     linear-gradient(135deg, color-mix(in srgb, var(--section-accent) 14%, transparent) 0%, transparent 60%),
     var(--color-surface);
@@ -152,7 +146,6 @@
   overflow: hidden;
 }
 
-/* Ring SVG elements */
 .profile__ring-track {
   fill: none;
   stroke: var(--color-border);
@@ -226,8 +219,6 @@
   white-space: nowrap;
 }
 
-/* ---- Edit profile button ---- */
-
 .profile__edit-btn {
   font-size: var(--font-sm);
   font-weight: var(--weight-bold);
@@ -245,11 +236,6 @@
   color: #ffffff;
 }
 
-/* ---- Inline edit ---- */
-
-/* When editing, the avatar-info column hosts the name input.
-   Extras (focus toggles + actions) appear below the avatar row,
-   so the avatar itself never moves. */
 .profile__edit-extras {
   display: flex;
   flex-direction: column;
@@ -337,8 +323,6 @@
 }
 
 .profile__edit-save:hover { opacity: 0.9; }
-
-/* ---- Identity card ─ "who you are" panel, distinct from Progress analytics ---- */
 
 .profile__identity-card {
   position: relative;
@@ -503,10 +487,6 @@
   background: #1e1e30;
 }
 
-/* =========================================================================
-   30-DAY GOAL
-   ========================================================================= */
-
 .profile__goal-card {}
 
 .profile__goal-header {
@@ -541,8 +521,6 @@
   border: none;
   text-align: left;
 }
-
-/* ---- Goal list (multi-goal) ---- */
 
 .profile__goal-list {
   list-style: none;
@@ -703,10 +681,6 @@
   margin-top: var(--space-1);
 }
 
-/* =========================================================================
-   MILESTONE MOMENTS
-   ========================================================================= */
-
 .profile__moments-list {
   display: flex;
   flex-direction: column;
@@ -745,10 +719,6 @@
   margin-top: 2px;
   font-variant-numeric: tabular-nums;
 }
-
-/* =========================================================================
-   DATA & BACKUP
-   ========================================================================= */
 
 .profile__data-privacy {
   font-size: var(--font-sm);

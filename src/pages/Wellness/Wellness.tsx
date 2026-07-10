@@ -7,15 +7,6 @@ import './Wellness.css'
 
 type WellnessTab = 'skincare' | 'workout'
 
-/**
- * Local error boundary so a thrown render inside Skincare/Workout (most
- * likely from `react-body-highlighter` on malformed data, or AnimatePresence
- * mid-flight reconciliation) doesn't leave the Wellness route blank.
- *
- * The outer `RouteBoundary` in App.tsx catches lazy-import failures; this
- * catches render-time failures inside the sub-apps so the user always sees
- * an actionable fallback instead of a blank screen.
- */
 class SubAppErrorBoundary extends Component<
   { children: ReactNode; onRetry: () => void },
   { error: Error | null }
@@ -73,7 +64,7 @@ const TABS: { id: WellnessTab; label: string; Icon: () => React.JSX.Element }[] 
 
 export default function Wellness() {
   const [tab, setTab] = useState<WellnessTab>('skincare')
-  // Bumped by "Reload this section" to force-remount the failed sub-app
+
   const [reloadKey, setReloadKey] = useState(0)
 
   function handleTab(next: WellnessTab) {
@@ -106,16 +97,6 @@ export default function Wellness() {
         ))}
       </div>
 
-      {/*
-        Why this isn't `AnimatePresence mode="wait"` anymore:
-        The route-level wrapper in Layout.tsx already runs `mode="wait"` between
-        pages. Nesting a second wait-mode here on top of react-body-highlighter's
-        heavy first paint (many SVG <Model/> instances per exercise day) produced
-        a reconciliation race where the new sub-app would occasionally stay
-        locked in its exit state — the user saw a blank Wellness page until they
-        navigated away. A plain keyed cross-fade has the same look without the
-        race. SubAppErrorBoundary handles any deeper render failure.
-      */}
       <div
         role="tabpanel"
         id={`wellness-panel-${tab}`}

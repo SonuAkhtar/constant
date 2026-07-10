@@ -19,7 +19,6 @@
     box-shadow var(--ease-slow);
 }
 
-/* Grain texture overlay */
 .header::after {
   content: "";
   position: absolute;
@@ -38,7 +37,6 @@
   z-index: 1;
 }
 
-/* Scroll-shrink state */
 .header--scrolled {
   height: 52px;
   padding: var(--space-2) var(--space-5);

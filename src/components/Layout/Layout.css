@@ -6,7 +6,7 @@
   max-width: var(--max-width);
   margin: 0 auto;
   position: relative;
-  /* safe-area top: status bar / notch / Dynamic Island clearance */
+
   padding-top: env(safe-area-inset-top);
 }
 
@@ -25,9 +25,6 @@
   min-height: 100%;
 }
 
-/* Calm loading state shown while a lazy route chunk is downloading.
-   Replaces the previous blank div so users see a heartbeat instead of
-   a flash-of-empty-screen during navigation on mobile networks. */
 .layout__page-loading {
   display: flex;
   align-items: center;
