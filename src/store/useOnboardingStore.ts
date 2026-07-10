@@ -20,6 +20,7 @@ interface OnboardingState {
   joinedAt: string;
   loadFromDb: (userId: string) => Promise<void>;
   updateProfile: (name: string, focuses: string[]) => void;
+  complete: (name: string, focuses: string[]) => void;
   addGoal: (text: string, habitId?: string) => Goal;
   editGoal: (id: string, text: string) => void;
   linkGoalHabit: (id: string, habitId: string) => void;
@@ -90,6 +91,21 @@ export const useOnboardingStore = create<OnboardingState>()(
             goal: serializeGoals(state.goals),
             goalSetDate: state.goals[0]?.setDate ?? "",
             completed: state.completed,
+          });
+        }
+      },
+
+      complete: (name, focuses) => {
+        set({ userName: name.trim(), focuses, completed: true });
+        const userId = uid();
+        if (userId) {
+          const state = get();
+          upsertProfile(userId, {
+            userName: name.trim(),
+            focuses,
+            goal: serializeGoals(state.goals),
+            goalSetDate: state.goals[0]?.setDate ?? "",
+            completed: true,
           });
         }
       },
