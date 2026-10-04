@@ -1,81 +1,52 @@
 import { create } from "zustand";
 import { persist } from "zustand/middleware";
 import { format } from "date-fns";
-import { upsertProfile, fetchProfile } from "../lib/db";
+import {
+  updateProfile as updateProfileRow,
+  fetchProfile,
+  fetchGoals,
+  upsertGoal,
+  deleteGoal as deleteGoalRow,
+} from "../lib/db";
+import { hasPendingWrites } from "../lib/outbox";
 import { useAuthStore } from "./useAuthStore";
 import type { Goal } from "../types";
 
 const uid = () => useAuthStore.getState().userId;
 
-const newId = () =>
-  typeof crypto !== "undefined" && "randomUUID" in crypto
-    ? crypto.randomUUID()
-    : `g_${Date.now().toString(36)}_${Math.random().toString(36).slice(2, 9)}`;
-
 interface OnboardingState {
-  completed: boolean;
+  ownerId: string | null;
   userName: string;
   focuses: string[];
   goals: Goal[];
-  joinedAt: string;
   loadFromDb: (userId: string) => Promise<void>;
   updateProfile: (name: string, focuses: string[]) => void;
-  complete: (name: string, focuses: string[]) => void;
   addGoal: (text: string, habitId?: string) => Goal;
   editGoal: (id: string, text: string) => void;
-  linkGoalHabit: (id: string, habitId: string) => void;
   deleteGoal: (id: string) => void;
   reset: () => void;
-}
-
-function serializeGoals(goals: Goal[]): string {
-  return goals.length === 0 ? "" : JSON.stringify(goals);
-}
-
-function parseGoalsField(field: string, fallbackDate: string): Goal[] {
-  if (!field) return [];
-
-  if (field.startsWith("[") || field.startsWith("{")) {
-    try {
-      const parsed = JSON.parse(field) as Goal[];
-      if (Array.isArray(parsed)) return parsed;
-    } catch {
-      return plainTextGoal(field, fallbackDate);
-    }
-  }
-  return plainTextGoal(field, fallbackDate);
-}
-
-function plainTextGoal(field: string, fallbackDate: string): Goal[] {
-  return [
-    {
-      id: newId(),
-      text: field,
-      setDate: fallbackDate || format(new Date(), "yyyy-MM-dd"),
-    },
-  ];
 }
 
 export const useOnboardingStore = create<OnboardingState>()(
   persist(
     (set, get) => ({
-      completed: false,
+      ownerId: null,
       userName: "",
       focuses: [],
       goals: [],
-      joinedAt: "",
 
       loadFromDb: async (userId) => {
-        const profile = await fetchProfile(userId);
-        if (!profile) return;
-        const goals = parseGoalsField(
-          (profile.goal as string) ?? "",
-          (profile.goal_set_date as string) ?? "",
-        );
+        if (get().ownerId && get().ownerId !== userId) {
+          set({ ownerId: null, userName: "", focuses: [], goals: [] });
+        }
+        if (hasPendingWrites()) return;
+        const [res, goals] = await Promise.all([fetchProfile(userId), fetchGoals(userId)]);
+        if (!res?.profile || !goals) return;
+        const profile = res.profile;
         set({
-          completed: profile.onboarding_completed ?? false,
-          userName: profile.user_name ?? "",
-          focuses: profile.focuses ?? [],
+          ownerId: userId,
+          userName: (profile.user_name as string) ?? "",
+          focuses: (profile.focuses as string[]) ?? [],
           goals,
         });
       },
@@ -83,125 +54,54 @@ export const useOnboardingStore = create<OnboardingState>()(
       updateProfile: (name, focuses) => {
         set({ userName: name.trim(), focuses });
         const userId = uid();
-        if (userId) {
-          const state = get();
-          upsertProfile(userId, {
-            userName: name.trim(),
-            focuses,
-            goal: serializeGoals(state.goals),
-            goalSetDate: state.goals[0]?.setDate ?? "",
-            completed: state.completed,
-          });
-        }
-      },
-
-      complete: (name, focuses) => {
-        set({ userName: name.trim(), focuses, completed: true });
-        const userId = uid();
-        if (userId) {
-          const state = get();
-          upsertProfile(userId, {
-            userName: name.trim(),
-            focuses,
-            goal: serializeGoals(state.goals),
-            goalSetDate: state.goals[0]?.setDate ?? "",
-            completed: true,
-          });
-        }
+        if (userId) updateProfileRow(userId, { userName: name.trim(), focuses });
       },
 
       addGoal: (text, habitId) => {
         const goal: Goal = {
-          id: newId(),
+          id: crypto.randomUUID(),
           text: text.trim(),
           setDate: format(new Date(), "yyyy-MM-dd"),
           habitId,
         };
-        const goals = [...get().goals, goal];
-        set({ goals });
+        set({ goals: [...get().goals, goal] });
         const userId = uid();
-        if (userId) {
-          const state = get();
-          upsertProfile(userId, {
-            userName: state.userName,
-            focuses: state.focuses,
-            goal: serializeGoals(goals),
-            goalSetDate: goals[0].setDate,
-            completed: state.completed,
-          });
-        }
+        if (userId) upsertGoal(userId, goal);
         return goal;
       },
 
       editGoal: (id, text) => {
-        const goals = get().goals.map((g) =>
-          g.id === id ? { ...g, text: text.trim() } : g,
-        );
-        set({ goals });
+        set({
+          goals: get().goals.map((g) => (g.id === id ? { ...g, text: text.trim() } : g)),
+        });
         const userId = uid();
-        if (userId) {
-          const state = get();
-          upsertProfile(userId, {
-            userName: state.userName,
-            focuses: state.focuses,
-            goal: serializeGoals(goals),
-            goalSetDate: goals[0]?.setDate ?? "",
-            completed: state.completed,
-          });
-        }
-      },
-
-      linkGoalHabit: (id, habitId) => {
-        const goals = get().goals.map((g) =>
-          g.id === id ? { ...g, habitId } : g,
-        );
-        set({ goals });
-        const userId = uid();
-        if (userId) {
-          const state = get();
-          upsertProfile(userId, {
-            userName: state.userName,
-            focuses: state.focuses,
-            goal: serializeGoals(goals),
-            goalSetDate: goals[0]?.setDate ?? "",
-            completed: state.completed,
-          });
-        }
+        const goal = get().goals.find((g) => g.id === id);
+        if (userId && goal) upsertGoal(userId, goal);
       },
 
       deleteGoal: (id) => {
-        const goals = get().goals.filter((g) => g.id !== id);
-        set({ goals });
-        const userId = uid();
-        if (userId) {
-          const state = get();
-          upsertProfile(userId, {
-            userName: state.userName,
-            focuses: state.focuses,
-            goal: serializeGoals(goals),
-            goalSetDate: goals[0]?.setDate ?? "",
-            completed: state.completed,
-          });
-        }
+        set({ goals: get().goals.filter((g) => g.id !== id) });
+        if (uid()) deleteGoalRow(id);
       },
 
       reset: () =>
-        set({ completed: false, userName: "", focuses: [], goals: [] }),
+        set({ ownerId: null, userName: "", focuses: [], goals: [] }),
     }),
     {
       name: "progress-onboarding",
-      version: 2,
+      version: 4,
 
       migrate: (raw, version) => {
         const s = raw as Partial<
-          OnboardingState & { goal?: string; goalSetDate?: string }
+          OnboardingState & { goal?: string; goalSetDate?: string; joinedAt?: string }
         >;
+        delete s.joinedAt;
         if (version < 2 && s.goal && (!s.goals || s.goals.length === 0)) {
           return {
             ...s,
             goals: [
               {
-                id: newId(),
+                id: crypto.randomUUID(),
                 text: s.goal,
                 setDate: s.goalSetDate || format(new Date(), "yyyy-MM-dd"),
               },

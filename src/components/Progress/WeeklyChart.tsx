@@ -1,130 +1,114 @@
-import { useState, useEffect } from 'react'
+import { useState, useEffect, useRef } from 'react'
 import { format } from 'date-fns'
-import {
-  BarChart,
-  Bar,
-  XAxis,
-  YAxis,
-  CartesianGrid,
-  Tooltip,
-  ReferenceLine,
-  ResponsiveContainer,
-  type BarShapeProps,
-} from 'recharts'
 import type { DailyProgress } from '../../types'
+import './WeeklyChart.css'
 
-const TICK_STYLE = { fontSize: 10, fill: 'var(--color-text-faint)' } as const
-
-function ChartTooltip({
-  active,
-  payload,
-}: {
-  active?: boolean
-  payload?: { payload: DailyProgress }[]
-}) {
-  if (!active || !payload?.length) return null
-  const d = payload[0].payload
-  return (
-    <div className="progress-page__tooltip">
-      <p className="progress-page__tooltip-date">
-        {format(new Date(`${d.date}T00:00:00`), 'EEE, MMM d')}
-      </p>
-      <p className="progress-page__tooltip-value">{d.percentage}%</p>
-      <p className="progress-page__tooltip-sub">
-        {d.completed} of {d.total} done
-      </p>
-    </div>
-  )
-}
+const TICKS = [100, 50, 0]
 
 export function WeeklyChart({ data, avg }: { data: DailyProgress[]; avg: number }) {
   const todayStr = format(new Date(), 'yyyy-MM-dd')
   const [mounted, setMounted] = useState(false)
-  const reducedMotion =
-    typeof window !== 'undefined'
-      ? window.matchMedia('(prefers-reduced-motion: reduce)').matches
-      : false
+  const [active, setActive] = useState<string | null>(null)
+  const plotRef = useRef<HTMLDivElement>(null)
 
   useEffect(() => {
     const id = requestAnimationFrame(() => setMounted(true))
     return () => cancelAnimationFrame(id)
   }, [])
 
+  useEffect(() => {
+    if (!active) return
+    const onPointerDown = (e: PointerEvent) => {
+      if (!plotRef.current?.contains(e.target as Node)) setActive(null)
+    }
+    const onKeyDown = (e: KeyboardEvent) => {
+      if (e.key === 'Escape') setActive(null)
+    }
+    document.addEventListener('pointerdown', onPointerDown)
+    document.addEventListener('keydown', onKeyDown)
+    return () => {
+      document.removeEventListener('pointerdown', onPointerDown)
+      document.removeEventListener('keydown', onKeyDown)
+    }
+  }, [active])
+
+  const activeDay = data.find((d) => d.date === active)
+
   return (
     <div className="progress-page__chart-wrap">
-      <ResponsiveContainer width="100%" height={200}>
-        <BarChart
-          data={data}
-          barCategoryGap="30%"
-          margin={{ top: 8, right: 4, left: -28, bottom: 0 }}
-        >
-          <CartesianGrid
-            vertical={false}
-            stroke="var(--color-border)"
-            strokeDasharray="4 4"
-          />
-          <XAxis
-            dataKey="date"
-            tickFormatter={(d) => format(new Date(`${d}T00:00:00`), 'EEE')}
-            tick={TICK_STYLE}
-            axisLine={false}
-            tickLine={false}
-          />
-          <YAxis
-            domain={[0, 100]}
-            ticks={[0, 50, 100]}
-            tickFormatter={(v) => `${v}%`}
-            tick={TICK_STYLE}
-            axisLine={false}
-            tickLine={false}
-          />
-          <Tooltip
-            content={<ChartTooltip />}
-            cursor={{ fill: 'rgba(128, 128, 128, 0.07)', radius: 6 }}
-          />
+      <div className="wchart">
+        <div className="wchart__axis" aria-hidden="true">
+          {TICKS.map((t) => (
+            <span key={t} className="wchart__tick" style={{ bottom: `${t}%` }}>{t}%</span>
+          ))}
+        </div>
+
+        <div className="wchart__plot" ref={plotRef} onMouseLeave={() => setActive(null)}>
+          {TICKS.map((t) => (
+            <div key={t} className="wchart__grid" style={{ bottom: `${t}%` }} aria-hidden="true" />
+          ))}
           {avg > 0 && (
-            <ReferenceLine
-              y={avg}
-              stroke="var(--color-border)"
-              strokeDasharray="4 3"
-              strokeWidth={1.5}
-            />
+            <div className="wchart__avg" style={{ bottom: `${avg}%` }} aria-hidden="true" />
           )}
-          <Bar
-            dataKey="percentage"
-            radius={[4, 4, 0, 0]}
-            isAnimationActive={false}
-            shape={(props: BarShapeProps & { index?: number }) => {
-              const { x = 0, y = 0, width = 0, height = 0, index = 0 } = props
-              const entry = props.payload as DailyProgress
-              const h = Math.max(height, 0)
-              const isEmpty = entry.total === 0 || entry.percentage === 0
+
+          <ul className="wchart__bars" aria-label="Daily completion, last 7 days">
+            {data.map((d, i) => {
+              const empty = d.total === 0 || d.percentage === 0
+              const label = `${format(new Date(`${d.date}T00:00:00`), 'EEEE, MMM d')}: ${d.percentage}%, ${d.completed} of ${d.total} done`
               return (
-                <rect
-                  x={x}
-                  y={isEmpty ? y + h - 3 : y}
-                  width={width}
-                  height={isEmpty ? 3 : h}
-                  rx={4}
-                  ry={4}
-                  fill={isEmpty ? 'var(--color-surface-alt)' : 'var(--color-primary)'}
-                  fillOpacity={isEmpty ? 1 : entry.date === todayStr ? 1 : 0.55}
-                  style={
-                    reducedMotion
-                      ? undefined
-                      : {
-                          transformBox: 'fill-box',
-                          transformOrigin: 'bottom',
-                          transform: mounted ? 'scaleY(1)' : 'scaleY(0)',
-                          transition: `transform 0.4s cubic-bezier(0.34, 1.56, 0.64, 1) ${index * 40}ms`,
-                        }
-                  }
-                />
+                <li key={d.date} className="wchart__col">
+                  <button
+                    type="button"
+                    className={[
+                      'wchart__hit',
+                      active === d.date ? 'wchart__hit--active' : '',
+                    ].join(' ')}
+                    aria-label={label}
+                    onMouseEnter={() => setActive(d.date)}
+                    onClick={() => setActive(d.date)}
+                  >
+                    <span
+                      className={[
+                        'wchart__bar',
+                        empty ? 'wchart__bar--empty' : '',
+                        d.date === todayStr ? 'wchart__bar--today' : '',
+                      ].filter(Boolean).join(' ')}
+                      style={{
+                        height: empty ? undefined : `${d.percentage}%`,
+                        transform: mounted ? 'scaleY(1)' : 'scaleY(0)',
+                        transitionDelay: `${i * 40}ms`,
+                      }}
+                    />
+                  </button>
+                </li>
               )
-            }}
-          />
-        </BarChart>
-      </ResponsiveContainer>
+            })}
+          </ul>
+
+          {activeDay && (
+            <div
+              className="progress-page__tooltip wchart__tooltip"
+              style={{ left: `${((data.indexOf(activeDay) + 0.5) / data.length) * 100}%` }}
+              aria-hidden="true"
+            >
+              <p className="progress-page__tooltip-date">
+                {format(new Date(`${activeDay.date}T00:00:00`), 'EEE, MMM d')}
+              </p>
+              <p className="progress-page__tooltip-value">{activeDay.percentage}%</p>
+              <p className="progress-page__tooltip-sub">
+                {activeDay.completed} of {activeDay.total} done
+              </p>
+            </div>
+          )}
+        </div>
+
+        <div className="wchart__days" aria-hidden="true">
+          {data.map((d) => (
+            <span key={d.date}>{format(new Date(`${d.date}T00:00:00`), 'EEE')}</span>
+          ))}
+        </div>
+      </div>
+
       <div className="progress-page__chart-legend">
         <span className="progress-page__chart-legend-dot progress-page__chart-legend-dot--dim" />
         <span className="progress-page__chart-legend-text">Past days</span>

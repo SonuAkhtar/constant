@@ -118,34 +118,6 @@ export function FocusIcon({ id, size = 20 }: { id: string; size?: number }) {
   return <svg {...s}><circle cx="10" cy="10" r="6" {...lp} /></svg>
 }
 
-export function TapIcon({ size = 22 }: { size?: number }) {
-  return (
-    <svg width={size} height={size} viewBox="0 0 22 22" fill="none" aria-hidden="true">
-      <path d="M11 3v6M8.5 5.5V11M14 7V11a5 5 0 01-10 0V5.5"
-        stroke="currentColor" strokeWidth="1.6" strokeLinecap="round" strokeLinejoin="round" />
-    </svg>
-  )
-}
-
-export const HABIT_ICON_OPTIONS: { key: string; label: string }[] = [
-  { key: 'water',    label: 'Water'    },
-  { key: 'run',      label: 'Run'      },
-  { key: 'gym',      label: 'Gym'      },
-  { key: 'meditate', label: 'Meditate' },
-  { key: 'book',     label: 'Read'     },
-  { key: 'sleep',    label: 'Sleep'    },
-  { key: 'coffee',   label: 'Coffee'   },
-  { key: 'meal',     label: 'Eat'      },
-  { key: 'music',    label: 'Music'    },
-  { key: 'journal',  label: 'Journal'  },
-  { key: 'heart',    label: 'Health'   },
-  { key: 'bike',     label: 'Bike'     },
-  { key: 'medicine', label: 'Medicine' },
-  { key: 'plant',    label: 'Nature'   },
-  { key: 'focus',    label: 'Focus'    },
-  { key: 'stretch',  label: 'Stretch'  },
-]
-
 export function HabitIcon({ icon, size = 20 }: { icon: string; size?: number }) {
   if (icon === 'morning' || icon === 'afternoon' || icon === 'evening' || icon === 'night') {
     return <SlotIcon slot={icon} size={size} />
@@ -243,16 +215,4 @@ export function HabitIcon({ icon, size = 20 }: { icon: string; size?: number }) 
     )
     default: return <SlotIcon slot="morning" size={size} />
   }
-}
-
-export function SwipeIcon({ direction = 'right', size = 22 }: { direction?: 'left' | 'right'; size?: number }) {
-  return (
-    <svg width={size} height={size} viewBox="0 0 22 22" fill="none" aria-hidden="true">
-      {direction === 'right' ? (
-        <path d="M4 11h14M14 7l4 4-4 4" stroke="currentColor" strokeWidth="1.6" strokeLinecap="round" strokeLinejoin="round" />
-      ) : (
-        <path d="M18 11H4M8 7L4 11l4 4" stroke="currentColor" strokeWidth="1.6" strokeLinecap="round" strokeLinejoin="round" />
-      )}
-    </svg>
-  )
 }

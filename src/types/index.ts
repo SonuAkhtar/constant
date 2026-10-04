@@ -15,6 +15,7 @@ export interface Habit {
   frequency?: HabitFrequency
   customDays?: number[]
   reminderTime?: string
+  createdAt?: string
 }
 
 export interface Milestone {
@@ -37,6 +38,7 @@ export interface HabitLog {
   skipped?: boolean
   completedAt?: string
   skipReason?: SkipReason
+  updatedAt?: string
 }
 
 export interface DailyProgress {
@@ -62,6 +64,7 @@ export interface HabitDayStat {
   date: string
   completed: boolean
   skipped: boolean
+  scheduled: boolean
 }
 
 export interface HabitStats {

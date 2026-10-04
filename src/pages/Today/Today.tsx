@@ -4,6 +4,7 @@ import { format, differenceInCalendarDays, parseISO, subDays } from "date-fns";
 import { motion, AnimatePresence } from "framer-motion";
 import { useHabitStore } from "../../store/useHabitStore";
 import { useOnboardingStore } from "../../store/useOnboardingStore";
+import { useAuthStore } from "../../store/useAuthStore";
 import { useSlotTimingStore, formatSlotTime, getActiveSlotIndex } from "../../store/useSlotTimingStore";
 import { useToastStore } from "../../store/useToastStore";
 import { haptic } from "../../utils/haptic";
@@ -104,7 +105,7 @@ function EmptyTodayState({ userName }: { userName: string }) {
           <circle cx="58" cy="56" r="14" fill="var(--color-primary)" />
           <path
             d="M53 56l3.5 3.5L63 51"
-            stroke="white"
+            style={{ stroke: "var(--color-on-primary)" }}
             strokeWidth="2.2"
             strokeLinecap="round"
             strokeLinejoin="round"
@@ -122,6 +123,16 @@ function EmptyTodayState({ userName }: { userName: string }) {
       </button>
     </motion.div>
   );
+}
+
+const SKIP_TIP_KEY = "progress-skip-tip-seen";
+
+function readSkipTipSeen(): boolean {
+  try {
+    return localStorage.getItem(SKIP_TIP_KEY) === "1";
+  } catch {
+    return true;
+  }
 }
 
 function NumRoll({ n }: { n: number }) {
@@ -153,12 +164,15 @@ export default function Today() {
     getTodayHabits,
     getScheduledHabits,
     toggleHabit,
+    skipHabit,
+    unskipHabit,
     getStreak,
     getDayProgress,
     getAppStreak,
     getLastActiveDate,
   } = useHabitStore();
-  const { userName, goals, joinedAt } = useOnboardingStore();
+  const { userName, goals } = useOnboardingStore();
+  const joinedAt = useAuthStore((s) => s.joinedAt);
   const { timings } = useSlotTimingStore();
 
   const [selectedGoalId, setSelectedGoalId] = useState<string | null>(null);
@@ -181,10 +195,16 @@ export default function Today() {
     return { dayNum, doneCount, hasHabit: !!goal.habitId };
   }
 
-  const [selectedDate, setSelectedDate] = useState(() => format(new Date(), 'yyyy-MM-dd'));
-  const isViewingToday = selectedDate === format(new Date(), 'yyyy-MM-dd');
+  const [todayDate, setTodayDate] = useState(() => format(new Date(), "yyyy-MM-dd"));
+  const [selectedDate, setSelectedDate] = useState(todayDate);
+  const [prevTodayDate, setPrevTodayDate] = useState(todayDate);
+  if (prevTodayDate !== todayDate) {
+    setPrevTodayDate(todayDate);
+    if (selectedDate === prevTodayDate) setSelectedDate(todayDate);
+  }
+  const isViewingToday = selectedDate === todayDate;
 
-  const todayHabits = useMemo(() => getTodayHabits(), [habits, logs]); // eslint-disable-line react-hooks/exhaustive-deps
+  const todayHabits = useMemo(() => getTodayHabits(), [habits, logs, todayDate]); // eslint-disable-line react-hooks/exhaustive-deps
   const viewHabits = useMemo(
     () => isViewingToday ? todayHabits : getScheduledHabits(selectedDate),
     [isViewingToday, todayHabits, selectedDate, habits, logs], // eslint-disable-line react-hooks/exhaustive-deps
@@ -210,8 +230,8 @@ export default function Today() {
   const slotsToRender = isViewingToday ? orderedSlots : SLOTS;
 
   const weekDates = useMemo(() =>
-    Array.from({ length: 7 }, (_, i) => format(subDays(new Date(), 6 - i), 'yyyy-MM-dd'))
-  , []);
+    Array.from({ length: 7 }, (_, i) => format(subDays(parseISO(todayDate), 6 - i), 'yyyy-MM-dd'))
+  , [todayDate]);
 
   const completedSet = useMemo(
     () => new Set(logs.filter(l => l.date === selectedDate && l.completed).map(l => l.habitId)),
@@ -235,11 +255,22 @@ export default function Today() {
   const auroraTriggeredRef = useRef(new Set<number>());
   const [auroraBurst, setAuroraBurst] = useState(false);
   const [expandedSlots, setExpandedSlots] = useState<Set<TimeSlot>>(new Set());
+  const [skipTipSeen, setSkipTipSeen] = useState(readSkipTipSeen);
+
+  function dismissSkipTip() {
+    setSkipTipSeen(true);
+    try {
+      localStorage.setItem(SKIP_TIP_KEY, "1");
+    } catch {
+      return;
+    }
+  }
 
   function toggleSlotExpand(slot: TimeSlot) {
     setExpandedSlots(prev => {
       const next = new Set(prev);
-      next.has(slot) ? next.delete(slot) : next.add(slot);
+      if (next.has(slot)) next.delete(slot);
+      else next.add(slot);
       return next;
     });
   }
@@ -251,18 +282,13 @@ export default function Today() {
     ? differenceInCalendarDays(new Date(), parseISO(lastActiveDate))
     : 0;
 
-  const [todayDate, setTodayDate] = useState(format(new Date(), "yyyy-MM-dd"));
   useEffect(() => {
-    const id = setInterval(() => {
-      const now = format(new Date(), "yyyy-MM-dd");
-      if (now !== todayDate) setTodayDate(now);
-    }, 30_000);
-    return () => clearInterval(id);
-  }, [todayDate]);
-
-  useEffect(() => {
-    const update = () => setCurrentHour(new Date().getHours());
-    const id = setInterval(update, 60_000);
+    const update = () => {
+      const d = new Date();
+      setCurrentHour(d.getHours());
+      setTodayDate(format(d, "yyyy-MM-dd"));
+    };
+    const id = setInterval(update, 30_000);
     document.addEventListener('visibilitychange', update);
     return () => {
       clearInterval(id);
@@ -308,13 +334,32 @@ export default function Today() {
   }, [percentage]);
 
   function handleToggle(habitId: string) {
+    const date = selectedDate;
+    if (skippedSet.has(habitId)) {
+      unskipHabit(habitId, date);
+      pushToast('Skip removed', undefined, {
+        label: 'Undo',
+        onClick: () => skipHabit(habitId, date),
+      });
+      return;
+    }
     const wasCompleted = completedSet.has(habitId);
-    const milestone = toggleHabit(habitId, selectedDate);
+    const milestone = toggleHabit(habitId, date);
     pushToast('Saved ✓', undefined, {
       label: 'Undo',
-      onClick: () => toggleHabit(habitId, selectedDate),
+      onClick: () => toggleHabit(habitId, date),
     });
     if (!wasCompleted && isViewingToday && milestone) setActiveMilestone(milestone);
+  }
+
+  function handleSkip(habitId: string) {
+    if (!skipTipSeen) dismissSkipTip();
+    const date = selectedDate;
+    skipHabit(habitId, date);
+    pushToast('Skipped for the day', undefined, {
+      label: 'Undo',
+      onClick: () => unskipHabit(habitId, date),
+    });
   }
 
   const strokeDash = ringMounted ? (percentage / 100) * RING_CIRC : 0;
@@ -428,7 +473,7 @@ export default function Today() {
 
       <div className="today__date-strip" role="radiogroup" aria-label="Select date">
         {weekDates.map(date => {
-          const isToday = date === format(new Date(), 'yyyy-MM-dd')
+          const isToday = date === todayDate
           const isSelected = date === selectedDate
           const isDisabled = !!joinedAt && date < joinedAt
           return (
@@ -465,7 +510,7 @@ export default function Today() {
             {format(parseISO(selectedDate), 'EEEE, MMMM d')}
             {' · '}<span className="today__past-banner-count">{viewCompleted}/{viewTotal} done</span>
           </span>
-          <button className="today__past-banner-back" onClick={() => setSelectedDate(format(new Date(), 'yyyy-MM-dd'))}>
+          <button className="today__past-banner-back" onClick={() => setSelectedDate(todayDate)}>
             Today
           </button>
         </div>
@@ -631,6 +676,17 @@ export default function Today() {
         );
       })()}
 
+      {!skipTipSeen && viewHabits.length > 0 && (
+        <div className="today__tip" role="note">
+          <span>
+            <strong>Tip:</strong> swipe a habit right to complete it, or left to skip it for the day.
+          </span>
+          <button className="today__tip-close" onClick={dismissSkipTip} aria-label="Dismiss tip">
+            ×
+          </button>
+        </div>
+      )}
+
       {viewHabits.length === 0 && isViewingToday && <EmptyTodayState userName={userName} />}
       {viewHabits.length === 0 && !isViewingToday && (
         <motion.div
@@ -689,6 +745,7 @@ export default function Today() {
                   skipped={skippedSet.has(habit.id)}
                   streak={getStreak(habit.id)}
                   onToggle={() => handleToggle(habit.id)}
+                  onSkip={() => handleSkip(habit.id)}
                   index={i}
                 />
               ))}
@@ -698,11 +755,11 @@ export default function Today() {
       })()}
 
       {slotsToRender.map(({ slot, label }) => {
-        const slotHabits = viewHabits.filter((h) => h.timeSlot === slot);
+        const slotHabits = viewHabits.filter((h) => h.timeSlot === slot && !h.isPinned);
         if (slotHabits.length === 0) return null;
 
         const slotDone = slotHabits.filter((h) => completedSet.has(h.id)).length;
-        const slotComplete = slotDone === slotHabits.length;
+        const slotComplete = slotHabits.every((h) => completedSet.has(h.id) || skippedSet.has(h.id));
         const isCollapsed = slotComplete && !expandedSlots.has(slot);
 
         return (
@@ -779,6 +836,7 @@ export default function Today() {
                         skipped={skippedSet.has(habit.id)}
                         streak={getStreak(habit.id)}
                         onToggle={() => handleToggle(habit.id)}
+                        onSkip={() => handleSkip(habit.id)}
                         index={i}
                       />
                     ))}
@@ -787,7 +845,7 @@ export default function Today() {
                     <div className="today__slot-done" role="status">
                       <svg width="13" height="13" viewBox="0 0 13 13" fill="none" aria-hidden="true">
                         <circle cx="6.5" cy="6.5" r="6.5" fill="var(--color-success)" />
-                        <path d="M4 6.5l2 2 3-3" stroke="#fff" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" />
+                        <path d="M4 6.5l2 2 3-3" style={{ stroke: "var(--color-on-primary)" }} strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" />
                       </svg>
                       All {label.toLowerCase()} habits done
                     </div>

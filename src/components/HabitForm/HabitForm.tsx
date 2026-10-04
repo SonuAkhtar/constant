@@ -1,8 +1,9 @@
-import { useState, useMemo, useEffect } from 'react'
+import { useState, useMemo } from 'react'
 import * as Dialog from '@radix-ui/react-dialog'
 import { motion, AnimatePresence, useDragControls, type PanInfo } from 'framer-motion'
 import { useHabitStore } from '../../store/useHabitStore'
-import { SlotIcon, HabitIcon, HABIT_ICON_OPTIONS } from '../Icons'
+import { SlotIcon, HabitIcon } from '../Icons'
+import { HABIT_ICON_OPTIONS } from '../../data/habitIcons'
 import type { Habit, TimeSlot, HabitFrequency } from '../../types'
 import './HabitForm.css'
 
@@ -40,6 +41,9 @@ export default function HabitForm({ defaultSlot, defaultTitle, habit, children, 
 
   const [title,       setTitle]       = useState('')
   const [description, setDescription] = useState('')
+  const [intention,   setIntention]   = useState('')
+  const [plannedTime, setPlannedTime] = useState('')
+  const [daysError,   setDaysError]   = useState(false)
   const [timeSlot,     setTimeSlot]     = useState<TimeSlot>(defaultSlot)
   const [frequency,    setFrequency]    = useState<HabitFrequency>('daily')
   const [customDays,   setCustomDays]   = useState<number[]>([1, 2, 3, 4, 5])
@@ -49,16 +53,20 @@ export default function HabitForm({ defaultSlot, defaultTitle, habit, children, 
   function resetForm() {
     setTitle(habit?.title ?? defaultTitle ?? '')
     setDescription(habit?.description ?? '')
+    setIntention(habit?.intention ?? '')
+    setPlannedTime(habit?.reminderTime ?? '')
+    setDaysError(false)
     setTimeSlot(habit?.timeSlot ?? defaultSlot)
     setFrequency(habit?.frequency ?? 'daily')
     setCustomDays(habit?.customDays ?? [1, 2, 3, 4, 5])
     setIcon(HABIT_ICON_OPTIONS.some(o => o.key === habit?.icon) ? habit!.icon : 'water')
   }
 
-  useEffect(() => {
+  const [wasOpen, setWasOpen] = useState(false)
+  if (open !== wasOpen) {
+    setWasOpen(open)
     if (open) resetForm()
-  // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [open])
+  }
 
   const isDuplicateName = useMemo(() => {
     const trimmed = title.trim().toLowerCase()
@@ -72,18 +80,20 @@ export default function HabitForm({ defaultSlot, defaultTitle, habit, children, 
     } else {
       setOpenInternal(next)
     }
-    if (next) resetForm()
   }
 
   function toggleDay(day: number) {
+    setDaysError(false)
     setCustomDays(prev =>
-      prev.includes(day) ? prev.filter(d => d !== day) : [...prev, day]
+      prev.includes(day) ? prev.filter(d => d !== day) : [...prev, day].sort()
     )
   }
 
   function handleSubmit(e: React.FormEvent) {
     e.preventDefault()
-    if (!title.trim()) {
+    const noDays = frequency === 'custom' && customDays.length === 0
+    if (!title.trim() || noDays) {
+      setDaysError(noDays)
       setShaking(true)
       navigator.vibrate?.(20)
       setTimeout(() => setShaking(false), 400)
@@ -92,6 +102,8 @@ export default function HabitForm({ defaultSlot, defaultTitle, habit, children, 
     const payload: Omit<Habit, 'id' | 'isCustom'> = {
       title:       title.trim(),
       description: description.trim() || undefined,
+      intention:   intention.trim() || undefined,
+      reminderTime: plannedTime || undefined,
       timeSlot,
       icon,
       frequency,
@@ -128,7 +140,7 @@ export default function HabitForm({ defaultSlot, defaultTitle, habit, children, 
               />
             </Dialog.Overlay>
 
-            <Dialog.Content asChild>
+            <Dialog.Content asChild aria-describedby={undefined}>
               <motion.div
                 className="habit-form__panel"
                 initial={{ opacity: 0, y: 32, scale: 0.97 }}
@@ -201,6 +213,37 @@ export default function HabitForm({ defaultSlot, defaultTitle, habit, children, 
                   </div>
 
                   <div className="habit-form__field">
+                    <div className="habit-form__label-row">
+                      <label className="habit-form__label" htmlFor="habit-intention">
+                        Intention <span className="habit-form__optional">(optional)</span>
+                      </label>
+                      <span className="habit-form__char-count">{intention.length}/80</span>
+                    </div>
+                    <input
+                      id="habit-intention"
+                      className="habit-form__input"
+                      type="text"
+                      placeholder="e.g. After coffee, I will..."
+                      value={intention}
+                      onChange={e => setIntention(e.target.value)}
+                      maxLength={80}
+                    />
+                  </div>
+
+                  <div className="habit-form__field">
+                    <label className="habit-form__label" htmlFor="habit-time">
+                      Planned time <span className="habit-form__optional">(optional)</span>
+                    </label>
+                    <input
+                      id="habit-time"
+                      className="habit-form__input"
+                      type="time"
+                      value={plannedTime}
+                      onChange={e => setPlannedTime(e.target.value)}
+                    />
+                  </div>
+
+                  <div className="habit-form__field">
                     <label className="habit-form__label">Time of day</label>
                     <div className="habit-form__slots">
                       {SLOT_OPTIONS.map(({ slot, label }) => (
@@ -262,6 +305,11 @@ export default function HabitForm({ defaultSlot, defaultTitle, habit, children, 
                           </button>
                         ))}
                       </div>
+                    )}
+                    {frequency === 'custom' && daysError && (
+                      <p className="habit-form__duplicate-warning" role="alert">
+                        Pick at least one day.
+                      </p>
                     )}
                   </div>
 

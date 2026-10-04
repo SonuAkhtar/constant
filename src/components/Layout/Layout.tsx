@@ -18,9 +18,14 @@ export default function Layout() {
     return () => el.removeEventListener('scroll', onScroll)
   }, [])
 
+  const [prevPath, setPrevPath] = useState(location.pathname)
+  if (prevPath !== location.pathname) {
+    setPrevPath(location.pathname)
+    setScrolled(false)
+  }
+
   useEffect(() => {
     if (mainRef.current) mainRef.current.scrollTop = 0
-    setScrolled(false)
   }, [location.pathname])
 
   const isToday = location.pathname === '/'

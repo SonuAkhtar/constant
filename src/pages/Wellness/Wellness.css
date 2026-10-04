@@ -29,7 +29,7 @@
 }
 
 .wellness-page__tab--active {
-  color: #fff;
+  color: var(--color-on-primary);
 }
 
 [data-theme="dark"] .wellness-page__tab--active {
@@ -100,5 +100,5 @@
 
 .wellness-page__error-btn:hover {
   background: var(--color-primary);
-  color: #fff;
+  color: var(--color-on-primary);
 }

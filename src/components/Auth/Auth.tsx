@@ -3,18 +3,14 @@ import { motion, AnimatePresence } from 'framer-motion'
 import { Eye, EyeOff, ArrowLeft, Check, X, MailCheck } from 'lucide-react'
 import { useAuthStore } from '../../store/useAuthStore'
 import { usernameExists } from '../../lib/db'
+import { EMAIL_RE, isStrongPassword } from '../../utils/validation'
 import './Auth.css'
 
 type Mode = 'login' | 'signup' | 'forgot'
 type UsernameStatus = 'idle' | 'checking' | 'available' | 'taken' | 'invalid'
 
-const EMAIL_RE = /^[^\s@]+@[^\s@]+\.[^\s@]+$/
 const USERNAME_RE = /^[a-zA-Z0-9_]{3,20}$/
 const SPRING = { type: 'spring', stiffness: 420, damping: 34, mass: 0.9 } as const
-
-function isStrong(pw: string): boolean {
-  return pw.length >= 8 && /[a-z]/.test(pw) && /[A-Z]/.test(pw) && /\d/.test(pw)
-}
 
 function passwordStrength(pw: string): { score: number; label: string } {
   let s = 0
@@ -114,29 +110,36 @@ export default function Auth() {
   const [confirm, setConfirm] = useState('')
   const [showPw, setShowPw] = useState(false)
   const [showConfirm, setShowConfirm] = useState(false)
-  const [usernameStatus, setUsernameStatus] = useState<UsernameStatus>('idle')
+  const [usernameCheck, setUsernameCheck] = useState<{ name: string; taken: boolean } | null>(null)
+  const [notice, setNotice] = useState('')
 
   const [forgotEmail, setForgotEmail] = useState('')
   const [forgotSent, setForgotSent] = useState(false)
 
+  const trimmedUsername = username.trim()
+  const usernameValid = USERNAME_RE.test(trimmedUsername)
+  const usernameStatus: UsernameStatus =
+    !trimmedUsername ? 'idle'
+    : !usernameValid ? 'invalid'
+    : usernameCheck?.name === trimmedUsername.toLowerCase()
+      ? (usernameCheck.taken ? 'taken' : 'available')
+      : 'checking'
+
   useEffect(() => {
-    if (mode !== 'signup') return
-    const u = username.trim()
-    if (!u) { setUsernameStatus('idle'); return }
-    if (!USERNAME_RE.test(u)) { setUsernameStatus('invalid'); return }
-    setUsernameStatus('checking')
+    if (mode !== 'signup' || !usernameValid) return
+    const u = trimmedUsername.toLowerCase()
     let active = true
     const timer = setTimeout(async () => {
-      const taken = await usernameExists(u.toLowerCase())
-      if (active) setUsernameStatus(taken ? 'taken' : 'available')
+      const taken = await usernameExists(u)
+      if (active) setUsernameCheck({ name: u, taken })
     }, 450)
     return () => { active = false; clearTimeout(timer) }
-  }, [username, mode])
+  }, [trimmedUsername, usernameValid, mode])
 
   function switchMode(next: Mode) {
     setMode(next)
     setError('')
-    setUsernameStatus('idle')
+    setNotice('')
     setForgotSent(false)
   }
 
@@ -153,10 +156,15 @@ export default function Auth() {
     if (!USERNAME_RE.test(username.trim())) return setError('Username must be 3-20 letters, numbers, or underscores.')
     if (usernameStatus === 'taken') return setError('That username is already taken.')
     if (!EMAIL_RE.test(email.trim())) return setError('Please enter a valid email address.')
-    if (!isStrong(password)) return setError('Use 8+ characters with an uppercase letter and a number.')
+    if (!isStrongPassword(password)) return setError('Use 8+ characters with an uppercase letter and a number.')
     if (password !== confirm) return setError("Passwords don't match.")
-    const { error: err } = await signUp({ name, username, email, password })
+    const { error: err, notice: msg } = await signUp({ name, username, email, password })
     if (err) setError(friendlyError(err))
+    else if (msg) {
+      switchMode('login')
+      setIdentifier(email.trim())
+      setNotice(msg)
+    }
   }
 
   async function handleForgot() {
@@ -169,7 +177,7 @@ export default function Auth() {
 
   async function handleRecovery() {
     setError('')
-    if (!isStrong(password)) return setError('Use 8+ characters with an uppercase letter and a number.')
+    if (!isStrongPassword(password)) return setError('Use 8+ characters with an uppercase letter and a number.')
     if (password !== confirm) return setError("Passwords don't match.")
     const { error: err } = await updatePassword(password)
     if (err) setError(friendlyError(err))
@@ -299,6 +307,7 @@ export default function Auth() {
                   Forgot password?
                 </button>
 
+                {notice && <p className="auth__hint auth__hint--ok" role="status">{notice}</p>}
                 {error && <p className="auth__error" role="alert">{error}</p>}
 
                 <button className="auth__submit-btn" type="submit" disabled={loading || !canLogin}>
@@ -341,7 +350,7 @@ export default function Auth() {
                     aria-invalid={usernameStatus === 'taken' || usernameStatus === 'invalid'}
                   />
                   {usernameStatus === 'checking' && (
-                    <span className="auth__hint"><span className="auth__hint-spinner" /> Checking availability…</span>
+                    <span className="auth__hint"><span className="auth__hint-spinner" /> Checking availability...</span>
                   )}
                   {usernameStatus === 'invalid' && (
                     <span className="auth__hint auth__hint--error"><X size={14} /> 3-20 letters, numbers, or underscores.</span>

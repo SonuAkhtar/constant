@@ -11,11 +11,11 @@ export const morningSteps: SkincareStep[] = [
     step: 1,
     name: "Gentle Cleanser",
     summary: "Remove overnight sebum without disrupting your skin barrier.",
-    why: "During sleep your skin produces sebum and sheds dead cells. A pH-balanced cleanser removes these without stripping the acid mantle, which sits at pH 4.5–5.5 and acts as your first line of defence against bacteria.",
+    why: "During sleep your skin produces sebum and sheds dead cells. A pH-balanced cleanser removes these without stripping the acid mantle, which sits at pH 4.5-5.5 and acts as your first line of defence against bacteria.",
     evidence:
       "AAD current guidelines; included in the 2025 JAAD Delphi consensus as a universal baseline step.",
     usage:
-      "Use a fragrance-free, non-foaming or low-foam formula. Avoid sulfate-heavy or alkaline cleansers. Massage for 30–60 seconds, rinse with lukewarm water. Apply to all skin types daily.",
+      "Use a fragrance-free, non-foaming or low-foam formula. Avoid sulfate-heavy or alkaline cleansers. Massage for 30-60 seconds, rinse with lukewarm water. Apply to all skin types daily.",
     timeSlot: "morning",
     when: "morning",
   },
@@ -29,7 +29,7 @@ export const morningSteps: SkincareStep[] = [
     evidence:
       "88.7% dermatologist consensus in the 2025 JAAD Delphi study. Ranked among the top photoaging interventions in the 2025 Nature Scientific Reports network meta-analysis across 30+ RCTs.",
     usage:
-      "Apply to dry skin immediately after cleansing. Start at 10% concentration- 15–20% is more potent but may irritate sensitive skin. Ascorbyl glucoside is a gentler derivative. Wait 60 seconds before the next step.",
+      "Apply to dry skin immediately after cleansing. Start at 10% concentration- 15-20% is more potent but may irritate sensitive skin. Ascorbyl glucoside is a gentler derivative. Wait 60 seconds before the next step.",
     notFor: ["sensitive"],
     timeSlot: "morning",
     when: "morning",
@@ -53,7 +53,7 @@ export const morningSteps: SkincareStep[] = [
     name: "SPF 30+ Sunscreen",
     summary:
       "The single most evidence-backed intervention for skin health. Non-negotiable.",
-    why: "UV radiation is the primary driver of extrinsic skin ageing- fine lines, dark spots, texture changes- and a leading cause of skin cancer. UVA penetrates deep into the dermis and degrades collagen. UVB causes direct DNA mutations in keratinocytes. Even on cloudy days, 60–80% of UV reaches the skin.",
+    why: "UV radiation is the primary driver of extrinsic skin ageing- fine lines, dark spots, texture changes- and a leading cause of skin cancer. UVA penetrates deep into the dermis and degrades collagen. UVB causes direct DNA mutations in keratinocytes. Even on cloudy days, 60-80% of UV reaches the skin.",
     evidence:
       "Mineral sunscreen reached 96.8% consensus for fine lines and 95.2% for redness- the highest consensus of any ingredient in the entire 2025 JAAD study. A landmark RCT showed daily sunscreen users had 24% fewer solar keratoses than discretionary users after 4.5 years.",
     usage:
@@ -88,7 +88,7 @@ export const nightSteps: SkincareStep[] = [
     evidence:
       "2025 JAAD consensus: retinoids received the top recommendation across 5 skin concerns- fine lines and wrinkles, acne, dark spots, large pores, and oily skin. Salicylic acid (BHA) reached 93.6% consensus for acne in the same study. EU regulations cap face product retinol at 0.3% from November 2025.",
     usage:
-      "Retinoids: start at 0.01–0.05% retinol or retinaldehyde, 2 nights per week. Build over 4–8 weeks to 3–4 nights per week. Apply to completely dry skin. A pea-sized amount covers the full face. Results visible in 3–6 months. Never use during pregnancy. On non-retinoid nights: AHA (glycolic or lactic acid) for texture, or BHA (salicylic acid 0.5–2%) for oily/acne-prone skin. Do not use retinoid and exfoliant on the same night.",
+      "Retinoids: start at 0.01-0.05% retinol or retinaldehyde, 2 nights per week. Build over 4-8 weeks to 3-4 nights per week. Apply to completely dry skin. A pea-sized amount covers the full face. Results visible in 3-6 months. Never use during pregnancy. On non-retinoid nights: AHA (glycolic or lactic acid) for texture, or BHA (salicylic acid 0.5-2%) for oily/acne-prone skin. Do not use retinoid and exfoliant on the same night.",
     timeSlot: "night",
     when: "night",
   },
@@ -112,7 +112,7 @@ export const daytimeHabits: DaytimeHabit[] = [
   {
     id: "spf-reapply",
     icon: "☀️",
-    text: "Reapply SPF every 2 hours when outdoors. Even on cloudy days, 60–80% of UV penetrates cloud cover.",
+    text: "Reapply SPF every 2 hours when outdoors. Even on cloudy days, 60-80% of UV penetrates cloud cover.",
   },
   {
     id: "no-face-touch",
@@ -132,7 +132,7 @@ export const daytimeHabits: DaytimeHabit[] = [
   {
     id: "sleep",
     icon: "🌙",
-    text: "Prioritise 7–9 hours of sleep. An 8-hour sleep cohort showed significantly lower TEWL and faster barrier recovery versus sleep-deprived participants.",
+    text: "Prioritise 7-9 hours of sleep. An 8-hour sleep cohort showed significantly lower TEWL and faster barrier recovery versus sleep-deprived participants.",
   },
 ];
 
@@ -142,9 +142,9 @@ export const supplements: Supplement[] = [
     name: "Collagen Peptides",
     strength: "strongest",
     benefit: "Skin elasticity and hydration",
-    dose: "2.5–10g hydrolysed collagen peptides per day. Take with vitamin C.",
+    dose: "2.5-10g hydrolysed collagen peptides per day. Take with vitamin C.",
     notes:
-      "2025 Frontiers in Medicine meta-analysis (8 RCTs, 306 participants): SMD 1.93 for elasticity (p=0.003). No adverse events across all 14 collagen studies. Results visible in 4–12 weeks.",
+      "2025 Frontiers in Medicine meta-analysis (8 RCTs, 306 participants): SMD 1.93 for elasticity (p=0.003). No adverse events across all 14 collagen studies. Results visible in 4-12 weeks.",
     recommended: true,
   },
   {
@@ -152,7 +152,7 @@ export const supplements: Supplement[] = [
     name: "Omega-3 Fatty Acids (EPA + DHA)",
     strength: "strong",
     benefit: "Anti-inflammatory, reduces skin redness and supports barrier",
-    dose: "2–3g EPA/DHA daily. Take with food. Fish oil or algae-based sources.",
+    dose: "2-3g EPA/DHA daily. Take with food. Fish oil or algae-based sources.",
     notes:
       "Clinical evidence for psoriasis and atopic dermatitis. Reduces inflammatory prostaglandins that degrade structural skin proteins.",
     recommended: true,
@@ -162,7 +162,7 @@ export const supplements: Supplement[] = [
     name: "Vitamin D",
     strength: "moderate",
     benefit: "Atopic dermatitis, immune modulation",
-    dose: "Check serum 25(OH)D first; optimal range 40–60 ng/mL before supplementing.",
+    dose: "Check serum 25(OH)D first; optimal range 40-60 ng/mL before supplementing.",
     notes:
       "RCTs show benefit for atopic dermatitis at 60 days. Deficiency is extremely common globally. Do not supplement without testing- excess is harmful.",
     recommended: true,
@@ -172,7 +172,7 @@ export const supplements: Supplement[] = [
     name: "Oral Vitamin C",
     strength: "moderate",
     benefit: "Collagen synthesis cofactor and antioxidant",
-    dose: "500–1000mg daily.",
+    dose: "500-1000mg daily.",
     notes:
       "Essential cofactor for collagen hydroxylation at proline and lysine sites. Supports the same mechanism as topical Vitamin C. PMC 2024 review confirms antioxidant defense and collagen synthesis. Topical has more direct surface evidence than oral alone.",
     recommended: true,
@@ -182,7 +182,7 @@ export const supplements: Supplement[] = [
     name: "Flavanols and Polyphenols",
     strength: "emerging",
     benefit: "UV tolerance and skin elasticity",
-    dose: "Flavanols: 200–600mg. Polyphenols: 250–1400mg. Sources: dark chocolate, green tea, berries, grape seed extract.",
+    dose: "Flavanols: 200-600mg. Polyphenols: 250-1400mg. Sources: dark chocolate, green tea, berries, grape seed extract.",
     notes:
       "2025 Frontiers meta-analysis: flavanols improved UV tolerance (SMD 3.31, p=0.01); polyphenols improved elasticity (SMD 1.88, p=0.03). Promising but limited trial count.",
     recommended: true,

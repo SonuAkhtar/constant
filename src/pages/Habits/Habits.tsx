@@ -2,7 +2,7 @@ import { useState, useMemo } from 'react'
 import { AnimatePresence, motion, Reorder, useDragControls } from 'framer-motion'
 import { haptic } from '../../utils/haptic'
 import { useHabitStore } from '../../store/useHabitStore'
-import { useSlotTimingStore, formatSlotTime } from '../../store/useSlotTimingStore'
+import { useSlotTimingStore, formatSlotTime, cascadeSlotTiming } from '../../store/useSlotTimingStore'
 import { useToastStore } from '../../store/useToastStore'
 import HabitForm from '../../components/HabitForm/HabitForm'
 import { HabitDetailSheet } from '../../components/Habits/HabitDetailSheet'
@@ -16,8 +16,6 @@ const SLOTS: { slot: TimeSlot; label: string }[] = [
   { slot: 'evening',   label: 'Evening'   },
   { slot: 'night',     label: 'Night'     },
 ]
-
-const SLOT_ORDER: TimeSlot[] = ['morning', 'afternoon', 'evening', 'night']
 
 function ClockEditIcon() {
   return (
@@ -113,7 +111,7 @@ function HabitRow({
           >
             {selected && (
               <svg width="10" height="8" viewBox="0 0 10 8" fill="none">
-                <path d="M1 4l2.5 2.5L9 1" stroke="white" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round" />
+                <path d="M1 4l2.5 2.5L9 1" style={{ stroke: "var(--color-on-primary)" }} strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round" />
               </svg>
             )}
           </button>
@@ -168,13 +166,14 @@ function HabitRow({
 
 type RowSharedProps = Pick<HabitRowProps, 'confirmArchive' | 'shakingId' | 'organizing' | 'onStartArchive' | 'onCancelArchive' | 'onArchive' | 'onSelect' | 'onShowDetail'>
 
-function ReorderableRow({ habit, streak, selected, ...shared }: { habit: Habit; streak: Streak; selected: boolean } & RowSharedProps) {
+function ReorderableRow({ habit, streak, selected, onDrop, ...shared }: { habit: Habit; streak: Streak; selected: boolean; onDrop: () => void } & RowSharedProps) {
   const dragControls = useDragControls()
   return (
     <Reorder.Item
       value={habit}
       dragControls={dragControls}
       dragListener={false}
+      onDragEnd={onDrop}
       className="habits-page__reorder-item"
       whileDrag={{ scale: 1.02, boxShadow: '0 8px 24px rgba(0,0,0,0.12)' }}
     >
@@ -190,8 +189,8 @@ function ReorderableRow({ habit, streak, selected, ...shared }: { habit: Habit; 
 }
 
 export default function Habits() {
-  const { habits, logs, archiveHabit, unarchiveHabit, removeHabit, reorderHabits, getStreak, editHabit } = useHabitStore()
-  const { timings, setSlotTiming } = useSlotTimingStore()
+  const { habits, logs, archiveHabit, unarchiveHabit, removeHabit, reorderHabits, saveOrder, getStreak, editHabit, togglePin } = useHabitStore()
+  const { timings, setTimings } = useSlotTimingStore()
   const pushToast = useToastStore(s => s.push)
   const [confirmArchive, setConfirmArchive] = useState<string | null>(null)
   const [shakingId, setShakingId]           = useState<string | null>(null)
@@ -214,24 +213,19 @@ export default function Habits() {
 
   function handleSaveTime() {
     if (!editingSlot) return
-    const idx = SLOT_ORDER.indexOf(editingSlot)
-
-    setSlotTiming(editingSlot, editStart, editEnd)
-
-    let cascaded = false
-    if (idx < SLOT_ORDER.length - 1) {
-      const next = SLOT_ORDER[idx + 1]
-      setSlotTiming(next, editEnd, timings[next].end)
-      cascaded = true
+    const result = cascadeSlotTiming(timings, editingSlot, editStart, editEnd)
+    if ('error' in result) {
+      haptic('error')
+      pushToast(result.error)
+      return
     }
-    if (idx > 0) {
-      const prev = SLOT_ORDER[idx - 1]
-      setSlotTiming(prev, timings[prev].start, editStart)
-      cascaded = true
-    }
-
+    const neighboursChanged = (Object.keys(timings) as TimeSlot[]).some(
+      s => s !== editingSlot &&
+        (timings[s].start !== result.timings[s].start || timings[s].end !== result.timings[s].end),
+    )
+    setTimings(result.timings)
     setEditingSlot(null)
-    if (cascaded) pushToast('Adjacent slots adjusted')
+    if (neighboursChanged) pushToast('Adjacent slots adjusted')
   }
 
   const activeHabits   = habits.filter(h => !h.isArchived)
@@ -258,7 +252,8 @@ export default function Habits() {
   function handleToggleSelect(id: string) {
     setSelected(prev => {
       const next = new Set(prev)
-      next.has(id) ? next.delete(id) : next.add(id)
+      if (next.has(id)) next.delete(id)
+      else next.add(id)
       return next
     })
   }
@@ -321,7 +316,7 @@ export default function Habits() {
           <input
             className="habits-page__search"
             type="text"
-            placeholder="Search habits…"
+            placeholder="Search habits..."
             value={search}
             onChange={e => setSearch(e.target.value)}
           />
@@ -374,7 +369,7 @@ export default function Habits() {
                     value={editStart}
                     onChange={e => setEditStart(e.target.value)}
                   />
-                  <span className="habits-page__time-sep">–</span>
+                  <span className="habits-page__time-sep">-</span>
                   <input
                     type="time"
                     className="habits-page__time-input"
@@ -406,6 +401,7 @@ export default function Habits() {
                     habit={habit}
                     streak={streakMap.get(habit.id) ?? { habitId: habit.id, current: 0, best: 0 }}
                     selected={selected.has(habit.id)}
+                    onDrop={() => saveOrder(slot)}
                     {...sharedProps}
                   />
                 ))}
@@ -577,6 +573,7 @@ export default function Habits() {
           setTimeout(() => setEditFromDetailId(id), 240)
         }}
         onArchive={() => { if (detailHabitId) handleStartArchive(detailHabitId) }}
+        onTogglePin={() => { if (detailHabitId) togglePin(detailHabitId) }}
       />
 
       {editFromDetailHabit && (

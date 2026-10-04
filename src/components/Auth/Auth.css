@@ -96,7 +96,7 @@
 }
 
 .auth__toggle-btn--active .auth__toggle-text {
-  color: #ffffff;
+  color: var(--color-on-primary);
 }
 
 .auth__card {

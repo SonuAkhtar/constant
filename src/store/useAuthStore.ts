@@ -1,12 +1,15 @@
 import { create } from 'zustand'
+import type { Session } from '@supabase/supabase-js'
+import { format } from 'date-fns'
 import { supabase } from '../lib/supabase'
-import { usernameExists, createProfile, seedDefaultHabits } from '../lib/db'
+import { usernameExists, deleteAccount as deleteAccountRequest } from '../lib/db'
+import { clearOutbox, flushOutbox } from '../lib/outbox'
 
 const INVALID_CREDENTIALS = 'Wrong email/username or password.'
 
-let suppressAuthSync = false
+let authSubscribed = false
 
-export interface SignUpData {
+interface SignUpData {
   name: string
   username: string
   email: string
@@ -16,59 +19,60 @@ export interface SignUpData {
 interface AuthState {
   userId: string | null
   email: string | null
+  joinedAt: string | null
   initializing: boolean
   loading: boolean
 
   recovery: boolean
   init: () => Promise<void>
-  signUp: (data: SignUpData) => Promise<{ error: string | null }>
+  signUp: (data: SignUpData) => Promise<{ error: string | null; notice?: string }>
 
   signIn: (identifier: string, password: string) => Promise<{ error: string | null }>
   sendPasswordReset: (email: string) => Promise<{ error: string | null }>
   updatePassword: (password: string) => Promise<{ error: string | null }>
+  changePassword: (current: string, next: string) => Promise<{ error: string | null }>
+  changeEmail: (email: string) => Promise<{ error: string | null }>
+  deleteAccount: () => Promise<{ error: string | null }>
   signOut: () => Promise<void>
 }
 
-export const useAuthStore = create<AuthState>()((set) => ({
+function fromSession(session: Session | null) {
+  const user = session?.user
+  return {
+    userId: user?.id ?? null,
+    email: user?.email ?? null,
+    joinedAt: user?.created_at ? format(new Date(user.created_at), 'yyyy-MM-dd') : null,
+  }
+}
+
+export const useAuthStore = create<AuthState>()((set, get) => ({
   userId: null,
   email: null,
+  joinedAt: null,
   initializing: true,
   loading: false,
   recovery: false,
 
   init: async () => {
-
     const isRecovery =
       typeof window !== 'undefined' && window.location.hash.includes('type=recovery')
 
     const { data } = await supabase.auth.getSession()
-    const session = data.session
-    set({
-      userId: session?.user.id ?? null,
-      email: session?.user.email ?? null,
-      recovery: isRecovery,
-      initializing: false,
-    })
+    set({ ...fromSession(data.session), recovery: isRecovery, initializing: false })
+
+    if (authSubscribed) return
+    authSubscribed = true
     supabase.auth.onAuthStateChange((event, session) => {
-      if (suppressAuthSync) return
       if (event === 'PASSWORD_RECOVERY') {
-        set({
-          recovery: true,
-          userId: session?.user.id ?? null,
-          email: session?.user.email ?? null,
-        })
+        set({ ...fromSession(session), recovery: true })
         return
       }
-      set({
-        userId: session?.user.id ?? null,
-        email: session?.user.email ?? null,
-      })
+      set(fromSession(session))
     })
   },
 
   signUp: async ({ name, username, email, password }) => {
     set({ loading: true })
-    suppressAuthSync = true
     try {
       const uname = username.trim().toLowerCase()
 
@@ -80,39 +84,32 @@ export const useAuthStore = create<AuthState>()((set) => ({
       const { data, error } = await supabase.auth.signUp({
         email: email.trim(),
         password,
+        options: {
+          data: { name: name.trim(), username: uname },
+          emailRedirectTo: window.location.origin,
+        },
       })
       if (error) {
         set({ loading: false })
         return { error: error.message }
       }
-      const user = data.user
-      if (!user) {
+      if (!data.user) {
         set({ loading: false })
         return { error: 'Could not create your account. Please try again.' }
       }
 
-      const { error: profileErr } = await createProfile(user.id, {
-        name: name.trim(),
-        username: uname,
-        email: email.trim(),
-      })
-      if (profileErr) {
-        set({ loading: false })
-        return { error: profileErr }
-      }
-      await seedDefaultHabits(user.id)
-
       if (data.session) {
-        set({ userId: user.id, email: user.email ?? null, loading: false })
+        set({ ...fromSession(data.session), loading: false })
         return { error: null }
       }
       set({ loading: false })
-      return { error: 'Account created. Confirm your email, then log in.' }
+      return {
+        error: null,
+        notice: 'Account created. Confirm your email, then log in with your email address.',
+      }
     } catch (e) {
       set({ loading: false })
       return { error: e instanceof Error ? e.message : 'Something went wrong.' }
-    } finally {
-      suppressAuthSync = false
     }
   },
 
@@ -120,14 +117,13 @@ export const useAuthStore = create<AuthState>()((set) => ({
     set({ loading: true })
     const id = identifier.trim()
     try {
-
       if (id.includes('@')) {
         const { data, error } = await supabase.auth.signInWithPassword({ email: id, password })
         if (error || !data.session) {
           set({ loading: false })
           return { error: INVALID_CREDENTIALS }
         }
-        set({ userId: data.user.id, email: data.user.email ?? null, loading: false })
+        set({ ...fromSession(data.session), loading: false })
         return { error: null }
       }
 
@@ -143,11 +139,7 @@ export const useAuthStore = create<AuthState>()((set) => ({
         set({ loading: false })
         return { error: INVALID_CREDENTIALS }
       }
-      set({
-        userId: sessionData.session.user.id,
-        email: sessionData.session.user.email ?? null,
-        loading: false,
-      })
+      set({ ...fromSession(sessionData.session), loading: false })
       return { error: null }
     } catch {
       set({ loading: false })
@@ -190,8 +182,57 @@ export const useAuthStore = create<AuthState>()((set) => ({
     }
   },
 
+  changePassword: async (current, next) => {
+    const email = get().email
+    if (!email) return { error: 'Sign in again to change your password.' }
+    set({ loading: true })
+    try {
+      const { error: verifyError } = await supabase.auth.signInWithPassword({ email, password: current })
+      if (verifyError) {
+        set({ loading: false })
+        return { error: 'Your current password is incorrect.' }
+      }
+      const { error } = await supabase.auth.updateUser({ password: next })
+      set({ loading: false })
+      return { error: error ? error.message : null }
+    } catch (e) {
+      set({ loading: false })
+      return { error: e instanceof Error ? e.message : 'Something went wrong.' }
+    }
+  },
+
+  changeEmail: async (email) => {
+    set({ loading: true })
+    try {
+      const { error } = await supabase.auth.updateUser(
+        { email: email.trim() },
+        { emailRedirectTo: window.location.origin },
+      )
+      set({ loading: false })
+      return { error: error ? error.message : null }
+    } catch (e) {
+      set({ loading: false })
+      return { error: e instanceof Error ? e.message : 'Something went wrong.' }
+    }
+  },
+
+  deleteAccount: async () => {
+    set({ loading: true })
+    const { error } = await deleteAccountRequest()
+    if (error) {
+      set({ loading: false })
+      return { error }
+    }
+    clearOutbox()
+    await supabase.auth.signOut({ scope: 'local' })
+    set({ userId: null, email: null, joinedAt: null, recovery: false, loading: false })
+    return { error: null }
+  },
+
   signOut: async () => {
+    await flushOutbox()
+    clearOutbox()
     await supabase.auth.signOut()
-    set({ userId: null, email: null, recovery: false })
+    set({ userId: null, email: null, joinedAt: null, recovery: false })
   },
 }))

@@ -53,9 +53,9 @@ const PLANS: {
 
 function parseRestSeconds(rest: string): number {
   if (rest === "-") return 0;
-  const minMatch = rest.match(/(\d+)(?:[–-]\d+)?\s*min/);
+  const minMatch = rest.match(/(\d+)(?:[--]\d+)?\s*min/);
   if (minMatch) return parseInt(minMatch[1]) * 60;
-  const secMatch = rest.match(/(\d+)(?:[–-]\d+)?\s*sec/);
+  const secMatch = rest.match(/(\d+)(?:[--]\d+)?\s*sec/);
   if (secMatch) return parseInt(secMatch[1]);
   return 0;
 }
@@ -381,13 +381,6 @@ function ExerciseRow({
   const intervalRef = useRef<ReturnType<typeof setInterval> | null>(null);
 
   useEffect(() => {
-    if (!open) {
-      setTimerActive(false);
-      setTimerLeft(restSeconds);
-    }
-  }, [open, restSeconds]);
-
-  useEffect(() => {
     if (!timerActive) {
       if (intervalRef.current) clearInterval(intervalRef.current);
       return;
@@ -427,7 +420,13 @@ function ExerciseRow({
     >
       <button
         className="workout__exercise-header"
-        onClick={() => setOpen((o) => !o)}
+        onClick={() => {
+          if (open) {
+            setTimerActive(false);
+            setTimerLeft(restSeconds);
+          }
+          setOpen(!open);
+        }}
         aria-expanded={open}
         aria-label={`${exercise.name}, ${exercise.sets} sets of ${exercise.reps}${isExtra ? ", volume add-on" : ""}`}
       >
@@ -758,7 +757,7 @@ export default function Workout() {
 
       {level === "beginner" && (
         <div className="workout__beginner-note">
-          Designed for trainees with fewer than 3–6 months of consistent
+          Designed for trainees with fewer than 3-6 months of consistent
           training. Focus on movement quality over load. Graduate to
           Intermediate when all sets feel comfortable with good form.
         </div>

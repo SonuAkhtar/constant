@@ -79,7 +79,7 @@
 }
 
 [data-theme="dark"] .workout__plan-chip--active .workout__plan-dot {
-  background: rgba(182, 204, 190, 0.3);
+  background: rgba(var(--tint-rgb), 0.3);
 }
 
 .workout__plan-chip--active .workout__plan-dot--filled {
@@ -188,7 +188,7 @@
 }
 
 .workout__day-chip--active .workout__day-chip-name {
-  color: #fff;
+  color: var(--color-on-primary);
 }
 
 .workout__day-today-dot {
@@ -703,7 +703,7 @@
 
 .workout__timer-btn--start:hover {
   background: var(--color-primary);
-  color: #fff;
+  color: var(--color-on-primary);
 }
 
 .workout__timer-btn--stop {

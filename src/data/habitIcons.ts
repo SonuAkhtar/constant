@@ -1,0 +1,18 @@
+export const HABIT_ICON_OPTIONS: { key: string; label: string }[] = [
+  { key: 'water',    label: 'Water'    },
+  { key: 'run',      label: 'Run'      },
+  { key: 'gym',      label: 'Gym'      },
+  { key: 'meditate', label: 'Meditate' },
+  { key: 'book',     label: 'Read'     },
+  { key: 'sleep',    label: 'Sleep'    },
+  { key: 'coffee',   label: 'Coffee'   },
+  { key: 'meal',     label: 'Eat'      },
+  { key: 'music',    label: 'Music'    },
+  { key: 'journal',  label: 'Journal'  },
+  { key: 'heart',    label: 'Health'   },
+  { key: 'bike',     label: 'Bike'     },
+  { key: 'medicine', label: 'Medicine' },
+  { key: 'plant',    label: 'Nature'   },
+  { key: 'focus',    label: 'Focus'    },
+  { key: 'stretch',  label: 'Stretch'  },
+]

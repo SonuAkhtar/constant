@@ -14,7 +14,6 @@ class SubAppErrorBoundary extends Component<
   state = { error: null as Error | null }
   static getDerivedStateFromError(error: Error) { return { error } }
   componentDidCatch(error: Error) {
-    // eslint-disable-next-line no-console
     console.error('[Wellness sub-app] render error', error)
   }
   render() {

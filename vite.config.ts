@@ -6,8 +6,8 @@ export default defineConfig({
   plugins: [
     react(),
     VitePWA({
-      registerType: 'autoUpdate',
-      includeAssets: ['new-logo-full.png'],
+      registerType: 'prompt',
+      includeAssets: ['new-logo-full.png', 'icons/apple-touch-icon.png'],
       manifest: {
         name: 'Progress',
         short_name: 'Progress',
@@ -18,8 +18,9 @@ export default defineConfig({
         orientation: 'portrait',
         start_url: '/',
         icons: [
-          { src: '/new-logo-full.png', sizes: '1536x1024', type: 'image/png', purpose: 'any' },
-          { src: '/new-logo-full.png', sizes: 'any',       type: 'image/png', purpose: 'any' },
+          { src: '/icons/icon-192.png',     sizes: '192x192', type: 'image/png', purpose: 'any' },
+          { src: '/icons/icon-512.png',     sizes: '512x512', type: 'image/png', purpose: 'any' },
+          { src: '/icons/maskable-512.png', sizes: '512x512', type: 'image/png', purpose: 'maskable' },
         ],
       },
     }),

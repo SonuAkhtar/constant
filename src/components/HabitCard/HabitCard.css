@@ -49,14 +49,6 @@
   border: 1px solid var(--color-border);
 }
 
-.habit-card__backdrop {
-  position: fixed;
-  inset: 0;
-  z-index: 9;
-  background: transparent;
-  cursor: default;
-}
-
 .habit-card__drag-layer {
   position: relative;
   z-index: 1;
@@ -119,16 +111,16 @@
 }
 
 [data-theme="dark"] .habit-card--done {
-  background: rgba(182, 204, 190, 0.12);
-  border-color: rgba(182, 204, 190, 0.32);
+  background: rgba(var(--tint-rgb), 0.12);
+  border-color: rgba(var(--tint-rgb), 0.32);
   border-left-color: var(--color-primary);
   box-shadow:
-    0 0 0 1px rgba(182, 204, 190, 0.18),
-    0 0 12px rgba(182, 204, 190, 0.1);
+    0 0 0 1px rgba(var(--tint-rgb), 0.18),
+    0 0 12px rgba(var(--tint-rgb), 0.1);
 }
 
 [data-theme="dark"] .habit-card--done .habit-card__title {
-  color: #d1e8da;
+  color: var(--color-primary-light);
   text-decoration-color: var(--color-primary);
   text-decoration-thickness: 2px;
 }
@@ -153,9 +145,9 @@
 }
 
 [data-theme="dark"] .habit-card__badge {
-  border-color: rgba(182, 204, 190, 0.12);
+  border-color: rgba(var(--tint-rgb), 0.12);
   box-shadow:
-    inset 0 1px 0 rgba(182, 204, 190, 0.08),
+    inset 0 1px 0 rgba(var(--tint-rgb), 0.08),
     inset 0 -1px 0 rgba(0, 0, 0, 0.18);
 }
 
@@ -166,11 +158,6 @@
 .habit-card--done .habit-card__badge {
   background: var(--color-primary-dim);
   opacity: 0.75;
-}
-
-.habit-card__badge-icon {
-  font-size: 20px;
-  line-height: 1;
 }
 
 .habit-card__body {
@@ -390,4 +377,32 @@
   );
   background-size: 300% 100%;
   animation: card-shimmer 3s ease-in-out infinite;
+}
+
+.habit-card__skip-btn {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  overflow: hidden;
+  clip-path: inset(50%);
+  white-space: nowrap;
+}
+
+.habit-card__skip-btn:focus-visible {
+  z-index: 2;
+  top: 50%;
+  right: var(--space-3);
+  translate: 0 -50%;
+  width: auto;
+  height: auto;
+  clip-path: none;
+  padding: 6px 12px;
+  border-radius: var(--radius-full);
+  background: var(--color-surface-raised);
+  color: var(--color-text);
+  border: 1px solid var(--color-border-strong);
+  font-size: var(--font-sm);
+  font-weight: var(--weight-semibold);
+  outline: 2px solid var(--color-primary);
+  outline-offset: 2px;
 }

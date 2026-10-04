@@ -1,12 +1,20 @@
 import { Component, lazy, Suspense, useEffect, useState } from "react";
 import type { ComponentType, ReactNode } from "react";
 import { BrowserRouter, Routes, Route } from "react-router-dom";
-import { motion } from "framer-motion";
+import { motion, MotionConfig } from "framer-motion";
 import Layout from "./components/Layout/Layout";
 import Auth from "./components/Auth/Auth";
 import Today from "./pages/Today/Today";
 import InstallPrompt from "./components/InstallPrompt/InstallPrompt";
 import ToastContainer from "./components/Toast/Toast";
+import { useThemeStore } from "./store/useThemeStore";
+import { useOnboardingStore } from "./store/useOnboardingStore";
+import { useAuthStore } from "./store/useAuthStore";
+import { useHabitStore } from "./store/useHabitStore";
+import { ensureProfile } from "./lib/db";
+import { startSettingsSync } from "./lib/settingsSync";
+import { reportError, setMonitoringUser } from "./lib/monitoring";
+import UpdateBanner from "./components/UpdateBanner/UpdateBanner";
 
 function lazyWithRetry<T extends ComponentType<unknown>>(
   factory: () => Promise<{ default: T }>,
@@ -45,10 +53,6 @@ function preloadRoutes() {
   loadWellness();
   loadProfile();
 }
-import { useThemeStore } from "./store/useThemeStore";
-import { useOnboardingStore } from "./store/useOnboardingStore";
-import { useAuthStore } from "./store/useAuthStore";
-import { useHabitStore } from "./store/useHabitStore";
 
 class ErrorBoundary extends Component<
   { children: ReactNode },
@@ -56,6 +60,9 @@ class ErrorBoundary extends Component<
 > {
   state = { error: null };
   static getDerivedStateFromError(error: Error) { return { error }; }
+  componentDidCatch(error: Error, info: { componentStack?: string | null }) {
+    reportError(error, { componentStack: info.componentStack ?? undefined });
+  }
   render() {
     if (this.state.error) {
       return (
@@ -121,8 +128,8 @@ export default function App() {
   const { loadFromDb: loadProfile } = useOnboardingStore();
   const { userId, initializing, init, recovery } = useAuthStore();
   const { loadFromDb: loadHabits } = useHabitStore();
-  const [syncing, setSyncing] = useState(false);
-  const [dbLoaded, setDbLoaded] = useState(false);
+  const [loadedUserId, setLoadedUserId] = useState<string | null>(null);
+  const dbLoaded = !!userId && loadedUserId === userId;
 
   useEffect(() => {
     applyTheme();
@@ -133,17 +140,20 @@ export default function App() {
   }, [init]);
 
   useEffect(() => {
-    if (!userId) {
-      setSyncing(false);
-      setDbLoaded(false);
-      return;
-    }
-    setSyncing(true);
-    setDbLoaded(false);
-    Promise.all([loadHabits(userId), loadProfile(userId)]).finally(() => {
-      setSyncing(false);
-      setDbLoaded(true);
-    });
+    setMonitoringUser(userId);
+    if (!userId) return;
+    let active = true;
+    ensureProfile()
+      .catch((e) => reportError(e, { where: "ensureProfile" }))
+      .then(() =>
+        Promise.allSettled([loadHabits(userId), loadProfile(userId), startSettingsSync(userId)]),
+      )
+      .finally(() => {
+        if (active) setLoadedUserId(userId);
+      });
+    return () => {
+      active = false;
+    };
   }, [userId, loadHabits, loadProfile]);
 
   useEffect(() => {
@@ -163,11 +173,23 @@ export default function App() {
     };
   }, [dbLoaded]);
 
-  if (initializing) return <AppSpinner />;
+  return (
+    <MotionConfig reducedMotion="user">
+      <AppContent initializing={initializing} recovery={recovery} signedIn={!!userId} dbLoaded={dbLoaded} />
+      <UpdateBanner />
+    </MotionConfig>
+  );
+}
 
-  if (recovery) return <Auth />;
-  if (!userId) return <Auth />;
-  if (syncing || !dbLoaded) return <AppSpinner />;
+function AppContent({ initializing, recovery, signedIn, dbLoaded }: {
+  initializing: boolean;
+  recovery: boolean;
+  signedIn: boolean;
+  dbLoaded: boolean;
+}) {
+  if (initializing) return <AppSpinner />;
+  if (recovery || !signedIn) return <Auth />;
+  if (!dbLoaded) return <AppSpinner />;
 
   return (
     <BrowserRouter>

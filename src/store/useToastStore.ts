@@ -1,11 +1,11 @@
 import { create } from 'zustand'
 
-export interface ToastAction {
+interface ToastAction {
   label: string
   onClick: () => void
 }
 
-export interface ToastItem {
+interface ToastItem {
   id: string
   message: string
   icon?: string

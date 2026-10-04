@@ -59,7 +59,7 @@
   width: 100%;
   padding: var(--space-4);
   background: var(--color-primary);
-  color: #fff;
+  color: var(--color-on-primary);
   border-radius: var(--radius-md);
   font-family: var(--font-display);
   font-size: var(--font-base);

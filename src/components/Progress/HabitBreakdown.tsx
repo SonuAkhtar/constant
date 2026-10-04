@@ -1,50 +1,13 @@
 import { useState } from 'react'
 import { motion, AnimatePresence } from 'framer-motion'
-import { isScheduledOn } from '../../utils/schedule'
-import type { Habit, HabitLog } from '../../types'
-
-type DayStatus = 'done' | 'skip' | 'miss' | 'off'
-
-export interface HabitPeriodStat {
-  habit: Habit
-  rate: number
-  completed: number
-  skipped: number
-  scheduled: number
-  dayStats: { date: string; status: DayStatus }[]
-}
+import { HabitIcon } from '../Icons'
+import type { DayStatus, HabitPeriodStat } from '../../utils/habitStats'
 
 function rateColor(rate: number): string {
   if (rate >= 80) return 'var(--color-success)'
   if (rate >= 50) return 'var(--color-primary)'
   if (rate >= 25) return 'var(--color-warning)'
   return 'var(--color-error)'
-}
-
-export function computeHabitStats(
-  habits: Habit[],
-  logs: HabitLog[],
-  dates: string[],
-): HabitPeriodStat[] {
-  return habits
-    .filter((h) => !h.isArchived)
-    .map((habit) => {
-      const dayStats = dates.map((date) => {
-        const dow = new Date(`${date}T00:00:00`).getDay()
-        if (!isScheduledOn(habit, dow)) return { date, status: 'off' as DayStatus }
-        const log = logs.find((l) => l.habitId === habit.id && l.date === date)
-        if (!log) return { date, status: 'miss' as DayStatus }
-        if (log.completed) return { date, status: 'done' as DayStatus }
-        if (log.skipped) return { date, status: 'skip' as DayStatus }
-        return { date, status: 'miss' as DayStatus }
-      })
-      const scheduled = dayStats.filter((d) => d.status !== 'off').length
-      const completed = dayStats.filter((d) => d.status === 'done').length
-      const skipped = dayStats.filter((d) => d.status === 'skip').length
-      const rate = scheduled > 0 ? Math.round((completed / scheduled) * 100) : 0
-      return { habit, rate, completed, skipped, scheduled, dayStats }
-    })
-    .sort((a, b) => b.rate - a.rate)
 }
 
 const WEEK_LABELS = ['S', 'M', 'T', 'W', 'T', 'F', 'S']
@@ -105,7 +68,7 @@ function HabitPerfRow({
         aria-expanded={open}
       >
         <span className="ph-row__icon" aria-hidden="true">
-          {stat.habit.icon}
+          <HabitIcon icon={stat.habit.icon} size={16} />
         </span>
         <span className="ph-row__name">{stat.habit.title}</span>
         <div className="ph-row__track">
@@ -203,7 +166,7 @@ export function HabitBreakdown({
             <span className="ph-badge ph-badge--strong">{strong} strong</span>
           )}
           {mid > 0 && (
-            <span className="ph-badge ph-badge--mid">{mid} on track</span>
+            <span className="ph-badge ph-badge--mid">{mid} building</span>
           )}
           {low > 0 && (
             <span className="ph-badge ph-badge--low">{low} needs work</span>

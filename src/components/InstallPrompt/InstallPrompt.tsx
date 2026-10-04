@@ -5,8 +5,18 @@ import "./InstallPrompt.css";
 const OPEN_COUNT_KEY = "progress-open-count";
 const DISMISSED_KEY = "progress-install-dismissed";
 
+function isIosBrowser(): boolean {
+  const ua = navigator.userAgent;
+  const iOS = /iPad|iPhone|iPod/.test(ua) || (ua.includes("Macintosh") && navigator.maxTouchPoints > 1);
+  const standalone =
+    window.matchMedia("(display-mode: standalone)").matches ||
+    (navigator as Navigator & { standalone?: boolean }).standalone === true;
+  return iOS && !standalone;
+}
+
 export default function InstallPrompt() {
   const [show, setShow] = useState(false);
+  const [ios] = useState(isIosBrowser);
   const [deferredPrompt, setDeferredPrompt] = useState<
     (Event & { prompt: () => Promise<void> }) | null
   >(null);
@@ -18,6 +28,11 @@ export default function InstallPrompt() {
     const count = parseInt(localStorage.getItem(OPEN_COUNT_KEY) ?? "0", 10) + 1;
     localStorage.setItem(OPEN_COUNT_KEY, String(count));
 
+    if (count >= 3 && ios) {
+      const t = setTimeout(() => setShow(true), 0);
+      return () => clearTimeout(t);
+    }
+
     if (count >= 3) {
       const handler = (e: Event) => {
         e.preventDefault();
@@ -27,7 +42,7 @@ export default function InstallPrompt() {
       window.addEventListener("beforeinstallprompt", handler);
       return () => window.removeEventListener("beforeinstallprompt", handler);
     }
-  }, []);
+  }, [ios]);
 
   function handleDismiss() {
     localStorage.setItem(DISMISSED_KEY, "1");
@@ -69,7 +84,7 @@ export default function InstallPrompt() {
                 />
                 <polyline
                   points="4.5,21 9.5,14.5 13.5,17 18.5,9 25,11.5"
-                  stroke="white"
+                  style={{ stroke: "var(--color-on-primary)" }}
                   strokeWidth="2.2"
                   strokeLinecap="round"
                   strokeLinejoin="round"
@@ -79,10 +94,17 @@ export default function InstallPrompt() {
             </div>
             <div className="install-prompt__body">
               <p className="install-prompt__title">Add to Home Screen</p>
-              <p className="install-prompt__sub">
-                Get reminders, offline access, and a faster experience - right
-                from your home screen.
-              </p>
+              {ios ? (
+                <p className="install-prompt__sub">
+                  Tap the <strong>Share</strong> button in Safari, then choose{" "}
+                  <strong>Add to Home Screen</strong>.
+                </p>
+              ) : (
+                <p className="install-prompt__sub">
+                  Open it in one tap, use it offline, and get a faster experience -
+                  right from your home screen.
+                </p>
+              )}
             </div>
             <div className="install-prompt__actions">
               <button
@@ -93,9 +115,9 @@ export default function InstallPrompt() {
               </button>
               <button
                 className="install-prompt__install"
-                onClick={handleInstall}
+                onClick={ios ? handleDismiss : handleInstall}
               >
-                Add to Home Screen
+                {ios ? "Got it" : "Add to Home Screen"}
               </button>
             </div>
           </motion.div>

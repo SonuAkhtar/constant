@@ -3,6 +3,13 @@ import { persist } from 'zustand/middleware'
 
 type Theme = 'light' | 'dark'
 
+function setDocumentTheme(theme: Theme) {
+  document.documentElement.setAttribute('data-theme', theme)
+  document
+    .querySelector('meta[name="theme-color"]')
+    ?.setAttribute('content', theme === 'dark' ? '#080a01' : '#f9f9f7')
+}
+
 interface ThemeState {
   theme: Theme
   toggleTheme: () => void
@@ -16,12 +23,12 @@ export const useThemeStore = create<ThemeState>()(
 
       toggleTheme: () => {
         const next: Theme = get().theme === 'light' ? 'dark' : 'light'
-        document.documentElement.setAttribute('data-theme', next)
+        setDocumentTheme(next)
         set({ theme: next })
       },
 
       applyTheme: () => {
-        document.documentElement.setAttribute('data-theme', get().theme)
+        setDocumentTheme(get().theme)
       },
     }),
     { name: 'progress-theme', version: 1, migrate: (s) => s as ThemeState }

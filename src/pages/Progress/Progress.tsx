@@ -2,47 +2,17 @@ import { useState, useMemo } from "react";
 import { useNavigate } from "react-router-dom";
 import { format, subDays } from "date-fns";
 import { motion, AnimatePresence } from "framer-motion";
-import { useHabitStore } from "../../store/useHabitStore";
+import { useHabitStore, progressForDates } from "../../store/useHabitStore";
+import { useToastStore } from "../../store/useToastStore";
 import { useOnboardingStore } from "../../store/useOnboardingStore";
 import { FlameIcon, TrophyIcon } from "../../components/Icons";
 import { Counter } from "../../components/ui/Counter";
 import { WeeklyChart } from "../../components/Progress/WeeklyChart";
 import { MonthlyHeatmap } from "../../components/Progress/MonthlyHeatmap";
-import {
-  HabitBreakdown,
-  computeHabitStats,
-} from "../../components/Progress/HabitBreakdown";
-import { isScheduledOn } from "../../utils/schedule";
-import type { DailyProgress, Habit, HabitLog } from "../../types";
+import { HabitBreakdown } from "../../components/Progress/HabitBreakdown";
+import { computeHabitStats } from "../../utils/habitStats";
+import type { DailyProgress } from "../../types";
 import "./Progress.css";
-
-function computeProgressForRange(
-  habits: Habit[],
-  logs: HabitLog[],
-  anchorDate: Date,
-  days: number,
-): DailyProgress[] {
-  return Array.from({ length: days }, (_, i) => {
-    const date = format(subDays(anchorDate, days - 1 - i), "yyyy-MM-dd");
-    const dow = new Date(`${date}T00:00:00`).getDay();
-    const scheduled = habits.filter(
-      (h) => !h.isArchived && isScheduledOn(h, dow),
-    );
-    const total = scheduled.length;
-    const completed = logs.filter(
-      (l) =>
-        l.date === date &&
-        l.completed &&
-        scheduled.some((h) => h.id === l.habitId),
-    ).length;
-    return {
-      date,
-      total,
-      completed,
-      percentage: total > 0 ? Math.round((completed / total) * 100) : 0,
-    };
-  });
-}
 
 type View = "week" | "month";
 
@@ -235,6 +205,7 @@ export default function Progress() {
     getPersonalBests,
   } = useHabitStore();
   const { userName } = useOnboardingStore();
+  const pushToast = useToastStore((s) => s.push);
 
   const weekly = useMemo(() => getWeeklyProgress(), [habits, logs]); // eslint-disable-line react-hooks/exhaustive-deps
   const monthly = useMemo(() => getMonthlyProgress(), [habits, logs]); // eslint-disable-line react-hooks/exhaustive-deps
@@ -277,16 +248,19 @@ export default function Progress() {
 
   const displayMonthly = useMemo(() => {
     if (monthOffset === 0) return monthly;
-    const anchor = subDays(new Date(), -monthOffset * 30);
-    return computeProgressForRange(habits, logs, anchor, 30);
+    const anchor = subDays(new Date(), monthOffset * 30);
+    const dates = Array.from({ length: 30 }, (_, i) =>
+      format(subDays(anchor, 29 - i), "yyyy-MM-dd"),
+    );
+    return progressForDates(habits, logs, dates);
   }, [habits, logs, monthly, monthOffset]);
 
   const monthLabel = useMemo(() => {
     if (monthOffset === 0) return "Last 30 days";
-    const anchor = subDays(new Date(), -monthOffset * 30);
+    const anchor = subDays(new Date(), monthOffset * 30);
     const end = format(anchor, "MMM d");
     const start = format(subDays(anchor, 29), "MMM d");
-    return `${start} – ${end}`;
+    return `${start} - ${end}`;
   }, [monthOffset]);
 
   const weekDates = useMemo(() => weekly.map((d) => d.date), [weekly]);
@@ -309,7 +283,7 @@ export default function Progress() {
     (s) => s.rate >= 50 && s.rate < 80,
   ).length;
   const needsWork = scheduledThisWeek.filter((s) => s.rate < 50).length;
-  const topHabit = scheduledThisWeek[0];
+  const topHabit = scheduledThisWeek.find((s) => s.completed > 0);
   const summaryLine = getWeeklySummaryLine(
     weekAvg,
     appStreak,
@@ -326,10 +300,16 @@ export default function Progress() {
       `• Best day: ${bestDay}% on ${bestDayDate}`,
       `• Longest streak ever: ${bests.longestStreakEver} days`,
     ].join("\n");
-    if (navigator.share) {
-      await navigator.share({ title: "My Progress", text });
-    } else {
-      await navigator.clipboard.writeText(text);
+    try {
+      if (navigator.share) {
+        await navigator.share({ title: "My Progress", text });
+      } else {
+        await navigator.clipboard.writeText(text);
+        pushToast("Copied to clipboard");
+      }
+    } catch (e) {
+      if (e instanceof Error && e.name === "AbortError") return;
+      pushToast("Couldn't share right now");
     }
   }
 
@@ -496,7 +476,7 @@ export default function Progress() {
             <span className="progress-page__health-pip" aria-hidden="true" />
             <span className="progress-page__health-count">{building}</span>
             <span className="progress-page__health-label">building</span>
-            <span className="progress-page__health-sub">50–79%</span>
+            <span className="progress-page__health-sub">50-79%</span>
           </div>
           <div className="progress-page__health-card progress-page__health-card--weak">
             <span className="progress-page__health-pip" aria-hidden="true" />

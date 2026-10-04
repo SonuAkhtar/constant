@@ -1,6 +1,11 @@
-import { useState, useRef, useMemo } from "react";
+import { useState, useRef, useMemo, useEffect } from "react";
 import { format, parseISO, differenceInDays } from "date-fns";
-import { useHabitStore } from "../../store/useHabitStore";
+import { useHabitStore, parseBackup, type ParsedBackup } from "../../store/useHabitStore";
+import { useToastStore } from "../../store/useToastStore";
+import { hasPendingWrites } from "../../lib/outbox";
+import { resetAccountSettings } from "../../lib/settingsSync";
+import { usePhotoStore } from "../../store/usePhotoStore";
+import AccountSettings from "../../components/AccountSettings/AccountSettings";
 import { useOnboardingStore } from "../../store/useOnboardingStore";
 import { useThemeStore } from "../../store/useThemeStore";
 import { useAuthStore } from "../../store/useAuthStore";
@@ -17,6 +22,45 @@ const DAILY_QUOTES = [
   "The secret is to start before you feel ready.",
   "Consistency beats intensity every time.",
 ];
+
+const LEGACY_AVATAR_KEYS = (userId: string) => [`progress-avatar-photo:${userId}`, "progress-avatar-photo"];
+
+function resizeImage(file: File, size = 256): Promise<string> {
+  return new Promise((resolve, reject) => {
+    const url = URL.createObjectURL(file);
+    const img = new Image();
+    img.onload = () => {
+      const canvas = document.createElement("canvas");
+      canvas.width = size;
+      canvas.height = size;
+      const ctx = canvas.getContext("2d");
+      if (!ctx) {
+        URL.revokeObjectURL(url);
+        reject(new Error("Canvas unavailable"));
+        return;
+      }
+      const side = Math.min(img.naturalWidth, img.naturalHeight);
+      ctx.drawImage(
+        img,
+        (img.naturalWidth - side) / 2,
+        (img.naturalHeight - side) / 2,
+        side,
+        side,
+        0,
+        0,
+        size,
+        size,
+      );
+      URL.revokeObjectURL(url);
+      resolve(canvas.toDataURL("image/jpeg", 0.85));
+    };
+    img.onerror = () => {
+      URL.revokeObjectURL(url);
+      reject(new Error("Unreadable image"));
+    };
+    img.src = url;
+  });
+}
 
 const RING_R = 36;
 const RING_C = 2 * Math.PI * RING_R;
@@ -97,13 +141,15 @@ export default function Profile() {
     reset: resetHabits,
   } = useHabitStore();
   const { theme, toggleTheme } = useThemeStore();
-  const { email, signOut } = useAuthStore();
+  const { userId, signOut } = useAuthStore();
+  const pushToast = useToastStore((s) => s.push);
 
   const [confirmSignOut, setConfirmSignOut] = useState(false);
 
   function handleSignOut() {
     resetHabits();
     resetOnboarding();
+    resetAccountSettings();
     signOut();
   }
 
@@ -191,9 +237,22 @@ export default function Profile() {
 
   const importRef = useRef<HTMLInputElement>(null);
   const photoRef = useRef<HTMLInputElement>(null);
-  const [photoUrl, setPhotoUrl] = useState<string>(() =>
-    localStorage.getItem("progress-avatar-photo") ?? "",
-  );
+  const photoUrl = usePhotoStore((s) => s.photo);
+  const setPhotoUrl = usePhotoStore((s) => s.setPhoto);
+
+  useEffect(() => {
+    if (!userId) return;
+    try {
+      for (const key of LEGACY_AVATAR_KEYS(userId)) {
+        const legacy = localStorage.getItem(key);
+        if (legacy && !usePhotoStore.getState().photo) usePhotoStore.getState().setPhoto(legacy);
+        localStorage.removeItem(key);
+      }
+    } catch {
+      return;
+    }
+  }, [userId]);
+  const [pendingImport, setPendingImport] = useState<ParsedBackup | null>(null);
 
   function handleEditOpen() {
     setEditName(userName);
@@ -220,32 +279,46 @@ export default function Profile() {
     a.href = url;
     a.download = `progress-backup-${format(new Date(), "yyyy-MM-dd")}.json`;
     a.click();
-    URL.revokeObjectURL(url);
+    setTimeout(() => URL.revokeObjectURL(url), 1000);
   }
 
-  function handlePhotoChange(e: React.ChangeEvent<HTMLInputElement>) {
+  async function handlePhotoChange(e: React.ChangeEvent<HTMLInputElement>) {
     const file = e.target.files?.[0];
-    if (!file) return;
-    const reader = new FileReader();
-    reader.onload = (evt) => {
-      const url = evt.target?.result as string;
-      setPhotoUrl(url);
-      localStorage.setItem("progress-avatar-photo", url);
-    };
-    reader.readAsDataURL(file);
     e.target.value = "";
+    if (!file || !userId) return;
+    try {
+      setPhotoUrl(await resizeImage(file));
+    } catch {
+      pushToast("Couldn't use that photo. Try a different image.");
+    }
   }
 
   function handleImport(e: React.ChangeEvent<HTMLInputElement>) {
     const file = e.target.files?.[0];
+    e.target.value = "";
     if (!file) return;
     const reader = new FileReader();
     reader.onload = (evt) => {
-      const text = evt.target?.result as string;
-      importData(text);
+      const backup = parseBackup(String(evt.target?.result ?? ""));
+      if (!backup || backup.habits.length === 0) {
+        pushToast("That file isn't a valid Progress backup.");
+        return;
+      }
+      setPendingImport(backup);
     };
+    reader.onerror = () => pushToast("Couldn't read that file.");
     reader.readAsText(file);
-    e.target.value = "";
+  }
+
+  function handleConfirmImport() {
+    if (!pendingImport) return;
+    const result = importData(pendingImport);
+    setPendingImport(null);
+    if (result.ok) {
+      pushToast(`Restored ${result.habits} habits and ${result.logs} check-ins`);
+    } else {
+      pushToast(result.error);
+    }
   }
 
   return (
@@ -560,6 +633,8 @@ export default function Profile() {
         </div>
       </div>
 
+      <AccountSettings />
+
       <div className="profile__card profile__data-card">
         <h2 className="profile__section-heading">Your Data</h2>
         <p className="profile__data-privacy">
@@ -567,9 +642,9 @@ export default function Profile() {
             <rect x="2" y="6" width="8" height="6" rx="1.5" stroke="currentColor" strokeWidth="1.4" />
             <path d="M4 6V4a2 2 0 014 0v2" stroke="currentColor" strokeWidth="1.4" strokeLinecap="round" />
           </svg>
-          Synced to your account. Export a backup anytime.
+          Everything syncs to your account, including theme, time slots, workout
+          weights and your photo. Export a backup anytime.
         </p>
-        {email && <p className="profile__data-phone">Signed in as {email}</p>}
         <div className="profile__data-actions">
           <button className="profile__data-btn" onClick={handleExport}>
             Export backup
@@ -588,9 +663,29 @@ export default function Profile() {
             onChange={handleImport}
           />
         </div>
+        {pendingImport && (
+          <div className="profile__signout-confirm" role="alertdialog" aria-label="Confirm import">
+            <p className="profile__signout-confirm-text">
+              Restore {pendingImport.habits.length} habits and {pendingImport.logs.length} check-ins?
+              Habits that aren't in this backup will be deleted.
+            </p>
+            <div className="profile__signout-confirm-actions">
+              <button className="profile__signout-cancel" onClick={() => setPendingImport(null)}>
+                Cancel
+              </button>
+              <button className="profile__signout-confirm-btn" onClick={handleConfirmImport}>
+                Restore
+              </button>
+            </div>
+          </div>
+        )}
         {confirmSignOut ? (
           <div className="profile__signout-confirm">
-            <p className="profile__signout-confirm-text">Sign out and clear local data?</p>
+            <p className="profile__signout-confirm-text">
+              {hasPendingWrites()
+                ? "Some changes haven't synced yet (you may be offline). Signing out now will discard them."
+                : "Sign out and clear local data?"}
+            </p>
             <div className="profile__signout-confirm-actions">
               <button className="profile__signout-cancel" onClick={() => setConfirmSignOut(false)}>
                 Cancel

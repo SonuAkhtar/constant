@@ -1,4 +1,4 @@
-import { useMemo, useEffect } from 'react'
+import { useState, useEffect } from 'react'
 import { motion } from 'framer-motion'
 
 const CONFETTI_COLORS = [
@@ -6,28 +6,28 @@ const CONFETTI_COLORS = [
   '#c084fc', '#22d3ee', '#f59e0b', '#818cf8',
 ]
 
+function makeParticles() {
+  return Array.from({ length: 30 }, (_, i) => ({
+    id: i,
+    color: CONFETTI_COLORS[i % CONFETTI_COLORS.length],
+    x: (Math.random() - 0.5) * 340,
+    y: Math.random() * 300 + 80,
+    rotate: Math.random() * 640 - 320,
+    delay: i * 0.036,
+    duration: 1.0 + Math.random() * 0.6,
+    w: 6 + Math.floor(Math.random() * 7),
+    h: 4 + Math.floor(Math.random() * 5),
+    round: Math.random() > 0.5,
+  }))
+}
+
 export function Confetti({ onDone }: { onDone: () => void }) {
   const reducedMotion =
     typeof window !== 'undefined'
       ? window.matchMedia('(prefers-reduced-motion: reduce)').matches
       : false
 
-  const particles = useMemo(
-    () =>
-      Array.from({ length: 30 }, (_, i) => ({
-        id: i,
-        color: CONFETTI_COLORS[i % CONFETTI_COLORS.length],
-        x: (Math.random() - 0.5) * 340,
-        y: Math.random() * 300 + 80,
-        rotate: Math.random() * 640 - 320,
-        delay: i * 0.036,
-        duration: 1.0 + Math.random() * 0.6,
-        w: 6 + Math.floor(Math.random() * 7),
-        h: 4 + Math.floor(Math.random() * 5),
-        round: Math.random() > 0.5,
-      })),
-    [],
-  )
+  const [particles] = useState(makeParticles)
 
   useEffect(() => {
     const delay = reducedMotion ? 0 : 2600

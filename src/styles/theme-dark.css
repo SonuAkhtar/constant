@@ -1,0 +1,224 @@
+:root[data-theme="dark"] body {
+  background: var(--gradient-screen), var(--color-bg);
+  background-attachment: fixed;
+}
+
+:root[data-theme="dark"] .habit-card,
+:root[data-theme="dark"] .today__count-pill,
+:root[data-theme="dark"] .today__goal-dropdown,
+:root[data-theme="dark"] .today__milestone-card,
+:root[data-theme="dark"] .today__return-banner,
+:root[data-theme="dark"] .today__past-banner,
+:root[data-theme="dark"] .progress-page__health-card,
+:root[data-theme="dark"] .progress-page__chart-wrap,
+:root[data-theme="dark"] .progress-page__insight,
+:root[data-theme="dark"] .ph-row,
+:root[data-theme="dark"] .profile__card,
+:root[data-theme="dark"] .habits-page__row,
+:root[data-theme="dark"] .habits-page__reorder-group,
+:root[data-theme="dark"] .habits-page__search-results,
+:root[data-theme="dark"] .habits-page__organize-bar,
+:root[data-theme="dark"] .habits-page__section--archived > div,
+:root[data-theme="dark"] .hds__panel,
+:root[data-theme="dark"] .habit-form__panel,
+:root[data-theme="dark"] .workout__card,
+:root[data-theme="dark"] .workout__exercise,
+:root[data-theme="dark"] .workout__panel,
+:root[data-theme="dark"] .toast {
+  background: var(--gradient-surface);
+  border-color: var(--color-surface-edge);
+}
+
+:root[data-theme="dark"] .today__hero,
+:root[data-theme="dark"] .progress-page__summary,
+:root[data-theme="dark"] .profile__avatar-card,
+:root[data-theme="dark"] .today__goal-banner,
+:root[data-theme="dark"] .today__celebration {
+  background: var(--gradient-feature);
+  border-color: rgba(var(--tint-rgb), 0.14);
+}
+
+:root[data-theme="dark"] .today__hero::before,
+:root[data-theme="dark"] .progress-page__summary::before {
+  opacity: 0.35;
+}
+
+:root[data-theme="dark"] .habit-card {
+  border-left-color: var(--color-surface-edge);
+}
+
+:root[data-theme="dark"] .habit-card--done {
+  background: linear-gradient(225deg, rgba(var(--tint-rgb), 0.16) 0%, #1c1e0a 60%, #151604 100%);
+  border-color: rgba(var(--tint-rgb), 0.28);
+  border-left-color: var(--color-primary);
+  box-shadow: none;
+}
+
+:root[data-theme="dark"] .habit-card--done .habit-card__title {
+  color: var(--color-text-muted);
+  text-decoration-color: var(--color-primary);
+}
+
+:root[data-theme="dark"] .habit-card__check {
+  border-color: var(--color-border);
+  background: var(--color-surface-alt);
+}
+
+:root[data-theme="dark"] .habit-card--done .habit-card__check {
+  background: var(--color-primary);
+  border-color: var(--color-primary);
+}
+
+:root[data-theme="dark"] .habit-card__badge {
+  background: var(--color-surface-raised);
+  color: var(--color-primary);
+  border-color: rgba(var(--tint-rgb), 0.1);
+  box-shadow: none;
+}
+
+:root[data-theme="dark"] .habits-page__checkbox {
+  background: var(--color-surface-alt);
+  border-color: var(--color-border);
+}
+
+:root[data-theme="dark"] .habits-page__checkbox--checked {
+  background: var(--color-primary);
+  border-color: var(--color-primary);
+}
+
+:root[data-theme="dark"] .today__date-chip,
+:root[data-theme="dark"] .progress-page__best-pill,
+:root[data-theme="dark"] .progress-page__summary-cell,
+:root[data-theme="dark"] .progress-page__tab-bar,
+:root[data-theme="dark"] .profile__focus-toggle,
+:root[data-theme="dark"] .profile__focus-pill,
+:root[data-theme="dark"] .habits-page__section-meta,
+:root[data-theme="dark"] .habits-page__organize-btn,
+:root[data-theme="dark"] .habits-page__organize-slot-btn,
+:root[data-theme="dark"] .habits-page__search,
+:root[data-theme="dark"] .habit-form__slot,
+:root[data-theme="dark"] .habit-form__freq-pill,
+:root[data-theme="dark"] .habit-form__day,
+:root[data-theme="dark"] .habit-form__icon-btn,
+:root[data-theme="dark"] .habit-form__input,
+:root[data-theme="dark"] .wellness-page__tab-bar,
+:root[data-theme="dark"] .workout__day-chip,
+:root[data-theme="dark"] .workout__plan-chip {
+  background: var(--color-surface-alt);
+  border: 1px solid var(--color-border);
+  box-shadow: none;
+}
+
+:root[data-theme="dark"] .today__date-chip--selected,
+:root[data-theme="dark"] .progress-page__tab--active,
+:root[data-theme="dark"] .profile__focus-toggle--active,
+:root[data-theme="dark"] .habit-form__slot--active,
+:root[data-theme="dark"] .habit-form__freq-pill--active,
+:root[data-theme="dark"] .habit-form__day--active,
+:root[data-theme="dark"] .habit-form__icon-btn--active,
+:root[data-theme="dark"] .workout__day-chip--active,
+:root[data-theme="dark"] .workout__plan-chip--active {
+  background: var(--color-primary);
+  border-color: var(--color-primary);
+  color: var(--color-on-primary);
+  box-shadow: none;
+}
+
+:root[data-theme="dark"] .today__date-chip--selected *,
+:root[data-theme="dark"] .progress-page__tab--active,
+:root[data-theme="dark"] .habit-form__slot--active *,
+:root[data-theme="dark"] .habit-form__icon-btn--active *,
+:root[data-theme="dark"] .workout__day-chip--active *,
+:root[data-theme="dark"] .workout__plan-chip--active * {
+  color: var(--color-on-primary);
+}
+
+:root[data-theme="dark"] .workout__plan-chip--active .workout__plan-dot {
+  background: rgba(11, 12, 2, 0.25);
+}
+
+:root[data-theme="dark"] .workout__plan-chip--active .workout__plan-dot--filled {
+  background: var(--color-on-primary);
+}
+
+:root[data-theme="dark"] .progress-page__month-nav-btn,
+:root[data-theme="dark"] .progress-page__share-btn,
+:root[data-theme="dark"] .header__theme-toggle,
+:root[data-theme="dark"] .habit-form__close,
+:root[data-theme="dark"] .hds__close {
+  background: var(--color-surface-raised);
+  border: 1px solid var(--color-border-strong);
+  color: var(--color-text);
+}
+
+:root[data-theme="dark"] .today__goal-bar-fill,
+:root[data-theme="dark"] .profile__goal-bar-fill {
+  background: var(--color-primary);
+}
+
+:root[data-theme="dark"] .today__goal-label {
+  background: var(--color-primary);
+  color: var(--color-on-primary);
+}
+
+:root[data-theme="dark"] .profile__card {
+  --section-accent: var(--color-primary);
+  --section-tint: rgba(var(--tint-rgb), 0.06);
+}
+
+:root[data-theme="dark"] .auth {
+  --a-panel: #eefe73;
+  --a-panel-hover: #f4fea1;
+  --a-card: #24241b;
+  --a-field: #1c1d13;
+  --a-border: #363927;
+  --a-text: #ffffff;
+  --a-muted: #e0e1db;
+  --a-faint: #9fa192;
+  --a-error: #ff6b63;
+  --a-ok: #eefe73;
+  --a-toggle-bg: #1c1d13;
+  background: var(--gradient-screen), var(--color-bg);
+}
+
+:root[data-theme="dark"] .auth__submit-btn,
+:root[data-theme="dark"] .auth__toggle-btn--active .auth__toggle-text {
+  color: var(--color-on-primary);
+}
+
+:root[data-theme="dark"] .auth__input:focus {
+  background: var(--a-field);
+  box-shadow: 0 0 0 3px rgba(var(--tint-rgb), 0.16);
+}
+
+:root[data-theme="dark"] .today__section {
+  --section-tint: rgba(var(--tint-rgb), 0.025);
+  --section-border: rgba(var(--tint-rgb), 0.08);
+}
+
+:root[data-theme="dark"] .today__section .today__section-title {
+  color: var(--color-text);
+}
+
+:root[data-theme="dark"] .today__section-time {
+  color: var(--color-text-faint);
+}
+
+:root[data-theme="dark"] .today__goal-meta-text {
+  color: var(--color-text-muted);
+}
+
+:root[data-theme="dark"] .today__goal-meta-text strong {
+  color: var(--color-primary);
+}
+
+:root[data-theme="dark"] .toast {
+  color: var(--color-text);
+  border: 1px solid var(--color-surface-edge);
+}
+
+:root[data-theme="dark"] .toast__action {
+  background: var(--color-primary);
+  border-color: var(--color-primary);
+  color: var(--color-on-primary);
+}

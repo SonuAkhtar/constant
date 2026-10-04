@@ -101,6 +101,8 @@
   --color-primary-light: #65796e;
   --color-primary-dim: rgba(76, 96, 86, 0.09);
   --color-primary-text: #374b41;
+  --color-on-primary: #ffffff;
+  --tint-rgb: 76, 96, 86;
 
   --color-accent: #535f58;
   --color-accent-light: #6b7771;
@@ -126,6 +128,10 @@
   --color-nav-bg: rgba(249, 249, 247, 0.97);
 
   --gradient-brand: linear-gradient(135deg, #1a1c1b 0%, #4c6056 100%);
+  --gradient-screen: none;
+  --gradient-surface: none;
+  --gradient-feature: none;
+  --color-surface-edge: var(--color-border);
 
   --glow-primary: 0 0 20px 4px rgba(76, 96, 86, 0.2);
   --glow-accent: 0 0 20px 4px rgba(83, 95, 88, 0.15);
@@ -161,66 +167,74 @@
 }
 
 [data-theme="dark"] {
+  --tint-rgb: 238, 254, 115;
 
-  --color-bg: #262c28;
-  --color-surface: #2f3530;
-  --color-surface-alt: #373e38;
-  --color-surface-raised: #3e4640;
-  --color-surface-overlay: #464e47;
+  --color-bg: #080a01;
+  --color-surface: #24241b;
+  --color-surface-alt: #1c1d13;
+  --color-surface-raised: #3d3f28;
+  --color-surface-overlay: #2c2d1e;
 
-  --color-border: #3a4842;
-  --color-border-strong: rgba(182, 204, 190, 0.32);
+  --color-border: #363927;
+  --color-border-strong: #4f5233;
 
-  --color-primary: #b6ccbe;
-  --color-primary-light: #d1e8da;
-  --color-primary-dim: rgba(182, 204, 190, 0.12);
-  --color-primary-text: #b6ccbe;
+  --color-primary: #eefe73;
+  --color-primary-light: #f4fea1;
+  --color-primary-dim: rgba(238, 254, 115, 0.12);
+  --color-primary-text: #eefe73;
+  --color-on-primary: #0b0c02;
 
-  --color-accent: #bdcac1;
-  --color-accent-light: #d9e6dd;
-  --color-accent-dim: rgba(189, 202, 193, 0.1);
+  --color-accent: #c9d86a;
+  --color-accent-light: #e1ec8e;
+  --color-accent-dim: rgba(201, 216, 106, 0.12);
 
-  --color-success: #5a9b72;
-  --color-success-dim: rgba(90, 155, 114, 0.12);
-  --color-warning: #f0a830;
-  --color-warning-dim: rgba(240, 168, 48, 0.12);
-  --color-warning-text: #f0a830;
-  --color-error: #ffb4ab;
-  --color-error-dim: rgba(255, 180, 171, 0.12);
-  --color-info: #5aabe0;
-  --color-info-dim: rgba(90, 171, 224, 0.12);
-  --color-streak: #f0a830;
+  --color-success: #eefe73;
+  --color-success-dim: rgba(238, 254, 115, 0.12);
+  --color-warning: #f4c95d;
+  --color-warning-dim: rgba(244, 201, 93, 0.12);
+  --color-warning-text: #f4c95d;
+  --color-error: #e5484d;
+  --color-error-dim: rgba(229, 72, 77, 0.14);
+  --color-info: #b8c95f;
+  --color-info-dim: rgba(184, 201, 95, 0.12);
+  --color-streak: #eefe73;
 
-  --color-text: #e2e5e2;
-  --color-text-muted: #9aa09a;
+  --color-text: #ffffff;
+  --color-text-muted: #e0e1db;
 
-  --color-text-faint: #7a8278;
+  --color-text-faint: #9fa192;
 
-  --color-header-bg: rgba(38, 44, 40, 0.9);
-  --color-nav-bg: rgba(38, 44, 40, 0.97);
+  --color-header-bg: rgba(46, 48, 21, 0.9);
+  --color-nav-bg: #1d1f05;
 
-  --gradient-brand: linear-gradient(135deg, #e2e5e2 0%, #b6ccbe 100%);
+  --slot-morning: #eefe73;
+  --slot-morning-dim: rgba(238, 254, 115, 0.12);
+  --slot-afternoon: #d6e46b;
+  --slot-afternoon-dim: rgba(214, 228, 107, 0.12);
+  --slot-evening: #b7c35c;
+  --slot-evening-dim: rgba(183, 195, 92, 0.13);
+  --slot-night: #98a24e;
+  --slot-night-dim: rgba(152, 162, 78, 0.14);
 
-  --glow-primary: 0 0 20px 4px rgba(182, 204, 190, 0.22);
-  --glow-accent: 0 0 20px 4px rgba(189, 202, 193, 0.15);
+  --gradient-screen: linear-gradient(180deg, #2e3015 0%, #1b1d08 14%, #080a01 38%);
+  --gradient-surface: linear-gradient(180deg, #2c2d1e 0%, #22211a 100%);
+  --gradient-feature: linear-gradient(225deg, #727b34 0%, #3f4519 35%, #171a05 75%, #121302 100%);
+  --color-surface-edge: #353623;
 
-  --shadow-sm:
-    0 1px 3px rgba(0, 0, 0, 0.32), 0 0 0 1px rgba(182, 204, 190, 0.07),
-    0 0 10px rgba(182, 204, 190, 0.07);
-  --shadow-md:
-    0 4px 16px rgba(0, 0, 0, 0.44), 0 0 0 1px rgba(182, 204, 190, 0.1),
-    0 0 18px rgba(182, 204, 190, 0.12);
-  --shadow-lg:
-    0 8px 32px rgba(0, 0, 0, 0.56), 0 0 0 1px rgba(182, 204, 190, 0.13),
-    0 0 28px rgba(182, 204, 190, 0.16);
-  --shadow-xl:
-    0 16px 56px rgba(0, 0, 0, 0.64), 0 0 0 1px rgba(182, 204, 190, 0.16),
-    0 0 42px rgba(182, 204, 190, 0.2);
+  --gradient-brand: linear-gradient(135deg, #ffffff 0%, #eefe73 100%);
 
-  --heatmap-low: rgba(182, 204, 190, 0.15);
-  --heatmap-medium: rgba(182, 204, 190, 0.4);
-  --heatmap-high: rgba(182, 204, 190, 0.65);
-  --heatmap-very-high: #b6ccbe;
+  --glow-primary: 0 0 20px 4px rgba(238, 254, 115, 0.18);
+  --glow-accent: 0 0 20px 4px rgba(201, 216, 106, 0.14);
+
+  --shadow-sm: 0 1px 3px rgba(0, 0, 0, 0.5);
+  --shadow-md: 0 4px 16px rgba(0, 0, 0, 0.55);
+  --shadow-lg: 0 8px 32px rgba(0, 0, 0, 0.6);
+  --shadow-xl: 0 16px 56px rgba(0, 0, 0, 0.66);
+
+  --heatmap-low: rgba(238, 254, 115, 0.15);
+  --heatmap-medium: rgba(238, 254, 115, 0.38);
+  --heatmap-high: rgba(238, 254, 115, 0.65);
+  --heatmap-very-high: #eefe73;
 }
 
 [data-theme="dark"] .workout__card,
@@ -235,15 +249,13 @@
 [data-theme="dark"] .progress-page__chart-wrap,
 [data-theme="dark"] .ph-row,
 [data-theme="dark"] .profile__goal-item,
-[data-theme="dark"] .habits-page__group,
 [data-theme="dark"] .habit-card {
   box-shadow:
-    0 0 0 1px rgba(182, 204, 190, 0.07),
-    0 0 12px rgba(182, 204, 190, 0.07);
+    0 0 0 1px rgba(var(--tint-rgb), 0.07),
+    0 0 12px rgba(var(--tint-rgb), 0.07);
 }
 
 [data-theme="dark"] .progress-page__best-pill,
-[data-theme="dark"] .progress-page__summary-chip,
 [data-theme="dark"] .progress-page__summary-cell,
 [data-theme="dark"] .profile__focus-pill,
 [data-theme="dark"] .profile__focus-toggle,
@@ -260,8 +272,8 @@
 [data-theme="dark"] .workout__rest-badge,
 [data-theme="dark"] .ph-badge {
   box-shadow:
-    0 0 0 1px rgba(182, 204, 190, 0.08),
-    0 0 8px rgba(182, 204, 190, 0.06);
+    0 0 0 1px rgba(var(--tint-rgb), 0.08),
+    0 0 8px rgba(var(--tint-rgb), 0.06);
 }
 
 [data-theme="dark"] .workout__plan-chip--active,
@@ -269,20 +281,19 @@
 [data-theme="dark"] .today__date-chip--selected,
 [data-theme="dark"] .wellness-page__tab--active {
   box-shadow:
-    0 0 0 1px rgba(182, 204, 190, 0.35),
-    0 0 16px rgba(182, 204, 190, 0.22);
+    0 0 0 1px rgba(var(--tint-rgb), 0.35),
+    0 0 16px rgba(var(--tint-rgb), 0.22);
 }
 
 [data-theme="dark"] input:focus,
 [data-theme="dark"] textarea:focus {
   box-shadow:
-    0 0 0 1px rgba(182, 204, 190, 0.5),
-    0 0 14px rgba(182, 204, 190, 0.18);
+    0 0 0 1px rgba(var(--tint-rgb), 0.5),
+    0 0 14px rgba(var(--tint-rgb), 0.18);
 }
 
-[data-theme="dark"] .bottom-nav,
-[data-theme="dark"] .app-header {
+[data-theme="dark"] .bottom-nav {
   box-shadow:
-    0 0 0 1px rgba(182, 204, 190, 0.1),
-    0 -2px 24px rgba(182, 204, 190, 0.1);
+    0 0 0 1px rgba(var(--tint-rgb), 0.1),
+    0 -2px 24px rgba(var(--tint-rgb), 0.1);
 }

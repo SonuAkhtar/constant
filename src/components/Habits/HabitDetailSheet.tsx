@@ -1,4 +1,4 @@
-import { useMemo, useRef } from 'react'
+import { useState } from 'react'
 import * as Dialog from '@radix-ui/react-dialog'
 import { motion, AnimatePresence, useDragControls, type PanInfo } from 'framer-motion'
 import { useHabitStore } from '../../store/useHabitStore'
@@ -6,7 +6,7 @@ import { HabitIcon, FlameIcon } from '../Icons'
 import type { Habit } from '../../types'
 import './HabitDetailSheet.css'
 
-type DotStatus = 'done' | 'skip' | 'miss'
+type DotStatus = 'done' | 'skip' | 'miss' | 'off'
 
 function Dot({ status }: { status: DotStatus }) {
   return <div className={`hds__dot hds__dot--${status}`} aria-hidden="true" />
@@ -18,19 +18,18 @@ interface Props {
   onOpenChange: (open: boolean) => void
   onEdit: () => void
   onArchive: () => void
+  onTogglePin: () => void
 }
 
-export function HabitDetailSheet({ habit, open, onOpenChange, onEdit, onArchive }: Props) {
+export function HabitDetailSheet({ habit, open, onOpenChange, onEdit, onArchive, onTogglePin }: Props) {
   const getHabitStats = useHabitStore(s => s.getHabitStats)
+  useHabitStore(s => s.logs)
+  useHabitStore(s => s.habits)
 
-  const lastHabitRef = useRef<Habit | null>(null)
-  if (habit) lastHabitRef.current = habit
-  const displayHabit = lastHabitRef.current
+  const [displayHabit, setDisplayHabit] = useState<Habit | null>(habit)
+  if (habit && habit !== displayHabit) setDisplayHabit(habit)
 
-  const stats = useMemo(
-    () => displayHabit ? getHabitStats(displayHabit.id) : null,
-    [displayHabit?.id], // eslint-disable-line react-hooks/exhaustive-deps
-  )
+  const stats = displayHabit ? getHabitStats(displayHabit.id) : null
   const dragControls = useDragControls()
 
   if (!displayHabit || !stats) return null
@@ -100,7 +99,7 @@ export function HabitDetailSheet({ habit, open, onOpenChange, onEdit, onArchive 
                   <div className="hds__stat-sep" />
                   <div className="hds__stat">
                     <span className="hds__stat-value">{stats.completionRate30}%</span>
-                    <span className="hds__stat-label">30-day</span>
+                    <span className="hds__stat-label">30-day rate</span>
                   </div>
                   <div className="hds__stat-sep" />
                   <div className="hds__stat">
@@ -115,7 +114,7 @@ export function HabitDetailSheet({ habit, open, onOpenChange, onEdit, onArchive 
                     {stats.dailyData.map(d => (
                       <Dot
                         key={d.date}
-                        status={d.completed ? 'done' : d.skipped ? 'skip' : 'miss'}
+                        status={!d.scheduled ? 'off' : d.completed ? 'done' : d.skipped ? 'skip' : 'miss'}
                       />
                     ))}
                   </div>
@@ -126,8 +125,18 @@ export function HabitDetailSheet({ habit, open, onOpenChange, onEdit, onArchive 
                     <span className="hds__legend-label">Skipped</span>
                     <span className="hds__legend-dot hds__legend-dot--miss" />
                     <span className="hds__legend-label">Missed</span>
+                    <span className="hds__legend-dot hds__legend-dot--off" />
+                    <span className="hds__legend-label">Not scheduled</span>
                   </div>
                 </div>
+
+                <button
+                  className="hds__pin"
+                  onClick={onTogglePin}
+                  aria-pressed={!!displayHabit.isPinned}
+                >
+                  {displayHabit.isPinned ? 'Unpin from Core habits' : 'Pin to Core habits'}
+                </button>
 
                 <div className="hds__actions">
                   <button className="hds__action hds__action--edit" onClick={onEdit}>

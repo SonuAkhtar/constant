@@ -72,8 +72,7 @@ const NAV_ITEMS = [
 ]
 
 export default function BottomNav() {
-  const getDayProgress = useHabitStore(s => s.getDayProgress)
-  const { percentage } = getDayProgress()
+  const percentage = useHabitStore(s => s.getDayProgress().percentage)
 
   return (
     <nav className="bottom-nav">

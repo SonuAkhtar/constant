@@ -18,6 +18,7 @@ interface Props {
   skipped: boolean;
   streak: Streak;
   onToggle: () => void;
+  onSkip?: () => void;
   index: number;
 }
 
@@ -29,11 +30,13 @@ export default function HabitCard({
   skipped,
   streak,
   onToggle,
+  onSkip,
   index,
 }: Props) {
   const [justCompleted, setJustCompleted] = useState(false);
   const x = useMotionValue(0);
   const rightRevealOpacity = useTransform(x, [0, 120], [0, 1]);
+  const leftRevealOpacity = useTransform(x, [-120, 0], [1, 0]);
 
   const cardDisabled = done || skipped;
 
@@ -52,6 +55,9 @@ export default function HabitCard({
     const { offset, velocity } = info;
     if (offset.x > 100 && velocity.x > 200 && !cardDisabled) {
       handleToggle();
+    } else if (onSkip && offset.x < -90 && !cardDisabled) {
+      haptic("medium");
+      onSkip();
     }
     animate(x, 0, SPRING);
   }
@@ -80,7 +86,7 @@ export default function HabitCard({
             >
               <path
                 d="M4 11l5 5 9-9"
-                stroke="white"
+                style={{ stroke: "var(--color-on-primary)" }}
                 strokeWidth="2.4"
                 strokeLinecap="round"
                 strokeLinejoin="round"
@@ -89,12 +95,24 @@ export default function HabitCard({
           </motion.div>
         )}
 
+        {!cardDisabled && onSkip && (
+          <motion.div
+            className="habit-card__swipe-left"
+            style={{ opacity: leftRevealOpacity }}
+            aria-hidden="true"
+          >
+            <span className="habit-card__left-action habit-card__left-action--skip">
+              Skip
+            </span>
+          </motion.div>
+        )}
+
         <motion.div
           className="habit-card__drag-layer"
           style={{ x }}
           drag={cardDisabled ? false : "x"}
-          dragConstraints={{ left: 0, right: 120 }}
-          dragElastic={{ left: 0, right: 0.15 }}
+          dragConstraints={{ left: onSkip ? -120 : 0, right: 120 }}
+          dragElastic={{ left: onSkip ? 0.15 : 0, right: 0.15 }}
           onDragEnd={handleDragEnd}
         >
           <motion.button
@@ -113,7 +131,7 @@ export default function HabitCard({
               done
                 ? `Mark ${habit.title} as incomplete`
                 : skipped
-                  ? `${habit.title}- skipped`
+                  ? `${habit.title} - skipped. Tap to undo skip`
                   : `Mark ${habit.title} as complete`
             }
             animate={
@@ -141,7 +159,7 @@ export default function HabitCard({
                 <p className="habit-card__intention">{habit.intention}</p>
               )}
               {skipped && (
-                <span className="habit-card__skipped-badge">Skipped today</span>
+                <span className="habit-card__skipped-badge">Skipped</span>
               )}
               {streak.current >= 2 && !skipped && (
                 <div
@@ -207,7 +225,7 @@ export default function HabitCard({
                   >
                     <motion.path
                       d="M1.5 5.5L5.5 9.5L12.5 1.5"
-                      stroke="white"
+                      style={{ stroke: "var(--color-on-primary)" }}
                       strokeWidth="2.2"
                       strokeLinecap="round"
                       strokeLinejoin="round"
@@ -241,6 +259,12 @@ export default function HabitCard({
             </div>
           </motion.button>
         </motion.div>
+
+        {!cardDisabled && onSkip && (
+          <button type="button" className="habit-card__skip-btn" onClick={onSkip}>
+            Skip {habit.title} today
+          </button>
+        )}
       </div>
     </motion.li>
   );
